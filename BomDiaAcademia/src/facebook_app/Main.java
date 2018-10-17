@@ -43,9 +43,9 @@ public class Main {
 		
 		//    this is for publish things in my feed (not working)//
 
-		FacebookType response = fbClient.publish("me/feed", FacebookType.class,
-				Parameter.with("message", "O Rodrigo chega tarde para não trabalhar"));
-		System.out.println("fb.com/" + response.getId());
+//		FacebookType response = fbClient.publish("me/feed", FacebookType.class,
+//				Parameter.with("message", "O Rodrigo chega tarde para não trabalhar"));
+//		System.out.println("fb.com/" + response.getId());
 		
 		
 
@@ -58,19 +58,19 @@ public class Main {
 				// Will print the names of all groups from user //
 				System.out.println(rGroup.getName());
 				
-				if (rGroup.getName().contains("UniHUB")) {
-					
-					// Will access group's page//
-					Connection<Post> result3 = fbClient.fetchConnection(rGroup.getId() + "/feed", Post.class);
-					
-					for (List<Post> page3 : result3) {
-
-						for (Post rPost2 : page3) {
-							// Will print posts from chosen group (not working)//
-							System.out.println(rPost2.getMessage());
-						}
-					}
-				}
+//				if (rGroup.getName().contains("UniHUB")) {
+//					
+//					// Will access group's page//
+//					Connection<Post> result3 = fbClient.fetchConnection(rGroup.getId() + "/feed", Post.class);
+//					
+//					for (List<Post> page3 : result3) {
+//
+//						for (Post rPost2 : page3) {
+//							// Will print posts from chosen group (not working)//
+//							System.out.println(rPost2.getMessage());
+//						}
+//					}
+//				}
 			}
 		}
 
