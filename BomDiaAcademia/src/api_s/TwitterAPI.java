@@ -9,7 +9,6 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterAPI {
 	public static void main(String[] args) {
-
 		try {
 			ConfigurationBuilder cb = new ConfigurationBuilder();
 			cb.setDebugEnabled(true).setOAuthConsumerKey("GahzkZi50ZuasuqqkRqckC2ln")
@@ -18,7 +17,7 @@ public class TwitterAPI {
 					.setOAuthAccessTokenSecret("onDIulYjcQCvb3rVk6N3cYp0DxytW0ew86fM2Kyp8JQOj");
 			TwitterFactory tf = new TwitterFactory(cb.build());
 			Twitter twitter = tf.getInstance();
-			List<Status> statuses = twitter.getUserTimeline("@ISCTEIUL");
+			List<Status> statuses = twitter.getUserTimeline(args[0]);
 			System.out.println("------------------------\n Showing home timeline \n------------------------");
 			int counter = 0;
 			int counterTotal = 0;
