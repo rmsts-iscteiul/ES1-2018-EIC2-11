@@ -8,7 +8,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterAPI {
-	public static void main(String[] args) {
+	public static void main(String[] args) { // The first argument need to be the @ of the user. DON'T WRITE THE '@'
 		try {
 			ConfigurationBuilder cb = new ConfigurationBuilder();
 			cb.setDebugEnabled(true).setOAuthConsumerKey("GahzkZi50ZuasuqqkRqckC2ln")
@@ -17,7 +17,7 @@ public class TwitterAPI {
 					.setOAuthAccessTokenSecret("onDIulYjcQCvb3rVk6N3cYp0DxytW0ew86fM2Kyp8JQOj");
 			TwitterFactory tf = new TwitterFactory(cb.build());
 			Twitter twitter = tf.getInstance();
-			List<Status> statuses = twitter.getUserTimeline(args[0]);
+			List<Status> statuses = twitter.getUserTimeline(args[0]); // first argument 
 			System.out.println("------------------------\n Showing home timeline \n------------------------");
 			int counter = 0;
 			int counterTotal = 0;
