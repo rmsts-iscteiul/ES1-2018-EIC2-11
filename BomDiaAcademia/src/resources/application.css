@@ -1,0 +1,78 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+#root_pane {
+	-fx-background-color: rgba(0,0,0,0.0);
+}
+
+#window_root_pane {
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+}
+
+#window_pane {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 0px 10px 10px 0px;
+}
+
+#shadow_gap {
+	-fx-background-color: rgba(0,0,0,0.0);
+}
+
+#window_left_menu {
+	-fx-background-color: #202020;
+	-fx-background-radius: 10px 0px 0px 10px;
+	-fx-padding: 50px 0px 0px 0px;
+	-fx-spacing: 50px;
+}
+
+#window_left_menu_icon {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+}
+
+#window_left_menu_icon:hover {
+	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
+}
+
+#window_top_bar {
+	-fx-alignment: center-right;
+}
+
+#window_top_bar_icon {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+}
+
+#window_top_bar_icon:hover {
+	-fx-background-color: rgba(255,59,48, 1);
+	-fx-background-radius: 0px 10px 0px 0px;
+}
+
+
+/*
+
+#root_center_pane {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 0px 10px 10px 0px;
+}
+
+#facebook_pane {
+	-fx-background-color: #ffffff;
+	-fx-alignment: baseline-center ;
+}
+
+
+
+#post_pane {
+	-fx-padding: 10px;
+	-fx-effect: dropshadow(gaussian, #555555, 10.0, 0.2, 0.0, 0.0);
+}
+
+#post_texto {
+	-fx-background-color: #ffffff;
+}
+
+#tool_bar {
+	-fx-background-color: rgb(0,128,255) ;
+	-fx-background-radius: 10px 10px 0px 0px;
+}
+ 
+ */
