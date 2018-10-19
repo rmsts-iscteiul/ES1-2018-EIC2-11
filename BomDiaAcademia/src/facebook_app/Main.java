@@ -33,6 +33,7 @@ public class Main {
 			for (Post rPost : page) {
 				
 				// Will print the post's message //
+				if(rPost.getMessage().contains("X"))
 				System.out.println(rPost.getMessage());
 				// Will print post's url from facebook //
 				System.out.println("fb.com/" + rPost.getId());
