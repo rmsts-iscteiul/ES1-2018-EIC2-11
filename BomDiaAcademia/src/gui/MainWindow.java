@@ -1,5 +1,8 @@
 package gui;
 
+import java.util.List;
+
+import api_s.TwitterAPI;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -8,17 +11,19 @@ import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import twitter4j.Status;
 
 public class MainWindow extends Application {
 
@@ -35,6 +40,8 @@ public class MainWindow extends Application {
 	private static final int WINDOW_ROOT_PANE_HEIGHT = 600;
 	private static final int WINDOW_LEFT_MENU_WIDTH = 50;
 	private static final int WINDOW_TOP_BAR_HEIGHT = 20;
+
+	private static final int POST_WIDTH = 300;
 
 	private static final String ICONS = "/resources/icons/";
 
@@ -123,7 +130,19 @@ public class MainWindow extends Application {
 		twitter_icon.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				window_pane.setCenter(setTwitterPosts());
+				TwitterAPI twitter_api = new TwitterAPI();
+				List<Status> statuses = twitter_api.getUserTimeline();
+				
+				ScrollPane twitter_scroll_feed_pane = new ScrollPane();
+				twitter_scroll_feed_pane.setId("twitter_scroll_feed_pane");
+				VBox twitter_feed_pane = new VBox();
+				twitter_feed_pane.setId("twitter_feed_pane");
+				twitter_scroll_feed_pane.setContent(twitter_feed_pane);
+				window_pane.setCenter(twitter_scroll_feed_pane);
+				
+				for(Status s: statuses) {
+					twitter_feed_pane.getChildren().add(createTwitterPost(s));
+				}
 			}
 		});
 		Button email_icon = new Button(null,
@@ -160,21 +179,23 @@ public class MainWindow extends Application {
 				main_stage.setY(event.getScreenY() + yOffset);
 			}
 		});
+		FlowPane window_top_bar_buttons_container = new FlowPane();
+		window_top_bar_buttons_container.setId("window_top_bar_buttons_container");
 		Button close_button = new Button(null,
-				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "exit_gray.png"))));
-		close_button.setId("window_top_bar_icon");
+				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "exit_window_gray.png"))));
+		close_button.setId("window_top_bar_close_button");
 		close_button.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				close_button
-						.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(ICONS + "exit_white.png"))));
+				close_button.setGraphic(
+						new ImageView(new Image(getClass().getResourceAsStream(ICONS + "exit_window_white.png"))));
 			}
 		});
 		close_button.setOnMouseExited(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				close_button
-						.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(ICONS + "exit_gray.png"))));
+				close_button.setGraphic(
+						new ImageView(new Image(getClass().getResourceAsStream(ICONS + "exit_window_gray.png"))));
 			}
 		});
 		close_button.setOnAction(new EventHandler<ActionEvent>() {
@@ -183,29 +204,49 @@ public class MainWindow extends Application {
 				Platform.exit();
 			}
 		});
-		window_top_bar.getChildren().add(close_button);
+		window_top_bar_buttons_container.getChildren().add(close_button);
+		window_top_bar.getChildren().add(createSearch());
+		window_top_bar.getChildren().add(window_top_bar_buttons_container);
 		window_pane.setTop(window_top_bar);
 	}
 
-	public GridPane setTwitterPosts() {
-		GridPane post_pane = new GridPane();
+	private FlowPane createSearch() {
+		FlowPane window_top_bar_search_container = new FlowPane();
+		window_top_bar_search_container.setId("window_top_bar_search_container");
+		HBox search_pane = new HBox();
+		search_pane.setId("search_pane");
+		TextField search_text_field = new TextField();
+		search_text_field.setId("search_text_field");
+		Button search_button = new Button(null,
+				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "search_gray_14.png"))));
+		search_button.setId("search_button");
+		search_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				// TO-DO
+			}
+		});
+		search_pane.getChildren().addAll(search_text_field, search_button);
+		window_top_bar_search_container.getChildren().add(search_pane);
+		return window_top_bar_search_container;
+	}
+
+	public FlowPane createTwitterPost(Status status) {
+		FlowPane post_pane = new FlowPane(Orientation.VERTICAL);
 		post_pane.setId("post_pane");
-		post_pane.setMaxSize(400, 200);
-
+		post_pane.setPrefSize(POST_WIDTH, 100);
 		// TOP BAR
-		ToolBar tool_bar = new ToolBar(new ImageView(new Image(getClass().getResourceAsStream(ICONS + "twitter.png"))),
-				new Label("USER"));
-		tool_bar.setId("tool_bar");
-		post_pane.add(tool_bar, 0, 0, 1, 1);
-
+		HBox post_top_bar = new HBox(new Label(status.getUser().getName()));
+		post_top_bar.setId("post_top_bar");
+		post_pane.getChildren().add(post_top_bar);
 		// CENTER PANE
-		Label post_text = new Label("ESTE É UM POST");
-		post_text.setPrefSize(200, 100);
+		TextArea post_text = new TextArea(status.getText());
 		post_text.setId("post_texto");
-		ImageView profile_photo = new ImageView(new Image(getClass().getResourceAsStream(ICONS + "email.png")));
+		post_text.autosize();
+		post_text.setMaxWidth(POST_WIDTH);
+		ImageView profile_photo = new ImageView(new Image(status.getUser().getMiniProfileImageURL()));
 		HBox post_box = new HBox(profile_photo, post_text);
-		post_pane.add(post_box, 0, 1, 1, 1);
-
+		post_pane.getChildren().add(post_box);
 		return post_pane;
 	}
 }
