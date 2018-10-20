@@ -51,8 +51,6 @@ public class MainWindow extends Application {
 
 	private static final int POST_WIDTH = 240;
 
-	private static final String ICONS = "/resources/icons/";
-
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -222,23 +220,8 @@ public class MainWindow extends Application {
 		});
 		FlowPane window_top_bar_buttons_container = new FlowPane();
 		window_top_bar_buttons_container.setId("window_top_bar_buttons_container");
-		Button close_button = new Button(null,
-				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "exit_window_gray.png"))));
+		Button close_button = new Button();
 		close_button.setId("window_top_bar_close_button");
-		close_button.setOnMouseEntered(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				close_button.setGraphic(
-						new ImageView(new Image(getClass().getResourceAsStream(ICONS + "exit_window_white.png"))));
-			}
-		});
-		close_button.setOnMouseExited(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				close_button.setGraphic(
-						new ImageView(new Image(getClass().getResourceAsStream(ICONS + "exit_window_gray.png"))));
-			}
-		});
 		close_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
@@ -272,8 +255,7 @@ public class MainWindow extends Application {
 		search_text_field.setOnKeyPressed((event) -> { if(event.getCode() == KeyCode.ENTER) { if (search_twitter_toggle_button.isSelected()) {
 			refreshTwitterApp(search_text_field.getText());
 		} } });
-		Button search_button = new Button(null,
-				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "search_gray_14.png"))));
+		Button search_button = new Button();
 		search_button.setId("search_button");
 		search_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
@@ -312,9 +294,10 @@ public class MainWindow extends Application {
 		twitter_app_pane.setMaxSize((window_pane.getWidth() * 0.4),
 				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 
-		HBox twitter_app_top_bar = new HBox(
-				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "twitter_white_14.png"))));
+		HBox twitter_app_top_bar = new HBox();
 		twitter_app_top_bar.setId("twitter_app_top_bar");
+		Label twitter_app_top_bar_icon = new Label();
+		twitter_app_top_bar_icon.setId("twitter_app_top_bar_icon");
 		Button twitter_app_top_bar_refresh_button = new Button();
 		twitter_app_top_bar_refresh_button.setId("twitter_app_top_bar_refresh_button");
 		twitter_app_top_bar_refresh_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -323,7 +306,7 @@ public class MainWindow extends Application {
 				refreshTwitterApp(twitter_app.getUser_timeline_to_show());
 			}
 		});
-		twitter_app_top_bar.getChildren().add(twitter_app_top_bar_refresh_button);
+		twitter_app_top_bar.getChildren().addAll(twitter_app_top_bar_icon, twitter_app_top_bar_refresh_button);
 
 		ScrollPane twitter_app_scroll_pane = new ScrollPane();
 		twitter_app_scroll_pane.setId("twitter_scroll_feed_pane");

@@ -77,11 +77,13 @@
 #window_top_bar_close_button {
 	-fx-background-color: transparent;
     -fx-border-style: none;
+    -fx-graphic: "/resources/icons/exit_window_gray_14.png";
 }
 
 #window_top_bar_close_button:hover {
 	-fx-background-color: #ff3b30;
 	-fx-background-radius: 0.0px 10.0px 0.0px 0.0px;
+	-fx-graphic: "/resources/icons/exit_window_white_14.png";
 }
 
 #window_top_bar_search_container {
@@ -141,6 +143,7 @@
 #search_button {
 	-fx-background-color: transparent;
     -fx-border-style: none;
+	-fx-graphic: "/resources/icons/search_gray_14.png";    
 }
 
 #apps_pane {
@@ -156,8 +159,11 @@
 #twitter_app_top_bar {
 	-fx-background-color: #33ccff;
 	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
-	-fx-graphic: "/resources/icons/twitter_white_14.png";
 	-fx-alignment: center;
+}
+
+#twitter_app_top_bar_icon {
+	-fx-graphic: "/resources/icons/twitter_white_14.png";
 }
 
 #twitter_app_top_bar_refresh_button {
