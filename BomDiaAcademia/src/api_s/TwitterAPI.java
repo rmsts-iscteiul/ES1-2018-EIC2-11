@@ -11,6 +11,7 @@ import twitter4j.conf.ConfigurationBuilder;
 public class TwitterAPI {
 	
 	private Twitter twitter;
+	private String user_timeline_to_show;
 	
 	public TwitterAPI() {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -22,10 +23,11 @@ public class TwitterAPI {
 		this.twitter = tf.getInstance();
 	}
 
-	public List<Status> getUserTimeline() {
+	public List<Status> getUserTimeline(String username) {
+		user_timeline_to_show = username;
 		List<Status> statuses = null;
 		try {
-			statuses = twitter.getUserTimeline("CamaraLisboa");
+			statuses = twitter.getUserTimeline(username);
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
@@ -57,5 +59,9 @@ public class TwitterAPI {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
+	}
+
+	public String getUser_timeline_to_show() {
+		return user_timeline_to_show;
 	}
 }

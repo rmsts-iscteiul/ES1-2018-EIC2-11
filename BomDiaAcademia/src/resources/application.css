@@ -1,6 +1,6 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
 #root_pane {
-	-fx-background-color: rgba(0,0,0,0.0);
+	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
 }
 
 #window_root_pane {
@@ -8,29 +8,62 @@
 }
 
 #window_pane {
-	-fx-background-color: #edf0f5;
-	-fx-background-radius: 0px 10px 10px 0px;
+	-fx-background-color: #f4f4f4;
+	-fx-background-radius: 0.0px 10.0px 10.0px 0.0px;
 	-fx-alignment: center;
 }
 
 #shadow_gap {
-	-fx-background-color: rgba(0,0,0,0.0);
+	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
 }
 
 #window_left_menu {
 	-fx-background-color: #202020;
-	-fx-background-radius: 10px 0px 0px 10px;
-	-fx-padding: 50px 0px 0px 0px;
-	-fx-spacing: 50px;
+	-fx-background-radius: 10.0px 0.0px 0.0px 10.0px;
+	-fx-padding: 50.0px 0.0px 0.0px 0.0px;
+	-fx-spacing: 50.0px;
 }
 
-#window_left_menu_icon {
+#left_menu_facebook_toggle_button {
 	-fx-background-color: transparent;
     -fx-border-style: none;
+    -fx-graphic: "/resources/icons/facebook_white_32.png";
 }
 
-#window_left_menu_icon:hover {
+#left_menu_facebook_toggle_button:hover {
 	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
+}
+
+#left_menu_facebook_toggle_button:selected {
+    -fx-graphic: "/resources/icons/facebook_blue_32.png";
+}
+
+#left_menu_twitter_toggle_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/twitter_white_32.png";
+}
+
+#left_menu_twitter_toggle_button:hover {
+	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
+}
+
+#left_menu_twitter_toggle_button:selected {
+    -fx-graphic: "/resources/icons/twitter_aqua_32.png";
+}
+
+#left_menu_email_toggle_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/email_white_32.png";
+}
+
+#left_menu_email_toggle_button:hover {
+	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
+}
+
+#left_menu_email_toggle_button:selected {
+    -fx-graphic: "/resources/icons/email_red_32.png";
 }
 
 #window_top_bar {
@@ -47,17 +80,57 @@
 }
 
 #window_top_bar_close_button:hover {
-	-fx-background-color: rgba(255,59,48, 1);
-	-fx-background-radius: 0px 10px 0px 0px;
+	-fx-background-color: #ff3b30;
+	-fx-background-radius: 0.0px 10.0px 0.0px 0.0px;
 }
 
 #window_top_bar_search_container {
-	-fx-padding: 4px 0px 4px 0px;
+	-fx-padding: 4.0px 0.0px 4.0px 0.0px;
+	-fx-hgap: 10px;
 }
 #search_pane {
 	-fx-background-color: #ffffff;
+	-fx-background-radius: 50.0px;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+}
+
+#app_check_pane {
+	-fx-background-color: transparent;
+	-fx-border-style: none;
+	-fx-spacing: 4px;
+}
+
+#search_facebook_toggle_button {
+    -fx-background-color: transparent;
 	-fx-background-radius: 50px;
-	-fx-padding: 0px 4px 0px 4px;
+    -fx-graphic: "/resources/icons/facebook_gray_14.png";
+}
+
+#search_facebook_toggle_button:selected {
+    -fx-background-color: #3B5998;
+    -fx-graphic: "/resources/icons/facebook_white_14.png";
+}
+
+#search_twitter_toggle_button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50px;
+    -fx-graphic: "/resources/icons/twitter_gray_14.png";
+}
+
+#search_twitter_toggle_button:selected {
+    -fx-background-color: #33ccff;
+    -fx-graphic: "/resources/icons/twitter_white_14.png";
+}
+
+#search_email_toggle_button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50px;
+    -fx-graphic: "/resources/icons/email_gray_14.png"
+}
+
+#search_email_toggle_button:selected {
+    -fx-background-color: #ff3b30;
+    -fx-graphic: "/resources/icons/email_white_14.png";
 }
 
 #search_text_field {
@@ -70,18 +143,91 @@
     -fx-border-style: none;
 }
 
+#apps_pane {
+	-fx-background-color: transparent;
+	-fx-alignment: center;
+	-fx-spacing: 20px;
+}
+
+#twitter_app_pane {
+	-fx-background-color: transparent;
+}
+
+#twitter_app_top_bar {
+	-fx-background-color: #33ccff;
+	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
+	-fx-graphic: "/resources/icons/twitter_white_14.png";
+	-fx-alignment: center;
+}
+
+#twitter_app_top_bar_refresh_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/refresh_white_14.png";
+	-fx-border-style: none;
+	-fx-alignment: center-right;
+}
+
 #twitter_scroll_feed_pane {
-	-fx-background-color: #ff0000;
-	-fx-alignment: center;
-}
-#twitter_feed_pane {
-	-fx-background-color: #ff0000;
-	-fx-spacing: 50px;
-	-fx-alignment: center;
+	-fx-background-color: transparent;
+	-fx-alignment: top-center;
+	-fx-border-color: #33ccff;
 }
 
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color :transparent;
+    -fx-border-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-border-radius :2.0em;
+}
+.scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 0.0 10.0 0.0;
 
-#post_pane {
+}
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+    -fx-shape : " ";    
+    -fx-padding :0.15em 0.0;
+}
+ .scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";    
+    -fx-padding :0.0 0.15em;
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color :derive(black,90.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color :derive(#4D4C4F,10.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+
+#twitter_feed {
+	-fx-background-color: transparent;
+	-fx-spacing: 10px;
+	-fx-alignment: top-center;
+}
+
+#post_pane{
 	-fx-background-color: #ffffff;
 	-fx-background-radius: 10px;
+}
+
+#post_top_bar {
+	-fx-alignment: center;
 }

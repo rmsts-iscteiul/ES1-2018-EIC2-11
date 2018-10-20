@@ -12,15 +12,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import twitter4j.Status;
@@ -32,6 +34,12 @@ public class MainWindow extends Application {
 	private BorderPane root_pane;
 	private FlowPane window_root_pane;
 	private BorderPane window_pane;
+	private HBox apps_pane;
+	private HBox window_top_bar;
+
+	private VBox twitter_app_pane;
+
+	private TwitterAPI twitter_app;
 
 	private double xOffset, yOffset;
 
@@ -41,7 +49,7 @@ public class MainWindow extends Application {
 	private static final int WINDOW_LEFT_MENU_WIDTH = 50;
 	private static final int WINDOW_TOP_BAR_HEIGHT = 20;
 
-	private static final int POST_WIDTH = 300;
+	private static final int POST_WIDTH = 240;
 
 	private static final String ICONS = "/resources/icons/";
 
@@ -51,44 +59,40 @@ public class MainWindow extends Application {
 
 	@Override
 	public void start(Stage main_stage) throws Exception {
+		this.main_stage = main_stage;
 		try {
-			this.main_stage = main_stage;
 			configureStage();
 			createRootPane();
 			buildWindowRootPane();
 			buildScene();
+
+			initApps();
+
 			startStage();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	/*
+	 * This method is used to configure the stage.
+	 */
 	private void configureStage() {
 		main_stage.setTitle("Bom dia Academia");
 		main_stage.initStyle(StageStyle.TRANSPARENT);
 	}
 
+	/*
+	 * This method is used to create and configure the root pane. This pane is only
+	 * used to configure the size of the window and to apply to it the shadow
+	 * effect.
+	 */
 	private void createRootPane() {
 		BorderPane root_pane = new BorderPane();
 		this.root_pane = root_pane;
 		root_pane.setPrefSize(WINDOW_ROOT_PANE_WIDTH + SHADOW_GAP, WINDOW_ROOT_PANE_HEIGHT + SHADOW_GAP);
+		root_pane.setMaxSize(WINDOW_ROOT_PANE_WIDTH + SHADOW_GAP, WINDOW_ROOT_PANE_HEIGHT + SHADOW_GAP);
 		root_pane.setId("root_pane");
-		createGapToShadowEffect();
-	}
-
-	private void buildScene() {
-		final Scene scene = new Scene(root_pane);
-		scene.getStylesheets().add("/resources/application.css");
-		scene.setFill(null);
-		this.scene = scene;
-	}
-
-	private void startStage() {
-		main_stage.setScene(scene);
-		main_stage.show();
-	}
-
-	private void createGapToShadowEffect() {
 		HBox top_gap_pane = new HBox();
 		top_gap_pane.setPrefSize(WINDOW_ROOT_PANE_WIDTH + SHADOW_GAP, SHADOW_GAP);
 		top_gap_pane.setId("shadow_gap");
@@ -107,64 +111,101 @@ public class MainWindow extends Application {
 		root_pane.setRight(right_gap_pane);
 	}
 
+	/*
+	 * This method is used to build the scene and applies the CSS file.
+	 */
+	private void buildScene() {
+		scene = new Scene(root_pane);
+		scene.getStylesheets().add("/resources/application.css");
+		scene.setFill(null);
+	}
+
+	/*
+	 * This method is used to start the stage. It must be the be the last method to
+	 * be called in start method.
+	 */
+	private void startStage() {
+		main_stage.setScene(scene);
+		main_stage.show();
+	}
+
+	/*
+	 * This method is used to build the working base pane (window_root_pane).
+	 */
 	private void buildWindowRootPane() {
 		FlowPane window_root_pane = new FlowPane(Orientation.VERTICAL);
 		this.window_root_pane = window_root_pane;
 		window_root_pane.setId("window_root_pane");
 		window_root_pane.setPrefSize(WINDOW_ROOT_PANE_WIDTH, WINDOW_ROOT_PANE_HEIGHT);
+		window_root_pane.setMaxSize(WINDOW_ROOT_PANE_WIDTH, WINDOW_ROOT_PANE_HEIGHT);
 		buildWindowRootLeftMenu();
 		buildWindowPane();
 		root_pane.setCenter(window_root_pane);
 	}
 
+	/*
+	 * This method is used to build the left menu (window_left_menu).
+	 */
 	private void buildWindowRootLeftMenu() {
 		VBox window_left_menu = new VBox();
 		window_left_menu.setPrefSize(WINDOW_LEFT_MENU_WIDTH, WINDOW_ROOT_PANE_HEIGHT);
+		window_left_menu.setMaxSize(WINDOW_LEFT_MENU_WIDTH, WINDOW_ROOT_PANE_HEIGHT);
 		window_left_menu.setId("window_left_menu");
-		Button facebook_icon = new Button(null,
-				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "facebook.png"))));
-		facebook_icon.setId("window_left_menu_icon");
-		Button twitter_icon = new Button(null,
-				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "twitter.png"))));
-		twitter_icon.setId("window_left_menu_icon");
-		twitter_icon.setOnAction(new EventHandler<ActionEvent>() {
+		ToggleButton left_menu_facebook_toggle_button = new ToggleButton();
+		left_menu_facebook_toggle_button.setId("left_menu_facebook_toggle_button");
+		left_menu_facebook_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				TwitterAPI twitter_api = new TwitterAPI();
-				List<Status> statuses = twitter_api.getUserTimeline();
-				
-				ScrollPane twitter_scroll_feed_pane = new ScrollPane();
-				twitter_scroll_feed_pane.setId("twitter_scroll_feed_pane");
-				VBox twitter_feed_pane = new VBox();
-				twitter_feed_pane.setId("twitter_feed_pane");
-				twitter_scroll_feed_pane.setContent(twitter_feed_pane);
-				window_pane.setCenter(twitter_scroll_feed_pane);
-				
-				for(Status s: statuses) {
-					twitter_feed_pane.getChildren().add(createTwitterPost(s));
+				// TO-DO
+			}
+		});
+		ToggleButton left_menu_twitter_toggle_button = new ToggleButton();
+		left_menu_twitter_toggle_button.setId("left_menu_twitter_toggle_button");
+		left_menu_twitter_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				if (twitter_app_pane == null) {
+					buildTwitterApp(twitter_app.getUserTimeline("ISCTEIUL"));
+					apps_pane.getChildren().add(twitter_app_pane);
+				}
+				if (left_menu_twitter_toggle_button.isSelected()) {
+					twitter_app_pane.setVisible(true);
+				} else {
+					twitter_app_pane.setVisible(false);
 				}
 			}
 		});
-		Button email_icon = new Button(null,
-				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "email.png"))));
-		email_icon.setId("window_left_menu_icon");
-		window_left_menu.getChildren().addAll(facebook_icon, twitter_icon, email_icon);
+		ToggleButton left_menu_email_toggle_button = new ToggleButton();
+		left_menu_email_toggle_button.setId("left_menu_email_toggle_button");
+		window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button, left_menu_twitter_toggle_button,
+				left_menu_email_toggle_button);
 		window_root_pane.getChildren().add(window_left_menu);
 	}
 
+	/*
+	 * This method is used to build the window pane. This window is where it'll be
+	 * added the top bar and in the center the APPs pane.
+	 */
 	private void buildWindowPane() {
 		BorderPane window_pane = new BorderPane();
 		this.window_pane = window_pane;
 		window_pane.setId("window_pane");
 		window_pane.setPrefSize(WINDOW_ROOT_PANE_WIDTH - WINDOW_LEFT_MENU_WIDTH, WINDOW_ROOT_PANE_HEIGHT);
+		window_pane.setMaxSize(WINDOW_ROOT_PANE_WIDTH - WINDOW_LEFT_MENU_WIDTH, WINDOW_ROOT_PANE_HEIGHT);
 		buildWindowTopBar();
+		buildAppsPane();
 		window_root_pane.getChildren().add(window_pane);
 	}
 
+	/*
+	 * This method is used to build the window top bar which contains at the left
+	 * the search bar and at the right the windows buttons, like the exit button.
+	 */
 	private void buildWindowTopBar() {
-		HBox window_top_bar = new HBox();
+		window_top_bar = new HBox();
 		window_top_bar.setId("window_top_bar");
 		window_top_bar.setPrefSize(WINDOW_ROOT_PANE_WIDTH - WINDOW_LEFT_MENU_WIDTH, WINDOW_TOP_BAR_HEIGHT);
+		window_top_bar.setMaxSize(WINDOW_ROOT_PANE_WIDTH - WINDOW_LEFT_MENU_WIDTH, WINDOW_TOP_BAR_HEIGHT);
 		window_top_bar.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
@@ -205,48 +246,125 @@ public class MainWindow extends Application {
 			}
 		});
 		window_top_bar_buttons_container.getChildren().add(close_button);
-		window_top_bar.getChildren().add(createSearch());
-		window_top_bar.getChildren().add(window_top_bar_buttons_container);
+		window_top_bar.getChildren().addAll(createSearch(), window_top_bar_buttons_container);
 		window_pane.setTop(window_top_bar);
 	}
 
+	/*
+	 * This method is used to build the search bar.
+	 */
 	private FlowPane createSearch() {
 		FlowPane window_top_bar_search_container = new FlowPane();
 		window_top_bar_search_container.setId("window_top_bar_search_container");
+		HBox app_check_pane = new HBox();
+		app_check_pane.setId("app_check_pane");
+		ToggleButton search_facebook_toggle_button = new ToggleButton();
+		search_facebook_toggle_button.setId("search_facebook_toggle_button");
+		ToggleButton search_twitter_toggle_button = new ToggleButton();
+		search_twitter_toggle_button.setId("search_twitter_toggle_button");
+		ToggleButton search_email_toggle_button = new ToggleButton();
+		search_email_toggle_button.setId("search_email_toggle_button");
+		app_check_pane.getChildren().addAll(search_facebook_toggle_button, search_twitter_toggle_button, search_email_toggle_button);
 		HBox search_pane = new HBox();
 		search_pane.setId("search_pane");
 		TextField search_text_field = new TextField();
 		search_text_field.setId("search_text_field");
+		search_text_field.setOnKeyPressed((event) -> { if(event.getCode() == KeyCode.ENTER) { if (search_twitter_toggle_button.isSelected()) {
+			refreshTwitterApp(search_text_field.getText());
+		} } });
 		Button search_button = new Button(null,
 				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "search_gray_14.png"))));
 		search_button.setId("search_button");
 		search_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				// TO-DO
+				if (search_twitter_toggle_button.isSelected()) {
+					refreshTwitterApp(search_text_field.getText());
+				}
 			}
 		});
 		search_pane.getChildren().addAll(search_text_field, search_button);
-		window_top_bar_search_container.getChildren().add(search_pane);
+		window_top_bar_search_container.getChildren().addAll(app_check_pane, search_pane);
 		return window_top_bar_search_container;
 	}
 
-	public FlowPane createTwitterPost(Status status) {
+	/*
+	 * This method is used to build the APPs pane. This pane is where the Facebook,
+	 * Twitter and Email APPs is going to be added.
+	 */
+	private void buildAppsPane() {
+		apps_pane = new HBox();
+		apps_pane.setPrefSize(window_pane.getWidth(), (window_pane.getHeight() - window_top_bar.getHeight()));
+		apps_pane.setMaxSize(window_pane.getMaxWidth(), (window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
+		apps_pane.setId("apps_pane");
+		window_pane.setCenter(apps_pane);
+	}
+
+	/*
+	 * This method is used to build the Twitter APP pane. Note that this method
+	 * doesn't show the APP. It only build it back scene.
+	 */
+	private void buildTwitterApp(List<Status> statuses) {
+		twitter_app_pane = new VBox();
+		twitter_app_pane.setId("twitter_app_pane");
+		twitter_app_pane.setPrefSize((window_pane.getWidth() * 0.4),
+				(window_pane.getHeight() - window_top_bar.getHeight()));
+		twitter_app_pane.setMaxSize((window_pane.getWidth() * 0.4),
+				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
+
+		HBox twitter_app_top_bar = new HBox(
+				new ImageView(new Image(getClass().getResourceAsStream(ICONS + "twitter_white_14.png"))));
+		twitter_app_top_bar.setId("twitter_app_top_bar");
+		Button twitter_app_top_bar_refresh_button = new Button();
+		twitter_app_top_bar_refresh_button.setId("twitter_app_top_bar_refresh_button");
+		twitter_app_top_bar_refresh_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				refreshTwitterApp(twitter_app.getUser_timeline_to_show());
+			}
+		});
+		twitter_app_top_bar.getChildren().add(twitter_app_top_bar_refresh_button);
+
+		ScrollPane twitter_app_scroll_pane = new ScrollPane();
+		twitter_app_scroll_pane.setId("twitter_scroll_feed_pane");
+
+		VBox twitter_feed = new VBox();
+		twitter_feed.setId("twitter_feed");
+
+		for (Status status : statuses) {
+			twitter_feed.getChildren().add(newTwitterPost(status));
+		}
+
+		twitter_app_scroll_pane.setContent(twitter_feed);
+		twitter_app_pane.getChildren().addAll(twitter_app_top_bar, twitter_app_scroll_pane);
+	}
+
+	/*
+	 * This method is used to refresh the Twitter APP (twitter_app_pane).
+	 */
+	private void refreshTwitterApp(String user_timeline_to_show) {
+		apps_pane.getChildren().remove(twitter_app_pane);
+		buildTwitterApp(twitter_app.getUserTimeline(user_timeline_to_show));
+		apps_pane.getChildren().add(twitter_app_pane);
+	}
+
+	public FlowPane newTwitterPost(Status status) {
 		FlowPane post_pane = new FlowPane(Orientation.VERTICAL);
 		post_pane.setId("post_pane");
-		post_pane.setPrefSize(POST_WIDTH, 100);
+		post_pane.setPrefWidth(POST_WIDTH);
 		// TOP BAR
-		HBox post_top_bar = new HBox(new Label(status.getUser().getName()));
+		HBox post_top_bar = new HBox(new ImageView(new Image(status.getUser().getMiniProfileImageURL())),
+				new Label(status.getUser().getName()));
 		post_top_bar.setId("post_top_bar");
-		post_pane.getChildren().add(post_top_bar);
 		// CENTER PANE
-		TextArea post_text = new TextArea(status.getText());
+		Text post_text = new Text(status.getText());
 		post_text.setId("post_texto");
-		post_text.autosize();
-		post_text.setMaxWidth(POST_WIDTH);
-		ImageView profile_photo = new ImageView(new Image(status.getUser().getMiniProfileImageURL()));
-		HBox post_box = new HBox(profile_photo, post_text);
-		post_pane.getChildren().add(post_box);
+		post_text.setWrappingWidth(POST_WIDTH);
+		post_pane.getChildren().addAll(post_top_bar, post_text);
 		return post_pane;
+	}
+
+	private void initApps() {
+		twitter_app = new TwitterAPI();
 	}
 }
