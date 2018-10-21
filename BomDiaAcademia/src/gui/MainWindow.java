@@ -2,6 +2,9 @@ package gui;
 
 import java.util.List;
 
+import com.restfb.types.Post;
+
+import apps.FacebookApp;
 import apps.TwitterApp;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -39,8 +42,10 @@ public class MainWindow extends Application {
 	private HBox window_top_bar;
 
 	private VBox twitter_app_pane = null;
+	private VBox facebook_app_pane = null;
 
 	private TwitterApp twitter_app;
+	private FacebookApp facebook_app;
 
 	private double xOffset, yOffset;
 
@@ -64,9 +69,7 @@ public class MainWindow extends Application {
 			createRootPane();
 			buildWindowRootPane();
 			buildScene();
-
 			initApps();
-
 			startStage();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -116,6 +119,7 @@ public class MainWindow extends Application {
 	private void buildScene() {
 		scene = new Scene(root_pane);
 		scene.getStylesheets().add("/resources/css/main_window.css");
+		scene.getStylesheets().add("/resources/css/facebook_app.css");
 		scene.setFill(null);
 	}
 
@@ -155,30 +159,35 @@ public class MainWindow extends Application {
 		left_menu_facebook_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				// TO-DO
+				if (facebook_app_pane == null) {
+					buildFacebookApp(facebook_app.getTimeline());
+					apps_pane.getChildren().add(facebook_app_pane);
+				}
+				if (left_menu_facebook_toggle_button.isSelected()) {
+					facebook_app_pane.setVisible(true);
+				} else {
+					facebook_app_pane.setVisible(false);
+				}
 			}
 		});
 		ToggleButton left_menu_twitter_toggle_button = new ToggleButton();
 		left_menu_twitter_toggle_button.setId("left_menu_twitter_toggle_button");
 		left_menu_twitter_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent actionEvent) {
-				if (twitter_app_pane==null) {
-					buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser()));
-					apps_pane.getChildren().add(twitter_app_pane);
-				}
-				if (left_menu_twitter_toggle_button.isSelected()) {
-					twitter_app_pane.setVisible(true);
-				} else {
-					twitter_app_pane.setVisible(false);
-				}
-			}
-		});
-		ToggleButton left_menu_email_toggle_button = new ToggleButton();
-		left_menu_email_toggle_button.setId("left_menu_email_toggle_button");
-		window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button, left_menu_twitter_toggle_button,
-				left_menu_email_toggle_button);
-		window_root_pane.getChildren().add(window_left_menu);
+
+	@Override
+	public void handle(ActionEvent actionEvent) {
+		if (twitter_app_pane == null) {
+			buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser()));
+			apps_pane.getChildren().add(twitter_app_pane);
+		}
+		if (left_menu_twitter_toggle_button.isSelected()) {
+			twitter_app_pane.setVisible(true);
+		} else {
+			twitter_app_pane.setVisible(false);
+		}
+	}});
+
+	ToggleButton left_menu_email_toggle_button = new ToggleButton();left_menu_email_toggle_button.setId("left_menu_email_toggle_button");window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button,left_menu_twitter_toggle_button,left_menu_email_toggle_button);window_root_pane.getChildren().add(window_left_menu);
 	}
 
 	/*
@@ -229,7 +238,15 @@ public class MainWindow extends Application {
 				Platform.exit();
 			}
 		});
-		window_top_bar_buttons_container.getChildren().add(close_button);
+		Button minimize_button = new Button();
+		minimize_button.setId("window_top_bar_minimize_button");
+		minimize_button.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				main_stage.setIconified(true);
+			}
+		});
+		window_top_bar_buttons_container.getChildren().addAll(minimize_button, close_button);
 		window_top_bar.getChildren().addAll(createSearch(), window_top_bar_buttons_container);
 		window_pane.setTop(window_top_bar);
 	}
@@ -270,7 +287,11 @@ public class MainWindow extends Application {
 				if (search_twitter_toggle_button.isSelected()) {
 					refreshTwitterApp(search_text_field.getText());
 				}
-				if (!search_facebook_toggle_button.isSelected() && !search_twitter_toggle_button.isSelected() && !search_email_toggle_button.isSelected()) {
+				if (search_facebook_toggle_button.isSelected()) {
+					refreshFacebookApp(search_text_field.getText());
+				}
+				if (!search_facebook_toggle_button.isSelected() && !search_twitter_toggle_button.isSelected()
+						&& !search_email_toggle_button.isSelected()) {
 					new PopUpWindow(main_stage, PopUpType.WARNING, "Please select an App to search.");
 				}
 			}
@@ -343,7 +364,16 @@ public class MainWindow extends Application {
 				twitter_app_tool_bar.getChildren().add(change_user_container);
 			}
 		});
-		twitter_app_tool_bar.getChildren().addAll(twitter_app_top_bar_icon, spacer, twitter_app_top_bar_refresh_button, twitter_app_top_bar_change_user_button);
+		Button twitter_app_top_bar_minimize_button = new Button();
+		twitter_app_top_bar_minimize_button.setId("facebook_app_top_bar_minimize_button");
+		twitter_app_top_bar_minimize_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				twitter_app_pane.setVisible(false);
+			}
+		});
+		twitter_app_tool_bar.getChildren().addAll(twitter_app_top_bar_icon, spacer, twitter_app_top_bar_refresh_button,
+				twitter_app_top_bar_change_user_button, twitter_app_top_bar_minimize_button);
 		ScrollPane twitter_app_scroll_pane = new ScrollPane();
 		twitter_app_scroll_pane.setId("twitter_scroll_feed_pane");
 		twitter_app_scroll_pane.setPrefSize((window_pane.getWidth() * 0.4),
@@ -362,6 +392,51 @@ public class MainWindow extends Application {
 		twitter_app_pane.getChildren().addAll(twitter_app_tool_bar, twitter_app_scroll_pane);
 	}
 
+	private void buildFacebookApp(List<Post> posts) {
+		facebook_app_pane = new VBox();
+		facebook_app_pane.setId("facebook_app_pane");
+		HBox facebook_app_tool_bar = new HBox();
+		facebook_app_tool_bar.setId("facebook_app_tool_bar");
+		Label facebook_app_top_bar_icon = new Label(facebook_app.getUser());
+		facebook_app_top_bar_icon.setId("facebook_app_top_bar_icon");
+		Button facebook_app_top_bar_refresh_button = new Button();
+		facebook_app_top_bar_refresh_button.setId("facebook_app_top_bar_refresh_button");
+		facebook_app_top_bar_refresh_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				refreshFacebookApp();
+			}
+		});
+		Button facebook_app_top_bar_minimize_button = new Button();
+		facebook_app_top_bar_minimize_button.setId("facebook_app_top_bar_minimize_button");
+		facebook_app_top_bar_minimize_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				facebook_app_pane.setVisible(false);
+			}
+		});
+		final Pane spacer = new Pane();
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+		facebook_app_tool_bar.getChildren().addAll(facebook_app_top_bar_icon, spacer,
+				facebook_app_top_bar_refresh_button, facebook_app_top_bar_minimize_button);
+		ScrollPane facebook_app_scroll_pane = new ScrollPane();
+		facebook_app_scroll_pane.setId("facebook_app_scroll_pane");
+		facebook_app_scroll_pane.setPrefSize((window_pane.getWidth() * 0.4),
+				(window_pane.getHeight() - window_top_bar.getHeight()));
+		facebook_app_scroll_pane.setMaxSize((window_pane.getWidth() * 0.4),
+				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
+
+		VBox facebook_feed = new VBox();
+		facebook_feed.setId("facebook_feed");
+
+		for (Post post : posts) {
+			facebook_feed.getChildren().add(newFacebookPost(post));
+		}
+
+		facebook_app_scroll_pane.setContent(facebook_feed);
+		facebook_app_pane.getChildren().addAll(facebook_app_tool_bar, facebook_app_scroll_pane);
+	}
+
 	/*
 	 * This method is used to refresh the Twitter APP (twitter_app_pane).
 	 */
@@ -376,11 +451,23 @@ public class MainWindow extends Application {
 		buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser(), filter));
 		apps_pane.getChildren().add(twitter_app_pane);
 	}
-	
+
 	private void changeTwitterAppUser(String user) {
 		apps_pane.getChildren().remove(twitter_app_pane);
 		buildTwitterApp(twitter_app.getTimeline(user));
 		apps_pane.getChildren().add(twitter_app_pane);
+	}
+	
+	private void refreshFacebookApp() {
+		apps_pane.getChildren().remove(facebook_app_pane);
+		buildFacebookApp(facebook_app.getTimeline());
+		apps_pane.getChildren().add(facebook_app_pane);
+	}
+	
+	private void refreshFacebookApp(String filter) {
+		apps_pane.getChildren().remove(facebook_app_pane);
+		buildFacebookApp(facebook_app.getTimeline(filter));
+		apps_pane.getChildren().add(facebook_app_pane);
 	}
 
 	private FlowPane newTwitterPost(Status status) {
@@ -398,8 +485,24 @@ public class MainWindow extends Application {
 		post_pane.getChildren().addAll(post_top_bar, post_text);
 		return post_pane;
 	}
-	
+
+	private FlowPane newFacebookPost(Post post) {
+		FlowPane facebook_post_pane = new FlowPane(Orientation.VERTICAL);
+		facebook_post_pane.setId("facebook_post_pane");
+		facebook_post_pane.setPrefWidth(POST_WIDTH);
+		// TOP BAR
+		HBox facebook_post_top_bar = new HBox(new Label(post.getMessage()));
+		facebook_post_top_bar.setId("post_top_bar");
+		// CENTER PANE
+		Text post_text = new Text(post.getMessage());
+		post_text.setId("post_texto");
+		post_text.setWrappingWidth(POST_WIDTH);
+		facebook_post_pane.getChildren().addAll(facebook_post_top_bar, post_text);
+		return facebook_post_pane;
+	}
+
 	private void initApps() {
 		twitter_app = new TwitterApp();
+		facebook_app = new FacebookApp();
 	}
 }

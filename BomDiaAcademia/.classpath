@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/rodri/Downloads/twitter4j-4.0.7/lib/twitter4j-core-4.0.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/rodri/Downloads/restfb-2.11.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
