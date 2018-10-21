@@ -2,7 +2,6 @@ package gui;
 
 import java.util.List;
 
-
 import api_s.TwitterAPI;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -53,6 +52,8 @@ public class MainWindow extends Application {
 
 	private static final int POST_WIDTH = 240;
 
+	private Service<Void> backgroundThread;
+
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -83,9 +84,9 @@ public class MainWindow extends Application {
 	}
 
 	/*
-	 * This method is used to create and configure the root pane. This pane is only
-	 * used to configure the size of the window and to apply to it the shadow
-	 * effect.
+	 * This method is used to create and configure the root pane. This pane is
+	 * only used to configure the size of the window and to apply to it the
+	 * shadow effect.
 	 */
 	private void createRootPane() {
 		BorderPane root_pane = new BorderPane();
@@ -121,8 +122,8 @@ public class MainWindow extends Application {
 	}
 
 	/*
-	 * This method is used to start the stage. It must be the be the last method to
-	 * be called in start method.
+	 * This method is used to start the stage. It must be the be the last method
+	 * to be called in start method.
 	 */
 	private void startStage() {
 		main_stage.setScene(scene);
@@ -164,27 +165,55 @@ public class MainWindow extends Application {
 		left_menu_twitter_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
+
+				backgroundThread = new Service<Void>() {
+					@Override
+					protected Task<Void> createTask() {
+						return new Task<Void>() {
+
+							@Override
+							protected Void call() throws Exception {
+
+								buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser()));
+								return null;
+							}
+
+						};
+					};
+				};
+
+				backgroundThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+
+					@Override
+					public void handle(WorkerStateEvent arg0) {
+						apps_pane.getChildren().add(twitter_app_pane);
+						apps_pane.accessibleTextProperty().unbind();
+						twitter_app_pane.setVisible(true);
+					}
+
+				});
+
 				if (twitter_app_pane == null) {
-					buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser()));
-					apps_pane.getChildren().add(twitter_app_pane);
-				}
-				if (left_menu_twitter_toggle_button.isSelected()) {
-					twitter_app_pane.setVisible(true);
+					apps_pane.accessibleTextProperty().bind(backgroundThread.messageProperty());
+					backgroundThread.restart();
 				} else {
-					twitter_app_pane.setVisible(false);
+					if (left_menu_twitter_toggle_button.isSelected()) 
+						twitter_app_pane.setVisible(true);
+					else 
+						twitter_app_pane.setVisible(false);
+					
 				}
+
 			}
+
 		});
-		ToggleButton left_menu_email_toggle_button = new ToggleButton();
-		left_menu_email_toggle_button.setId("left_menu_email_toggle_button");
-		window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button, left_menu_twitter_toggle_button,
-				left_menu_email_toggle_button);
-		window_root_pane.getChildren().add(window_left_menu);
+
+	ToggleButton left_menu_email_toggle_button = new ToggleButton();left_menu_email_toggle_button.setId("left_menu_email_toggle_button");window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button,left_menu_twitter_toggle_button,left_menu_email_toggle_button);window_root_pane.getChildren().add(window_left_menu);
 	}
 
 	/*
-	 * This method is used to build the window pane. This window is where it'll be
-	 * added the top bar and in the center the APPs pane.
+	 * This method is used to build the window pane. This window is where it'll
+	 * be added the top bar and in the center the APPs pane.
 	 */
 	private void buildWindowPane() {
 		BorderPane window_pane = new BorderPane();
@@ -198,8 +227,9 @@ public class MainWindow extends Application {
 	}
 
 	/*
-	 * This method is used to build the window top bar which contains at the left
-	 * the search bar and at the right the windows buttons, like the exit button.
+	 * This method is used to build the window top bar which contains at the
+	 * left the search bar and at the right the windows buttons, like the exit
+	 * button.
 	 */
 	private void buildWindowTopBar() {
 		window_top_bar = new HBox();
@@ -249,29 +279,32 @@ public class MainWindow extends Application {
 		search_twitter_toggle_button.setId("search_twitter_toggle_button");
 		ToggleButton search_email_toggle_button = new ToggleButton();
 		search_email_toggle_button.setId("search_email_toggle_button");
-		app_check_pane.getChildren().addAll(search_facebook_toggle_button, search_twitter_toggle_button, search_email_toggle_button);
+		app_check_pane.getChildren().addAll(search_facebook_toggle_button, search_twitter_toggle_button,
+				search_email_toggle_button);
 		HBox search_pane = new HBox();
 		search_pane.setId("search_pane");
 		TextField search_text_field = new TextField();
 		search_text_field.setId("search_text_field");
-		search_text_field.setOnKeyPressed((event) -> { if(event.getCode() == KeyCode.ENTER) { if (search_twitter_toggle_button.isSelected()) {
-			refreshTwitterApp(search_text_field.getText());
-		} } });
+		search_text_field.setOnKeyPressed((event) -> {
+			if (event.getCode() == KeyCode.ENTER) {
+				if (search_twitter_toggle_button.isSelected()) {
+					refreshTwitterApp(search_text_field.getText());
+				}
+			}
+		});
 		Button search_button = new Button();
 		search_button.setId("search_button");
 		search_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				
-				new Runnable(){
+
+				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						if (search_twitter_toggle_button.isSelected()) 
+						if (search_twitter_toggle_button.isSelected())
 							refreshTwitterApp(search_text_field.getText());
 					}
-				};
-				
-				
+				}).start();
 			}
 		});
 		search_pane.getChildren().addAll(search_text_field, search_button);
@@ -280,8 +313,8 @@ public class MainWindow extends Application {
 	}
 
 	/*
-	 * This method is used to build the APPs pane. This pane is where the Facebook,
-	 * Twitter and Email APPs is going to be added.
+	 * This method is used to build the APPs pane. This pane is where the
+	 * Facebook, Twitter and Email APPs is going to be added.
 	 */
 	private void buildAppsPane() {
 		apps_pane = new HBox();
@@ -312,13 +345,7 @@ public class MainWindow extends Application {
 		twitter_app_top_bar_refresh_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				new Runnable(){
-					@Override
-					public void run() {
-						refreshTwitterApp(twitter_app.getUser());
-					}
-				};
-				
+				refreshTwitterApp(twitter_app.getUser());
 			}
 		});
 		twitter_app_top_bar.getChildren().addAll(twitter_app_top_bar_icon, twitter_app_top_bar_refresh_button);
@@ -351,6 +378,7 @@ public class MainWindow extends Application {
 		post_pane.setId("post_pane");
 		post_pane.setPrefWidth(POST_WIDTH);
 		// TOP BAR
+
 		HBox post_top_bar = new HBox(new ImageView(new Image(status.getUser().getMiniProfileImageURL())),
 				new Label(status.getUser().getName()));
 		post_top_bar.setId("post_top_bar");
@@ -363,6 +391,15 @@ public class MainWindow extends Application {
 	}
 
 	private void initApps() {
-		twitter_app = new TwitterAPI();
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				twitter_app = new TwitterAPI();
+			}
+
+		}).start();
+
 	}
 }
