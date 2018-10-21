@@ -2,8 +2,7 @@ package gui;
 
 import java.util.List;
 
-
-import api_s.TwitterAPI;
+import apps.TwitterApp;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -17,16 +16,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.concurrent.*;
 import twitter4j.Status;
 
 public class MainWindow extends Application {
@@ -39,9 +38,9 @@ public class MainWindow extends Application {
 	private HBox apps_pane;
 	private HBox window_top_bar;
 
-	private VBox twitter_app_pane;
+	private VBox twitter_app_pane = null;
 
-	private TwitterAPI twitter_app;
+	private TwitterApp twitter_app;
 
 	private double xOffset, yOffset;
 
@@ -116,7 +115,7 @@ public class MainWindow extends Application {
 	 */
 	private void buildScene() {
 		scene = new Scene(root_pane);
-		scene.getStylesheets().add("/resources/application.css");
+		scene.getStylesheets().add("/resources/css/main_window.css");
 		scene.setFill(null);
 	}
 
@@ -164,7 +163,7 @@ public class MainWindow extends Application {
 		left_menu_twitter_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				if (twitter_app_pane == null) {
+				if (twitter_app_pane==null) {
 					buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser()));
 					apps_pane.getChildren().add(twitter_app_pane);
 				}
@@ -249,29 +248,31 @@ public class MainWindow extends Application {
 		search_twitter_toggle_button.setId("search_twitter_toggle_button");
 		ToggleButton search_email_toggle_button = new ToggleButton();
 		search_email_toggle_button.setId("search_email_toggle_button");
-		app_check_pane.getChildren().addAll(search_facebook_toggle_button, search_twitter_toggle_button, search_email_toggle_button);
+		app_check_pane.getChildren().addAll(search_facebook_toggle_button, search_twitter_toggle_button,
+				search_email_toggle_button);
 		HBox search_pane = new HBox();
 		search_pane.setId("search_pane");
-		TextField search_text_field = new TextField();
+		TextField search_text_field = new TextField("Search...");
 		search_text_field.setId("search_text_field");
-		search_text_field.setOnKeyPressed((event) -> { if(event.getCode() == KeyCode.ENTER) { if (search_twitter_toggle_button.isSelected()) {
-			refreshTwitterApp(search_text_field.getText());
-		} } });
+		search_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				if (search_text_field.getText().equals("Search...")) {
+					search_text_field.clear();
+				}
+			}
+		});
 		Button search_button = new Button();
 		search_button.setId("search_button");
 		search_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				
-				new Runnable(){
-					@Override
-					public void run() {
-						if (search_twitter_toggle_button.isSelected()) 
-							refreshTwitterApp(search_text_field.getText());
-					}
-				};
-				
-				
+				if (search_twitter_toggle_button.isSelected()) {
+					refreshTwitterApp(search_text_field.getText());
+				}
+				if (!search_facebook_toggle_button.isSelected() && !search_twitter_toggle_button.isSelected() && !search_email_toggle_button.isSelected()) {
+					new PopUpWindow(main_stage, PopUpType.WARNING, "Please select an App to search.");
+				}
 			}
 		});
 		search_pane.getChildren().addAll(search_text_field, search_button);
@@ -298,33 +299,57 @@ public class MainWindow extends Application {
 	private void buildTwitterApp(List<Status> statuses) {
 		twitter_app_pane = new VBox();
 		twitter_app_pane.setId("twitter_app_pane");
-		twitter_app_pane.setPrefSize((window_pane.getWidth() * 0.4),
-				(window_pane.getHeight() - window_top_bar.getHeight()));
-		twitter_app_pane.setMaxSize((window_pane.getWidth() * 0.4),
-				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 
-		HBox twitter_app_top_bar = new HBox();
-		twitter_app_top_bar.setId("twitter_app_top_bar");
-		Label twitter_app_top_bar_icon = new Label();
+		HBox twitter_app_tool_bar = new HBox();
+		twitter_app_tool_bar.setId("twitter_app_tool_bar");
+		Label twitter_app_top_bar_icon = new Label("@" + twitter_app.getUser());
 		twitter_app_top_bar_icon.setId("twitter_app_top_bar_icon");
 		Button twitter_app_top_bar_refresh_button = new Button();
 		twitter_app_top_bar_refresh_button.setId("twitter_app_top_bar_refresh_button");
 		twitter_app_top_bar_refresh_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				new Runnable(){
-					@Override
-					public void run() {
-						refreshTwitterApp(twitter_app.getUser());
-					}
-				};
-				
+				refreshTwitterApp();
 			}
 		});
-		twitter_app_top_bar.getChildren().addAll(twitter_app_top_bar_icon, twitter_app_top_bar_refresh_button);
-
+		final Pane spacer = new Pane();
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+		Button twitter_app_top_bar_change_user_button = new Button();
+		twitter_app_top_bar_change_user_button.setId("twitter_app_top_bar_change_user_button");
+		twitter_app_top_bar_change_user_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				HBox change_user_container = new HBox();
+				change_user_container.setId("change_user_container");
+				TextField change_user_text_field = new TextField("New user");
+				change_user_text_field.setId("change_user_text_field");
+				change_user_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent mouseEvent) {
+						if (change_user_text_field.getText().equals("New user")) {
+							change_user_text_field.clear();
+						}
+					}
+				});
+				Button change_user_confirm_button = new Button();
+				change_user_confirm_button.setId("change_user_confirm_button");
+				change_user_confirm_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent mouseEvent) {
+						changeTwitterAppUser(change_user_text_field.getText());
+					}
+				});
+				change_user_container.getChildren().addAll(change_user_text_field, change_user_confirm_button);
+				twitter_app_tool_bar.getChildren().add(change_user_container);
+			}
+		});
+		twitter_app_tool_bar.getChildren().addAll(twitter_app_top_bar_icon, spacer, twitter_app_top_bar_refresh_button, twitter_app_top_bar_change_user_button);
 		ScrollPane twitter_app_scroll_pane = new ScrollPane();
 		twitter_app_scroll_pane.setId("twitter_scroll_feed_pane");
+		twitter_app_scroll_pane.setPrefSize((window_pane.getWidth() * 0.4),
+				(window_pane.getHeight() - window_top_bar.getHeight()));
+		twitter_app_scroll_pane.setMaxSize((window_pane.getWidth() * 0.4),
+				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 
 		VBox twitter_feed = new VBox();
 		twitter_feed.setId("twitter_feed");
@@ -334,24 +359,36 @@ public class MainWindow extends Application {
 		}
 
 		twitter_app_scroll_pane.setContent(twitter_feed);
-		twitter_app_pane.getChildren().addAll(twitter_app_top_bar, twitter_app_scroll_pane);
+		twitter_app_pane.getChildren().addAll(twitter_app_tool_bar, twitter_app_scroll_pane);
 	}
 
 	/*
 	 * This method is used to refresh the Twitter APP (twitter_app_pane).
 	 */
-	private void refreshTwitterApp(String user_timeline_to_show) {
+	private void refreshTwitterApp() {
 		apps_pane.getChildren().remove(twitter_app_pane);
-		buildTwitterApp(twitter_app.getTimeline(user_timeline_to_show));
+		buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser()));
 		apps_pane.getChildren().add(twitter_app_pane);
 	}
 
-	public FlowPane newTwitterPost(Status status) {
+	private void refreshTwitterApp(String filter) {
+		apps_pane.getChildren().remove(twitter_app_pane);
+		buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser(), filter));
+		apps_pane.getChildren().add(twitter_app_pane);
+	}
+	
+	private void changeTwitterAppUser(String user) {
+		apps_pane.getChildren().remove(twitter_app_pane);
+		buildTwitterApp(twitter_app.getTimeline(user));
+		apps_pane.getChildren().add(twitter_app_pane);
+	}
+
+	private FlowPane newTwitterPost(Status status) {
 		FlowPane post_pane = new FlowPane(Orientation.VERTICAL);
 		post_pane.setId("post_pane");
 		post_pane.setPrefWidth(POST_WIDTH);
 		// TOP BAR
-		HBox post_top_bar = new HBox(new ImageView(new Image(status.getUser().getMiniProfileImageURL())),
+		HBox post_top_bar = new HBox(new ImageView(new Image(status.getUser().getProfileImageURL())),
 				new Label(status.getUser().getName()));
 		post_top_bar.setId("post_top_bar");
 		// CENTER PANE
@@ -361,8 +398,8 @@ public class MainWindow extends Application {
 		post_pane.getChildren().addAll(post_top_bar, post_text);
 		return post_pane;
 	}
-
+	
 	private void initApps() {
-		twitter_app = new TwitterAPI();
+		twitter_app = new TwitterApp();
 	}
 }

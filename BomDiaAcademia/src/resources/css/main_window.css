@@ -1,4 +1,3 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
 #root_pane {
 	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
 }
@@ -28,6 +27,7 @@
 	-fx-background-color: transparent;
     -fx-border-style: none;
     -fx-graphic: "/resources/icons/facebook_white_32.png";
+    -fx-cursor: hand;
 }
 
 #left_menu_facebook_toggle_button:hover {
@@ -42,6 +42,7 @@
 	-fx-background-color: transparent;
     -fx-border-style: none;
     -fx-graphic: "/resources/icons/twitter_white_32.png";
+    -fx-cursor: hand;
 }
 
 #left_menu_twitter_toggle_button:hover {
@@ -56,6 +57,7 @@
 	-fx-background-color: transparent;
     -fx-border-style: none;
     -fx-graphic: "/resources/icons/email_white_32.png";
+    -fx-cursor: hand;
 }
 
 #left_menu_email_toggle_button:hover {
@@ -78,6 +80,7 @@
 	-fx-background-color: transparent;
     -fx-border-style: none;
     -fx-graphic: "/resources/icons/exit_window_gray_14.png";
+    -fx-cursor: hand;
 }
 
 #window_top_bar_close_button:hover {
@@ -106,6 +109,7 @@
     -fx-background-color: transparent;
 	-fx-background-radius: 50px;
     -fx-graphic: "/resources/icons/facebook_gray_14.png";
+    -fx-cursor: hand;
 }
 
 #search_facebook_toggle_button:selected {
@@ -117,6 +121,7 @@
     -fx-background-color: transparent;
     -fx-background-radius: 50px;
     -fx-graphic: "/resources/icons/twitter_gray_14.png";
+    -fx-cursor: hand;
 }
 
 #search_twitter_toggle_button:selected {
@@ -127,7 +132,8 @@
 #search_email_toggle_button {
     -fx-background-color: transparent;
     -fx-background-radius: 50px;
-    -fx-graphic: "/resources/icons/email_gray_14.png"
+    -fx-graphic: "/resources/icons/email_gray_14.png";
+    -fx-cursor: hand;
 }
 
 #search_email_toggle_button:selected {
@@ -143,7 +149,8 @@
 #search_button {
 	-fx-background-color: transparent;
     -fx-border-style: none;
-	-fx-graphic: "/resources/icons/search_gray_14.png";    
+	-fx-graphic: "/resources/icons/search_gray_14.png";  
+	-fx-cursor: hand;  
 }
 
 #apps_pane {
@@ -156,13 +163,15 @@
 	-fx-background-color: transparent;
 }
 
-#twitter_app_top_bar {
+#twitter_app_tool_bar {
 	-fx-background-color: #33ccff;
 	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
 	-fx-alignment: center;
+	-fx-padding: 0.0px 6.0px 0.0px 6.0px; 
 }
 
 #twitter_app_top_bar_icon {
+	-fx-text-fill: #ffffff;
 	-fx-graphic: "/resources/icons/twitter_white_14.png";
 }
 
@@ -170,7 +179,36 @@
 	-fx-background-color: transparent;
 	-fx-graphic: "/resources/icons/refresh_white_14.png";
 	-fx-border-style: none;
-	-fx-alignment: center-right;
+	-fx-cursor: hand;
+	-fx-tooltip-visible: true;
+}
+
+#twitter_app_top_bar_change_user_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/change_user_white_14.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
+}
+
+#change_user_container {
+	-fx-background-color: transparent;
+	-fx-background-radius: 50.0px;
+	-fx-border-style: none;
+	-fx-alignment: center;
+}
+#change_user_text_field {
+	-fx-background-color: transparent;
+	-fx-text-fill: #ffffff;
+	-fx-background-radius: 50.0px;
+	 -fx-border-color: transparent  transparent #ffffff transparent;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+}
+
+#change_user_confirm_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/ok_white_14.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
 }
 
 #twitter_scroll_feed_pane {

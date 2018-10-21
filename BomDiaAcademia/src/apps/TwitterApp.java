@@ -1,4 +1,4 @@
-package api_s;
+package apps;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,12 +8,12 @@ import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class TwitterAPI {
+public class TwitterApp {
 
 	private String user = "ISCTEIUL";
 	private Twitter twitter;
 
-	public TwitterAPI() {
+	public TwitterApp() {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true).setOAuthConsumerKey("GahzkZi50ZuasuqqkRqckC2ln")
 				.setOAuthConsumerSecret("Rr3Q7ivhL3HiEKVoP3d2aLwNbh6ez5rTdEy3MtNRd6yeC5vNVV")
