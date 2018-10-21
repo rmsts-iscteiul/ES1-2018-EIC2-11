@@ -2,6 +2,7 @@ package gui;
 
 import java.util.List;
 
+
 import api_s.TwitterAPI;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -25,6 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.concurrent.*;
 import twitter4j.Status;
 
 public class MainWindow extends Application {
@@ -163,7 +165,7 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(ActionEvent actionEvent) {
 				if (twitter_app_pane == null) {
-					buildTwitterApp(twitter_app.getUserTimeline("ISCTEIUL"));
+					buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser()));
 					apps_pane.getChildren().add(twitter_app_pane);
 				}
 				if (left_menu_twitter_toggle_button.isSelected()) {
@@ -260,9 +262,16 @@ public class MainWindow extends Application {
 		search_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				if (search_twitter_toggle_button.isSelected()) {
-					refreshTwitterApp(search_text_field.getText());
-				}
+				
+				new Runnable(){
+					@Override
+					public void run() {
+						if (search_twitter_toggle_button.isSelected()) 
+							refreshTwitterApp(search_text_field.getText());
+					}
+				};
+				
+				
 			}
 		});
 		search_pane.getChildren().addAll(search_text_field, search_button);
@@ -303,7 +312,13 @@ public class MainWindow extends Application {
 		twitter_app_top_bar_refresh_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				refreshTwitterApp(twitter_app.getUser_timeline_to_show());
+				new Runnable(){
+					@Override
+					public void run() {
+						refreshTwitterApp(twitter_app.getUser());
+					}
+				};
+				
 			}
 		});
 		twitter_app_top_bar.getChildren().addAll(twitter_app_top_bar_icon, twitter_app_top_bar_refresh_button);
@@ -327,7 +342,7 @@ public class MainWindow extends Application {
 	 */
 	private void refreshTwitterApp(String user_timeline_to_show) {
 		apps_pane.getChildren().remove(twitter_app_pane);
-		buildTwitterApp(twitter_app.getUserTimeline(user_timeline_to_show));
+		buildTwitterApp(twitter_app.getTimeline(user_timeline_to_show));
 		apps_pane.getChildren().add(twitter_app_pane);
 	}
 
