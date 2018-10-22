@@ -6,6 +6,7 @@ import api_s.TwitterAPI;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
@@ -165,50 +166,56 @@ public class MainWindow extends Application {
 		left_menu_twitter_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-
+				/*
+				 * The thread has a service that has only one task.
+				 */
 				backgroundThread = new Service<Void>() {
 					@Override
 					protected Task<Void> createTask() {
 						return new Task<Void>() {
-
+							/*
+							 * What the thread needs to do
+							 */
 							@Override
 							protected Void call() throws Exception {
-
 								buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser()));
 								return null;
 							}
-
 						};
 					};
 				};
-
+				/*
+				 * What the thread does after it did what is describred above
+				 */
 				backgroundThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
 					@Override
 					public void handle(WorkerStateEvent arg0) {
 						apps_pane.getChildren().add(twitter_app_pane);
-						apps_pane.accessibleTextProperty().unbind();
 						twitter_app_pane.setVisible(true);
 					}
-
 				});
 
-				if (twitter_app_pane == null) {
-					apps_pane.accessibleTextProperty().bind(backgroundThread.messageProperty());
-					backgroundThread.restart();
-				} else {
-					if (left_menu_twitter_toggle_button.isSelected()) 
-						twitter_app_pane.setVisible(true);
-					else 
-						twitter_app_pane.setVisible(false);
+				if (twitter_app_pane == null) { // If it's == null, we need to
+												// start the thread.
 					
+					backgroundThread.restart(); // thread.start()
+				} else {
+					if (left_menu_twitter_toggle_button.isSelected())
+						twitter_app_pane.setVisible(true);
+					else
+						twitter_app_pane.setVisible(false);
 				}
 
 			}
 
 		});
 
-	ToggleButton left_menu_email_toggle_button = new ToggleButton();left_menu_email_toggle_button.setId("left_menu_email_toggle_button");window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button,left_menu_twitter_toggle_button,left_menu_email_toggle_button);window_root_pane.getChildren().add(window_left_menu);
+		ToggleButton left_menu_email_toggle_button = new ToggleButton();
+		left_menu_email_toggle_button.setId("left_menu_email_toggle_button");
+		window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button, left_menu_twitter_toggle_button,
+				left_menu_email_toggle_button);
+		window_root_pane.getChildren().add(window_left_menu);
 	}
 
 	/*
@@ -283,30 +290,37 @@ public class MainWindow extends Application {
 				search_email_toggle_button);
 		HBox search_pane = new HBox();
 		search_pane.setId("search_pane");
-		TextField search_text_field = new TextField();
+		TextField search_text_field = new TextField("Search...");
 		search_text_field.setId("search_text_field");
-		search_text_field.setOnKeyPressed((event) -> {
-			if (event.getCode() == KeyCode.ENTER) {
-				if (search_twitter_toggle_button.isSelected()) {
-					refreshTwitterApp(search_text_field.getText());
+		search_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				if (search_text_field.getText().equals("Search...")) {
+					search_text_field.clear();
 				}
 			}
 		});
+
 		Button search_button = new Button();
 		search_button.setId("search_button");
 		search_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
-			public void handle(MouseEvent mouseEvent) {
+			public void handle(MouseEvent mouseEvent) { // working
+														// here.
 
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						if (search_twitter_toggle_button.isSelected())
-							refreshTwitterApp(search_text_field.getText());
-					}
-				}).start();
+				if (search_twitter_toggle_button.isSelected()) {
+					refreshTwitterApp(search_text_field.getText());
+				}
+
+				if (!search_facebook_toggle_button.isSelected() && !search_twitter_toggle_button.isSelected()
+						&& !search_email_toggle_button.isSelected()) {
+					// new PopUpWindow(main_stage, PopUpType.WARNING, "Please
+					// select an App to search.");
+
+				}
 			}
 		});
+
 		search_pane.getChildren().addAll(search_text_field, search_button);
 		window_top_bar_search_container.getChildren().addAll(app_check_pane, search_pane);
 		return window_top_bar_search_container;
@@ -368,9 +382,11 @@ public class MainWindow extends Application {
 	 * This method is used to refresh the Twitter APP (twitter_app_pane).
 	 */
 	private void refreshTwitterApp(String user_timeline_to_show) {
+
 		apps_pane.getChildren().remove(twitter_app_pane);
 		buildTwitterApp(twitter_app.getTimeline(user_timeline_to_show));
 		apps_pane.getChildren().add(twitter_app_pane);
+
 	}
 
 	public FlowPane newTwitterPost(Status status) {
