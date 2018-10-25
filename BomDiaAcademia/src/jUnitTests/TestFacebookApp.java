@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.restfb.types.Post;
@@ -19,8 +20,8 @@ class TestFacebookApp {
 		app = new FacebookApp(); // initiates facebookApp
 	}
 	
-	@BeforeAll
-	void setUp() throws Exception{
+	@BeforeEach
+	 void setUp() throws Exception{
 		System.out.println("\nA test is about to begin: \n");
 	}
 
@@ -39,7 +40,6 @@ class TestFacebookApp {
 		for (Post a : results) {
 			System.out.println("\n-----------------------------------------------------------------------");
 			System.out.println("Post number: " + i);
-			System.out.println("Likes: " + a.getLikesCount());
 			System.out.println("Message: " + a.getMessage());
 		}
 	}
@@ -54,7 +54,6 @@ class TestFacebookApp {
 			if(a.getMessage().contains("É")){ //filter
 				System.out.println("\n-----------------------------------------------------------------------");
 				System.out.println("Post number: " + i);
-				System.out.println("Likes: " + a.getLikesCount());
 				System.out.println("Message: " + a.getMessage()); // Returns all the posts that contains the previous filter
 			}
 		}
