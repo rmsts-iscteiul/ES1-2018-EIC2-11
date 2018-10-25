@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.restfb.types.Post;
@@ -19,7 +20,7 @@ class TestFacebookApp {
 		app = new FacebookApp(); // initiates facebookApp
 	}
 	
-	@BeforeAll
+	@BeforeEach
 	void setUp() throws Exception{
 		System.out.println("\nA test is about to begin: \n");
 	}
