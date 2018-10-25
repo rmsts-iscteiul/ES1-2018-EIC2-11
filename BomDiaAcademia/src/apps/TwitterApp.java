@@ -1,4 +1,4 @@
-package apps;
+package src.apps;
 
 import java.util.LinkedList;
 import java.util.List;
