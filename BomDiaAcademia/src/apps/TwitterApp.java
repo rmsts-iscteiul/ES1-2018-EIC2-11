@@ -92,15 +92,4 @@ public class TwitterApp {
 		return user;
 	}
 	
-	
-	//-------------------------Test-------------------------------//
-	
-//	public static void main(String[] args) {
-//		TwitterAPI t = new TwitterAPI();
-//		List<Status> s= t.showTimeline("ISCTEIUL", "vid");
-//		for (Status status : s) {
-//			System.out.println(status.getText());
-//		}
-//	}
-
 }
