@@ -1,5 +1,5 @@
 
-package src.apps;
+package apps;
 
 import java.util.LinkedList;
 import java.util.List;

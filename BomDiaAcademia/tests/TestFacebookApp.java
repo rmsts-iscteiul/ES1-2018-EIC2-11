@@ -1,4 +1,4 @@
-package src.jUnitTests;
+package tests;
 
 import java.util.List;
 
@@ -39,7 +39,6 @@ class TestFacebookApp {
 		for (Post a : results) {
 			System.out.println("\n-----------------------------------------------------------------------");
 			System.out.println("Post number: " + i);
-			System.out.println("Likes: " + a.getLikesCount());
 			System.out.println("Message: " + a.getMessage());
 		}
 	}
@@ -54,7 +53,6 @@ class TestFacebookApp {
 			if(a.getMessage().contains("É")){ //filter
 				System.out.println("\n-----------------------------------------------------------------------");
 				System.out.println("Post number: " + i);
-				System.out.println("Likes: " + a.getLikesCount());
 				System.out.println("Message: " + a.getMessage()); // Returns all the posts that contains the previous filter
 			}
 		}

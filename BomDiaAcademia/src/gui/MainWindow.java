@@ -1,9 +1,12 @@
-package src.gui;
+package gui;
+
 
 import java.util.List;
 
 import com.restfb.types.Post;
 
+import apps.FacebookApp;
+import apps.TwitterApp;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -27,8 +30,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import src.apps.FacebookApp;
-import src.apps.TwitterApp;
 import twitter4j.Status;
 
 /**
