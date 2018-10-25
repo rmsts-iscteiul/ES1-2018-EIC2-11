@@ -1,0 +1,173 @@
+#root_pane {
+	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
+}
+
+#window_root_pane {
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+}
+
+#window_pane {
+	-fx-background-color: #f4f4f4;
+	-fx-background-radius: 0.0px 10.0px 10.0px 0.0px;
+	-fx-alignment: center;
+}
+
+#shadow_gap {
+	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
+}
+
+#window_left_menu {
+	-fx-background-color: #202020;
+	-fx-background-radius: 10.0px 0.0px 0.0px 10.0px;
+	-fx-padding: 50.0px 0.0px 0.0px 0.0px;
+	-fx-spacing: 50.0px;
+}
+
+#left_menu_facebook_toggle_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/facebook_white_32.png";
+    -fx-cursor: hand;
+}
+
+#left_menu_facebook_toggle_button:hover {
+	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
+}
+
+#left_menu_facebook_toggle_button:selected {
+    -fx-graphic: "/resources/icons/facebook_blue_32.png";
+}
+
+#left_menu_twitter_toggle_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/twitter_white_32.png";
+    -fx-cursor: hand;
+}
+
+#left_menu_twitter_toggle_button:hover {
+	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
+}
+
+#left_menu_twitter_toggle_button:selected {
+    -fx-graphic: "/resources/icons/twitter_aqua_32.png";
+}
+
+#left_menu_email_toggle_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/email_white_32.png";
+    -fx-cursor: hand;
+}
+
+#left_menu_email_toggle_button:hover {
+	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
+}
+
+#left_menu_email_toggle_button:selected {
+    -fx-graphic: "/resources/icons/email_red_32.png";
+}
+
+#window_top_bar {
+	-fx-alignment: top-right;
+}
+
+#window_top_bar_buttons_container {
+	-fx-alignment: top-right;
+}
+
+#window_top_bar_close_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/exit_window_gray_14.png";
+    -fx-cursor: hand;
+}
+
+#window_top_bar_close_button:hover {
+	-fx-background-color: #ff3b30;
+	-fx-background-radius: 0.0px 10.0px 0.0px 0.0px;
+	-fx-graphic: "/resources/icons/exit_window_white_14.png";
+}
+
+#window_top_bar_minimize_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/minimize_gray_14.png";
+    -fx-cursor: hand;
+}
+
+#window_top_bar_minimize_button:hover {
+	-fx-background-color: #202020;
+	-fx-background-radius: 0.0px;
+	-fx-graphic: "/resources/icons/minimize_white_14.png";
+}
+
+#window_top_bar_search_container {
+	-fx-padding: 4.0px 0.0px 4.0px 0.0px;
+	-fx-hgap: 10px;
+}
+#search_pane {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 50.0px;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+}
+
+#app_check_pane {
+	-fx-background-color: transparent;
+	-fx-border-style: none;
+	-fx-spacing: 4px;
+}
+
+#search_facebook_toggle_button {
+    -fx-background-color: transparent;
+	-fx-background-radius: 50px;
+    -fx-graphic: "/resources/icons/facebook_gray_14.png";
+    -fx-cursor: hand;
+}
+
+#search_facebook_toggle_button:selected {
+    -fx-background-color: #3b5998;
+    -fx-graphic: "/resources/icons/facebook_white_14.png";
+}
+
+#search_twitter_toggle_button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50px;
+    -fx-graphic: "/resources/icons/twitter_gray_14.png";
+    -fx-cursor: hand;
+}
+
+#search_twitter_toggle_button:selected {
+    -fx-background-color: #33ccff;
+    -fx-graphic: "/resources/icons/twitter_white_14.png";
+}
+
+#search_email_toggle_button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50px;
+    -fx-graphic: "/resources/icons/email_gray_14.png";
+    -fx-cursor: hand;
+}
+
+#search_email_toggle_button:selected {
+    -fx-background-color: #ff3b30;
+    -fx-graphic: "/resources/icons/email_white_14.png";
+}
+
+#search_text_field {
+	-fx-background-color: transparent;
+	-fx-border-style: none;
+}
+
+#search_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+	-fx-graphic: "/resources/icons/search_gray_14.png";  
+	-fx-cursor: hand;  
+}
+
+#apps_pane {
+	-fx-background-color: transparent;
+	-fx-alignment: center;
+	-fx-spacing: 20px;
+}
