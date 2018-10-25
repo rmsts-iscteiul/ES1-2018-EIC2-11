@@ -1,10 +1,7 @@
 package jUnitTests;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.List;
 
-import org.junit.After;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,7 +13,6 @@ import facebook_app.FacebookApp;
 class TestFacebookApp {
 
 	private static FacebookApp app;
-	private String filter = "É";
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
