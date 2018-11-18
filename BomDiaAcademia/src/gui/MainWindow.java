@@ -198,8 +198,8 @@ public class MainWindow extends Application {
 
 				if (twitter_app_pane == null) { // If it's == null, we need to
 												// start the thread.
-					
 					backgroundThread.restart(); // thread.start()
+
 				} else {
 					if (left_menu_twitter_toggle_button.isSelected())
 						twitter_app_pane.setVisible(true);
@@ -307,9 +307,29 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(MouseEvent mouseEvent) { // working
 														// here.
-
 				if (search_twitter_toggle_button.isSelected()) {
-					refreshTwitterApp(search_text_field.getText());
+					/*
+					 * The thread has a service that has only one task.
+					 */
+					backgroundThread = new Service<Void>() {
+						@Override
+						protected Task<Void> createTask() {
+							return new Task<Void>() {
+								/*
+								 * What the thread needs to do
+								 */
+								@Override
+								protected Void call() throws Exception {
+									refreshTwitterApp(search_text_field.getText());
+									System.out.println("done");
+									search_text_field.accessibleTextProperty().unbind();
+									return null;
+								}
+							};
+						};
+					};
+					search_text_field.accessibleTextProperty().bind(backgroundThread.messageProperty());
+					backgroundThread.restart();
 				}
 
 				if (!search_facebook_toggle_button.isSelected() && !search_twitter_toggle_button.isSelected()
@@ -320,7 +340,7 @@ public class MainWindow extends Application {
 				}
 			}
 		});
-
+		
 		search_pane.getChildren().addAll(search_text_field, search_button);
 		window_top_bar_search_container.getChildren().addAll(app_check_pane, search_pane);
 		return window_top_bar_search_container;
