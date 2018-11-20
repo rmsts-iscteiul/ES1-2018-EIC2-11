@@ -1,0 +1,123 @@
+#email_app_pane {
+	-fx-background-color: transparent;
+}
+
+#email_app_tool_bar {
+	-fx-background-color: #ff3b30;
+	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
+	-fx-alignment: center;
+	-fx-padding: 0.0px 6.0px 0.0px 6.0px; 
+}
+
+#email_app_top_bar_icon {
+	-fx-text-fill: #ffffff;
+	-fx-graphic: "/resources/icons/email_white_14.png";
+}
+
+#email_app_top_bar_refresh_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/refresh_white_14.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
+	-fx-tooltip-visible: true;
+}
+
+#email_app_top_bar_change_user_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/change_user_white_14.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
+}
+
+#change_user_container {
+	-fx-background-color: transparent;
+	-fx-background-radius: 50.0px;
+	-fx-border-style: none;
+	-fx-alignment: center;
+}
+#change_user_text_field {
+	-fx-background-color: transparent;
+	-fx-text-fill: #ffffff;
+	-fx-background-radius: 50.0px;
+	 -fx-border-color: transparent  transparent #ffffff transparent;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+}
+
+#change_user_confirm_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/ok_white_14.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
+}
+
+#email_app_top_bar_minimize_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/minimize_white_14.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
+}
+
+#email_scroll_feed_pane {
+	-fx-background-color: transparent;
+	-fx-alignment: top-center;
+	-fx-border-color: #ff3b30;
+}
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color :transparent;
+    -fx-border-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-border-radius :2.0em;
+}
+.scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 0.0 10.0 0.0;
+
+}
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+    -fx-shape : " ";    
+    -fx-padding :0.15em 0.0;
+}
+ .scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";    
+    -fx-padding :0.0 0.15em;
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color :derive(black,90.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color :derive(#4D4C4F,10.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+
+#email_feed {
+	-fx-background-color: transparent;
+	-fx-spacing: 10px;
+	-fx-alignment: top-center;
+}
+
+#email_post_pane{
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 10px;
+}
+
+#email_post_top_bar {
+	-fx-alignment: center;
+}

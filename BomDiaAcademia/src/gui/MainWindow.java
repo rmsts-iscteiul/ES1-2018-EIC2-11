@@ -1,10 +1,14 @@
 package gui;
 
-
+import java.io.IOException;
 import java.util.List;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
 
 import com.restfb.types.Post;
 
+import apps.EmailApp;
 import apps.FacebookApp;
 import apps.TwitterApp;
 import javafx.application.Application;
@@ -28,6 +32,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import twitter4j.Status;
@@ -49,9 +54,11 @@ public class MainWindow extends Application {
 
 	private VBox twitter_app_pane = null;
 	private VBox facebook_app_pane = null;
+	private VBox email_app_pane = null;
 
 	private TwitterApp twitter_app;
 	private FacebookApp facebook_app;
+	private EmailApp email_app;
 
 	private double xOffset, yOffset;
 
@@ -136,8 +143,9 @@ public class MainWindow extends Application {
 	private void buildScene() {
 		scene = new Scene(root_pane);
 		scene.getStylesheets().add("/resources/css/main_window.css");
-		scene.getStylesheets().add("/resources/css/facebook_app.css");
 		scene.getStylesheets().add("/resources/css/twitter_app.css");
+		scene.getStylesheets().add("/resources/css/facebook_app.css");
+		scene.getStylesheets().add("/resources/css/email_app.css");
 		scene.setFill(null);
 	}
 
@@ -208,6 +216,21 @@ public class MainWindow extends Application {
 
 		ToggleButton left_menu_email_toggle_button = new ToggleButton();
 		left_menu_email_toggle_button.setId("left_menu_email_toggle_button");
+		left_menu_email_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				if (email_app_pane == null) {
+					buildEmailApp(email_app.getTimeline());
+					apps_pane.getChildren().add(email_app_pane);
+				}
+				if (left_menu_email_toggle_button.isSelected()) {
+					email_app_pane.setVisible(true);
+				} else {
+					email_app_pane.setVisible(false);
+				}
+			}
+		});
 		window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button, left_menu_twitter_toggle_button,
 				left_menu_email_toggle_button);
 		window_root_pane.getChildren().add(window_left_menu);
@@ -474,6 +497,62 @@ public class MainWindow extends Application {
 	}
 
 	/**
+	 * This method is used to build the Email App pane (email_app_pane), using a
+	 * list of emails. Note that this method doesn't set visible the App. It only
+	 * build it back scene.
+	 * 
+	 * @param emails
+	 */
+	private void buildEmailApp(List<Message> emails) {
+		email_app_pane = new VBox();
+		email_app_pane.setId("email_app_pane");
+		HBox email_app_tool_bar = new HBox();
+		email_app_tool_bar.setId("email_app_tool_bar");
+		Label email_app_top_bar_icon = new Label(email_app.getUser());
+		email_app_top_bar_icon.setId("email_app_top_bar_icon");
+		Button email_app_top_bar_refresh_button = new Button();
+		email_app_top_bar_refresh_button.setId("email_app_top_bar_refresh_button");
+		email_app_top_bar_refresh_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				refreshEmailApp();
+			}
+		});
+		Button email_app_top_bar_minimize_button = new Button();
+		email_app_top_bar_minimize_button.setId("email_app_top_bar_minimize_button");
+		email_app_top_bar_minimize_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				email_app_pane.setVisible(false);
+			}
+		});
+		final Pane spacer = new Pane();
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+		email_app_tool_bar.getChildren().addAll(email_app_top_bar_icon, spacer, email_app_top_bar_refresh_button,
+				email_app_top_bar_minimize_button);
+		ScrollPane email_app_scroll_pane = new ScrollPane();
+		email_app_scroll_pane.setId("email_app_scroll_pane");
+		email_app_scroll_pane.setPrefSize((window_pane.getWidth() * 0.4),
+				(window_pane.getHeight() - window_top_bar.getHeight()));
+		email_app_scroll_pane.setMaxSize((window_pane.getWidth() * 0.4),
+				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
+
+		VBox email_feed = new VBox();
+		email_feed.setId("email_feed");
+
+		for (Message message : emails) {
+			try {
+				email_feed.getChildren().add(newEmailPost(message));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		email_app_scroll_pane.setContent(email_feed);
+		email_app_pane.getChildren().addAll(email_app_tool_bar, email_app_scroll_pane);
+	}
+
+	/**
 	 * This method is used to refresh the Twitter App pane (twitter_app_pane).
 	 */
 	private void refreshTwitterApp() {
@@ -528,6 +607,27 @@ public class MainWindow extends Application {
 	}
 
 	/**
+	 * This method is used to refresh the Email App pane (email_app_pane).
+	 */
+	private void refreshEmailApp() {
+		apps_pane.getChildren().remove(email_app_pane);
+		buildEmailApp(email_app.getTimeline());
+		apps_pane.getChildren().add(email_app_pane);
+	}
+
+	/**
+	 * This method is used to refresh the Email App pane (email_app_pane), using a
+	 * keyword to filter the posts.
+	 * 
+	 * @param filter
+	 */
+//	private void refreshEmailApp(String filter) {
+//		apps_pane.getChildren().remove(email_app_pane);
+//		buildEmailApp(email_app.getTimeline(filter));
+//		apps_pane.getChildren().add(email_app_pane);
+//	}
+
+	/**
 	 * This method is used to return a Twitter post, given a status.
 	 * 
 	 * @param status
@@ -549,7 +649,7 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to return a Twitter post, given a status.
+	 * This method is used to return a Facebook post, given a post.
 	 * 
 	 * @param post
 	 * @return facebook_post_pane
@@ -570,10 +670,44 @@ public class MainWindow extends Application {
 	}
 
 	/**
+	 * This method is used to return a Email post, given a message.
+	 * 
+	 * @param message
+	 * @return email_post_pane
+	 * @throws Exception 
+	 */
+	private FlowPane newEmailPost(Message message) throws Exception {
+		FlowPane email_post_pane = new FlowPane(Orientation.VERTICAL);
+		try {
+			email_post_pane.setId("email_post_pane");
+			email_post_pane.setPrefWidth(POST_WIDTH);
+			
+			HBox email_post_top_bar;
+			email_post_top_bar = new HBox(new Label(""));
+			email_post_top_bar.setId("email_post_top_bar");
+			
+			WebView post_text  = new WebView();
+			StringBuilder sb = new StringBuilder();
+			sb.append(email_app.writePart(message));
+			post_text.getEngine().loadContent(sb.toString());
+			//Text post_text = new Text();
+			
+			post_text.setId("post_texto");
+			//post_text.setWrappingWidth(POST_WIDTH);
+
+			email_post_pane.getChildren().addAll(email_post_top_bar, post_text);
+		} catch (MessagingException | IOException e) {
+			e.printStackTrace();
+		}
+		return email_post_pane;
+	}
+
+	/**
 	 * This method is used to initialize the Facebook, Twitter and Email Apps.
 	 */
 	private void initApps() {
 		twitter_app = new TwitterApp();
 		facebook_app = new FacebookApp();
+		email_app = new EmailApp();
 	}
 }
