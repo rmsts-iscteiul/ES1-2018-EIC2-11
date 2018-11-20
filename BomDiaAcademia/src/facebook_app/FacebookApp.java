@@ -7,6 +7,7 @@ import java.util.List;
 import com.restfb.Connection;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
+import com.restfb.Parameter;
 import com.restfb.types.Post;
 import com.restfb.types.User;
 
@@ -48,7 +49,7 @@ public class FacebookApp {
 	public List<Post> getTimeline() {
 		List<Post> posts = new LinkedList<>();
 		try {
-			Connection<Post> result = fbClient.fetchConnection("me/feed", Post.class);
+			Connection<Post> result = fbClient.fetchConnection("me/feed", Post.class,Parameter.with("fields","likes.summary(true),comments.summary(true),message,shares"));
 			for (List<Post> page : result) {
 				for (Post rPost : page) {
 					if (rPost.getMessage() != null) {
@@ -74,7 +75,7 @@ public class FacebookApp {
 	public List<Post> getTimeline(String filter) {
 		List<Post> posts = new LinkedList<>();
 		try {
-			Connection<Post> result = fbClient.fetchConnection("me/feed", Post.class);
+			Connection<Post> result = fbClient.fetchConnection("me/feed", Post.class,Parameter.with("fields","likes.summary(true),comments.summary(true),message,shares"));
 			for (List<Post> page : result) {
 				for (Post rPost : page) {
 					if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
