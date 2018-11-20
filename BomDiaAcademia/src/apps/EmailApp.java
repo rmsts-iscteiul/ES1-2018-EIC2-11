@@ -26,10 +26,9 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 public class EmailApp {
-
-	private String filterS;
-	private String user = "rodrigomstavares@outlook.com";
-	public String password = "";
+	
+	private String user;
+	public String password;
 
 	private Folder emailFolder;
 
@@ -59,7 +58,6 @@ public class EmailApp {
 			for (int i = messages.length-1; i != messages.length-21; i--) {
 				Message message = messages[i];
 				emails.add(message);
-
 			}
 
 			// close the store and folder objects
@@ -178,11 +176,7 @@ public class EmailApp {
 			throw new RuntimeException(e);
 		}
 	}
-
-	public void filter(String filterS) {
-		this.filterS = filterS;
-	}
-
+	
 	/*
 	 * This method checks for content-type based on which, it processes and fetches
 	 * the content of the message
@@ -285,6 +279,14 @@ public class EmailApp {
 	 */
 	public Folder getEmailFolder() {
 		return emailFolder;
+	}
+	
+	public void setUser(String user) {
+		this.user = user;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

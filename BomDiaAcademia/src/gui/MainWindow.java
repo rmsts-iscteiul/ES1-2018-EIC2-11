@@ -221,6 +221,7 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(ActionEvent actionEvent) {
 				if (email_app_pane == null) {
+					new LoginWindow(main_stage, PopUpType.WARNING, email_app);
 					buildEmailApp(email_app.getTimeline());
 					apps_pane.getChildren().add(email_app_pane);
 				}
