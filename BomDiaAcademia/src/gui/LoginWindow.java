@@ -1,5 +1,6 @@
 package gui;
 
+import apps.EmailApp;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -149,6 +150,8 @@ public class LoginWindow {
 			public void handle(ActionEvent actionEvent) {
 				String checkUser = txtUserName.getText();
 				String checkPw = pf.getText();
+				EmailApp email = new EmailApp();
+				email.check(checkUser, checkPw);
 				pop_up_stage.close();
 				
 			}

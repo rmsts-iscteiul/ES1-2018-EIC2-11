@@ -61,7 +61,7 @@ public class EmailApp {
 						System.out.println("Email Number " + (i + 1));
 						System.out.println("Subject: " + message.getSubject());
 						System.out.println("From: " + message.getFrom()[0]);
-						// System.out.println("Text: " + message.getContent().toString());
+						System.out.println("Text: " + message.getContent().toString());
 					} else {
 						System.out.println("No results match the searching criteria");
 					}
@@ -74,7 +74,7 @@ public class EmailApp {
 					System.out.println("Email Number " + (i + 1));
 					System.out.println("Subject: " + message.getSubject());
 					System.out.println("From: " + message.getFrom()[0]);
-					// System.out.println("Text: " + message.getContent().toString());
+					System.out.println("Text: " + message.getContent().toString());
 
 				}
 			}
@@ -200,14 +200,14 @@ public class EmailApp {
 		this.filterS = filterS;
 	}
 
-//	public static void main(String[] args) {
-//		EmailApp email = new EmailApp();
-//
-//		String username = "msjrr@iscte-iul.pt";// change accordingly
-//		String password = "*******";// change accordingly
-//		//email.check(username, password);
-//		email.sendEmail("matiasfrazaocorreia@gmail.com", "Bom dia academia teste!");
-//	
-//	 }
+	public static void main(String[] args) {
+		EmailApp email = new EmailApp();
+
+		String username = "msjrr@iscte-iul.pt";// change accordingly
+		String password = "*****";// change accordingly
+		email.check(username, password);
+		//email.sendEmail("matiasfrazaocorreia@gmail.com", "Bom dia academia teste!");
+	
+	 }
 
 }
