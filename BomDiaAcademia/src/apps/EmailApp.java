@@ -29,7 +29,7 @@ public class EmailApp {
 
 	private String filterS;
 	private String user = "rodrigomstavares@outlook.com";
-	public String password = "MIL9noventa8";
+	public String password = "";
 
 	private Folder emailFolder;
 
@@ -44,7 +44,6 @@ public class EmailApp {
 			properties.put("mail.pop3.port", "995");
 			properties.put("mail.pop3.starttls.enable", "true");
 			Session emailSession = Session.getDefaultInstance(properties);
-			
 			// create the POP3 store object and connect with the pop server
 			Store store = emailSession.getStore("pop3s");
 
