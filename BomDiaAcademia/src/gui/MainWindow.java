@@ -580,7 +580,10 @@ public class MainWindow extends Application {
 		twitter_app = new TwitterApp();
 		facebook_app = new FacebookApp();
 	}
-
+	
+	/**
+	 *This method is responsible for getting the the twitters timeline without a filter
+	 */
 	private void getTwitterTimeline() {
 		/*
 		 * The thread has a service for FACEBOOK that has only one task.
@@ -614,7 +617,10 @@ public class MainWindow extends Application {
 		});
 		twitterThread.restart();
 	}
-
+	/**
+	 * This method is responsible for getting the twitters timeline with a filter
+	 * @param filter
+	 */
 	private void getTwitterTimeline(String filter) {
 		/*
 		 * The thread has a service for FACEBOOK that has only one task.
@@ -646,7 +652,9 @@ public class MainWindow extends Application {
 		});
 		twitterThread.restart();
 	}
-
+	/**
+	 * This method is responsible for getting the the facebooks timeline without a filter.
+	 */
 	private void getFacebookTimeline() {
 		/*
 		 * The thread has a service for TWITTER that has only one task.
@@ -681,8 +689,12 @@ public class MainWindow extends Application {
 		});
 		facebookThread.restart();
 	}
-
+	/**
+	 * This method is responsible for getting the the facebooks timeline with a filter
+	 * @param filter
+	 */
 	private void getFacebookTimeline(String filter) {
+		
 		facebookThread = new Service<Void>() {
 			@Override
 			protected Task<Void> createTask() {
