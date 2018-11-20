@@ -8,6 +8,7 @@ import com.restfb.Connection;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
+import com.restfb.exception.FacebookNetworkException;
 import com.restfb.types.Post;
 import com.restfb.types.User;
 
@@ -22,6 +23,7 @@ public class FacebookApp {
 	 * fbClient is to initiate communication with facebook trough accessToken
 	 */
 	private static FacebookClient fbClient;
+	private Connection<Post> result;
 
 	/**
 	 * Object fetched from facebook
@@ -46,10 +48,16 @@ public class FacebookApp {
 	 * @return List where all non-null message posts from user feed are included.
 	 */
 
+	@SuppressWarnings("finally")
 	public List<Post> getTimeline() {
 		List<Post> posts = new LinkedList<>();
 		try {
-			Connection<Post> result = fbClient.fetchConnection("me/feed", Post.class,Parameter.with("fields","likes.summary(true),comments.summary(true),message,shares"));
+			result = fbClient.fetchConnection("me/feed", Post.class,
+					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares"));
+		} catch (FacebookNetworkException e) {
+			System.out.println("System is Offline");
+		}
+		finally {
 			for (List<Post> page : result) {
 				for (Post rPost : page) {
 					if (rPost.getMessage() != null) {
@@ -57,11 +65,8 @@ public class FacebookApp {
 					}
 				}
 			}
-
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			return posts;
 		}
-		return posts;
 	}
 
 	/**
@@ -72,10 +77,16 @@ public class FacebookApp {
 	 * @param filter chosen by user to get specific posts.
 	 */
 
+	@SuppressWarnings("finally")
 	public List<Post> getTimeline(String filter) {
 		List<Post> posts = new LinkedList<>();
 		try {
-			Connection<Post> result = fbClient.fetchConnection("me/feed", Post.class,Parameter.with("fields","likes.summary(true),comments.summary(true),message,shares"));
+			result = fbClient.fetchConnection("me/feed", Post.class,
+					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares"));
+		} catch (FacebookNetworkException e) {
+			System.out.println("System is Offline");
+		}
+		finally {
 			for (List<Post> page : result) {
 				for (Post rPost : page) {
 					if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
@@ -83,12 +94,10 @@ public class FacebookApp {
 					}
 				}
 			}
-
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			return posts;
 		}
-		return posts;
 	}
+
 
 	/**
 	 * return user's name
@@ -97,14 +106,5 @@ public class FacebookApp {
 	 */
 	public String getUser() {
 		return me.getName();
-	}
-
-	public static void main(String[] args) {
-		FacebookApp app = new FacebookApp();
-		List<Post> results = app.getTimeline();
-		for (Post a : results) {
-			System.out.println(a.getMessage());
-
-		}
 	}
 }
