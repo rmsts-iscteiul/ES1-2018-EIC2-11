@@ -23,6 +23,8 @@ public class FacebookApp {
 	 * fbClient is to initiate communication with facebook trough accessToken
 	 */
 	private static FacebookClient fbClient;
+	/**
+	 * result is the list where posts are placed when fetching info from Facebook	 */
 	private Connection<Post> result;
 
 	/**

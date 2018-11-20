@@ -35,12 +35,16 @@ class TestFacebookApp {
 	@Test
 	void testGetAllPosts() {
 		int i = 0;
-		List<Post> results = app.getTimeline();
+		List<Post> results = app.getTimeline("a");
 		System.out.println("All post are going to be printed....\n");
 		for (Post a : results) {
 			System.out.println("\n-----------------------------------------------------------------------");
 			System.out.println("Post number: " + i);
-			System.out.println("Message: " + a.getMessage());
+			System.out.println("Message: " + a.getMessage()); // Returns all the messages
+			System.out.println("Likes: " + a.getLikesCount()); // Returns the post's likes count
+			System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
+			System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
+			i++;
 		}
 	}
 	
@@ -55,6 +59,10 @@ class TestFacebookApp {
 				System.out.println("\n-----------------------------------------------------------------------");
 				System.out.println("Post number: " + i);
 				System.out.println("Message: " + a.getMessage()); // Returns all the posts that contains the previous filter
+				System.out.println("Likes: " + a.getLikesCount()); // Returns the post's likes count
+				System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
+				System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
+				i++;
 			}
 		}
 	}
