@@ -22,10 +22,9 @@ class TestTwitterApp {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		System.out.println("\nA test is about to begin:\n");
+		System.out.println("\n------------------A test is about to begin:------------------\n");
+		System.out.println("The user for these tests is: " + twitter.getUser() + "\n");
 	}
-
-	
 	
 	@Test
 	void testGetTimeLineWithFilter() {
@@ -60,9 +59,9 @@ class TestTwitterApp {
 			System.out.println("-------------------------------------------------------------");
 		}
 	}
-
+	
 	@AfterAll
-	static void tearDownAfterClass() throws Exception {
+	static void tearDownAfterClass() {
 		System.out.println("\n\n **************** FINISHED ALL TESTS **************** \n\n");
 	}
 
