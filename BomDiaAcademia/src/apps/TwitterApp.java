@@ -5,19 +5,19 @@ import java.util.List;
 
 import twitter4j.Status;
 import twitter4j.Twitter;
+import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * 
- * This is the Twitter Application. It uses twitter4j library.
+ * This is the Twitter Aplication. It uses twitter4j library.
  * 
  * @author ES1-2018-EIC2-11
  *
  */
 
 public class TwitterApp {
-
 	/**
 	 * The variable user refers to the last searched user. Initially it has the
 	 * value of "ISCTEIUL" (default value).
@@ -29,6 +29,11 @@ public class TwitterApp {
 	 * ConsumerKey and a Access Token.
 	 */
 	private Twitter twitter;
+
+	/**
+	 * Deprecated list of a users tweets
+	 */
+	private List<Status> statuses;
 
 	/**
 	 * Constructor of the TwitterApp. It uses an Access token and an Consumer key to
@@ -51,16 +56,19 @@ public class TwitterApp {
 	 * @param user(String) Owns the timeline which is being displayed.
 	 * @return List(Status) - Contains the last 20 tweets of the user.
 	 */
+	@SuppressWarnings("finally")
 	public List<Status> getTimeline(String user) { // The argument need to be the @ of the user. DON'T
 													// WRITE THE '@'
 		try {
+			statuses = twitter.getUserTimeline(user);
 			this.user = user;
-			return (List<Status>) twitter.getUserTimeline(user);
 
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
+		} catch (TwitterException e) { // when Twitter service or network is unavailable this will return the
+										// un-updated LIST
+			System.out.println("CHECK NETWORK CONNECTION");
+		}finally {
+			return statuses;
 		}
-		return null; // when Twitter service or network is unavailable this will return a null LIST
 	}
 
 	/**
@@ -73,20 +81,23 @@ public class TwitterApp {
 	 * @return List(Status) - Contains the last 20 tweets based on the filter(2º
 	 *         argument) of the user.
 	 */
+	@SuppressWarnings("finally")
 	public List<Status> getTimeline(String user, String filter) {
-		List<Status> statuses = new LinkedList<>();
-		this.user = user;
+		List<Status> list = new LinkedList<>();
 		try {
-			for (Status status : twitter.getUserTimeline(user)) {
+			statuses = twitter.getUserTimeline(user);
+			this.user = user;
+			
+		} catch (TwitterException e) { // when Twitter service or network is unavailable
+			System.out.println("CHECK NETWORK CONNECTION");
+		}finally{
+			for (Status status : statuses) {
 				if (status.getText().contains(filter)) {
-					statuses.add(status);
+					list.add(status);
 				}
 			}
-		} catch (Exception e) { // when Twitter service or network is unavailable
-			System.out.println(e.getMessage());
+			return list;
 		}
-		return statuses;
-
 	}
 
 	/**
@@ -97,4 +108,5 @@ public class TwitterApp {
 	public String getUser() {
 		return user;
 	}
+
 }
