@@ -1,63 +1,91 @@
-#pop_up_root_pane {
+#login_root_pane {
 	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
 }
 
-#pop_up_root_pane {
+#login_root_pane {
 	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
 }
 
-#pop_up_window_root_pane {
-	-fx-background-color: #ffff;
+#login_window_root_pane {
+	-fx-background-color: #f4f4f4;
 	-fx-background-radius: 10.0px;
 	-fx-alignment: center;
 }
 
-#pop_up_shadow_gap {
+#login_shadow_gap {
 	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
 }
 
-#pop_up_window_top_bar {
-	-fx-background-color: #f4f4f4;
+#login_window_top_bar {
+	-fx-background-color: #202020;
 	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
 	-fx-alignment: top-right;
 }
 
-#pop_up_window_top_bar_buttons_container {
+#login_window_top_bar_buttons_container {
 	-fx-alignment: top-right;
 }
 
-#pop_up_window_top_bar_close_button {
+#login_window_top_bar_close_button {
 	-fx-background-color: transparent;
     -fx-border-style: none;
-    -fx-graphic: "/resources/icons/exit_window_gray_14.png";
+    -fx-graphic: "/resources/icons/exit_window_white_14.png";
 }
 
-#pop_up_window_top_bar_close_button:hover {
+#login_window_top_bar_close_button:hover {
 	-fx-background-color: #ff3b30;
 	-fx-background-radius: 0.0px 10.0px 0.0px 0.0px;
-	-fx-graphic: "/resources/icons/exit_window_white_14.png";
 }
 
-#pop_up_container {
+#login_container {
 	-fx-padding: 20.0px 0.0px 0.0px 0.0px;
 	-fx-alignment: top-center;
-	-fx-spacing: 50.0px;
+	-fx-vgap: 20px;
 }
 
-#ok_button {
+#email_text_field_container {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 50.0px;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+}
+
+#email_icon {
 	-fx-background-color: transparent;
     -fx-border-style: none;
-    -fx-graphic: "/resources/icons/ok_gray_32.png";
+	 -fx-graphic: "/resources/icons/email_gray_14.png";
 }
 
-#ok_button:hover {
+#email_text_field {
+	-fx-background-color: transparent;
+	-fx-border-style: none;
+}
+
+#password_field_container {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 50.0px;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+}
+
+#password_icon {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+	 -fx-graphic: "/resources/icons/password_gray_14.png";
+}
+
+#password_field {
+	-fx-background-color: transparent;
+	-fx-border-style: none;
+}
+
+#login_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/login_gray_32.png";
+}
+
+#login_button:hover {
 	-fx-background-color: #53d769;
 	-fx-background-radius: 50.0px;
     -fx-border-style: none;
-    -fx-graphic: "/resources/icons/ok_white_32.png";
-}
-
-#grid_container{
-	
-
+    -fx-graphic: "/resources/icons/login_white_32.png";
 }

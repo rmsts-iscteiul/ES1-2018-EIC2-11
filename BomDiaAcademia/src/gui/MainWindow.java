@@ -617,18 +617,6 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to refresh the Email App pane (email_app_pane), using a
-	 * keyword to filter the posts.
-	 * 
-	 * @param filter
-	 */
-//	private void refreshEmailApp(String filter) {
-//		apps_pane.getChildren().remove(email_app_pane);
-//		buildEmailApp(email_app.getTimeline(filter));
-//		apps_pane.getChildren().add(email_app_pane);
-//	}
-
-	/**
 	 * This method is used to return a Twitter post, given a status.
 	 * 
 	 * @param status
@@ -692,8 +680,7 @@ public class MainWindow extends Application {
 			sb.append(email_app.writePart(message));
 			post_text.getEngine().loadContent(sb.toString());
 			//Text post_text = new Text();
-			
-			post_text.setId("post_texto");
+			post_text.setId("post_text");
 			//post_text.setWrappingWidth(POST_WIDTH);
 
 			email_post_pane.getChildren().addAll(email_post_top_bar, post_text);

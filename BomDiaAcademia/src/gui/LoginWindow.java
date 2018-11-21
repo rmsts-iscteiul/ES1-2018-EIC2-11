@@ -3,19 +3,16 @@ package gui;
 import apps.EmailApp;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -60,19 +57,19 @@ public class LoginWindow {
 				POP_UP_ROOT_PANE_HEIGHT + POP_UP_SHADOW_GAP);
 		pop_up_root_pane.setMaxSize(POP_UP_ROOT_PANE_WIDTH + POP_UP_SHADOW_GAP,
 				POP_UP_ROOT_PANE_HEIGHT + POP_UP_SHADOW_GAP);
-		pop_up_root_pane.setId("pop_up_root_pane");
+		pop_up_root_pane.setId("login_root_pane");
 		HBox top_gap_pane = new HBox();
 		top_gap_pane.setPrefSize(POP_UP_ROOT_PANE_WIDTH + POP_UP_SHADOW_GAP, POP_UP_SHADOW_GAP);
-		top_gap_pane.setId("pop_up_shadow_gap");
+		top_gap_pane.setId("login_shadow_gap");
 		HBox bottom_gap_pane = new HBox();
 		bottom_gap_pane.setPrefSize(POP_UP_ROOT_PANE_WIDTH + POP_UP_SHADOW_GAP, POP_UP_SHADOW_GAP);
-		bottom_gap_pane.setId("pop_up_shadow_gap");
+		bottom_gap_pane.setId("login_shadow_gap");
 		VBox left_gap_pane = new VBox();
 		left_gap_pane.setPrefSize(POP_UP_SHADOW_GAP, POP_UP_ROOT_PANE_HEIGHT + POP_UP_SHADOW_GAP);
-		left_gap_pane.setId("pop_up_shadow_gap");
+		left_gap_pane.setId("login_shadow_gap");
 		VBox right_gap_pane = new VBox();
 		right_gap_pane.setPrefSize(POP_UP_SHADOW_GAP, POP_UP_ROOT_PANE_HEIGHT + POP_UP_SHADOW_GAP);
-		right_gap_pane.setId("pop_up_shadow_gap");
+		right_gap_pane.setId("login_shadow_gap");
 		pop_up_root_pane.setTop(top_gap_pane);
 		pop_up_root_pane.setBottom(bottom_gap_pane);
 		pop_up_root_pane.setLeft(left_gap_pane);
@@ -95,13 +92,13 @@ public class LoginWindow {
 
 	private void buildPopUpScene() {
 		pop_up_scene = new Scene(pop_up_root_pane, POP_UP_ROOT_PANE_WIDTH, POP_UP_ROOT_PANE_HEIGHT);
-		pop_up_scene.getStylesheets().add("/resources/css/pop_up_window.css");
+		pop_up_scene.getStylesheets().add("/resources/css/login_window.css");
 		pop_up_scene.setFill(null);
 	}
 
 	private void buildPopUpWindowRootPane() {
 		pop_up_window_root_pane = new BorderPane();
-		pop_up_window_root_pane.setId("pop_up_window_root_pane");
+		pop_up_window_root_pane.setId("login_window_root_pane");
 		pop_up_window_root_pane.setPrefSize(POP_UP_ROOT_PANE_WIDTH, POP_UP_ROOT_PANE_HEIGHT);
 		pop_up_window_root_pane.setMaxSize(POP_UP_ROOT_PANE_WIDTH, POP_UP_ROOT_PANE_HEIGHT);
 		buildPopUpWindowTopBar();
@@ -110,13 +107,13 @@ public class LoginWindow {
 
 	private void buildPopUpWindowTopBar() {
 		HBox pop_up_window_top_bar = new HBox();
-		pop_up_window_top_bar.setId("pop_up_window_top_bar");
+		pop_up_window_top_bar.setId("login_window_top_bar");
 		pop_up_window_top_bar.setPrefSize(POP_UP_ROOT_PANE_WIDTH, POP_UP_WINDOW_TOP_BAR_HEIGHT);
 		pop_up_window_top_bar.setMaxSize(POP_UP_ROOT_PANE_WIDTH, POP_UP_WINDOW_TOP_BAR_HEIGHT);
 		FlowPane pop_up_window_top_bar_buttons_container = new FlowPane();
-		pop_up_window_top_bar_buttons_container.setId("pop_up_window_top_bar_buttons_container");
+		pop_up_window_top_bar_buttons_container.setId("login_window_top_bar_buttons_container");
 		Button close_button = new Button();
-		close_button.setId("pop_up_window_top_bar_close_button");
+		close_button.setId("login_window_top_bar_close_button");
 		close_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
@@ -129,36 +126,53 @@ public class LoginWindow {
 	}
 
 	private void buildPopUpContent(PopUpType type) {
-		VBox pop_up_container = new VBox();
-		pop_up_container.setId("pop_up_container");
-		GridPane gridPane = new GridPane();
-		gridPane.setId("grid_container");
-		gridPane.setPadding(new Insets(20, 20, 20, 20));
-		gridPane.setHgap(5);
-		gridPane.setVgap(5);
-		Label lblUserName = new Label("Username");
-		final TextField txtUserName = new TextField();
-		Label lblPassword = new Label("Password");
-		final PasswordField pf = new PasswordField();
-		Button btnLogin = new Button("Login");
-		final Label lblMessage = new Label();
-		gridPane.add(lblUserName, 0, 0);
-		gridPane.add(txtUserName, 1, 0);
-		gridPane.add(lblPassword, 0, 1);
-		gridPane.add(pf, 1, 1);
-		gridPane.add(btnLogin, 2, 1);
-		gridPane.add(lblMessage, 1, 2);
-		btnLogin.setOnAction(new EventHandler<ActionEvent>() {
+		FlowPane login_container = new FlowPane(Orientation.VERTICAL);
+		login_container.setId("login_container");
+		
+		HBox email_text_field_container = new HBox();
+		email_text_field_container.setId("email_text_field_container");
+		Button email_icon = new Button();
+		email_icon.setId("email_icon");
+		TextField email_text_field = new TextField("email");
+		email_text_field.setId("email_text_field");
+		email_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				if (email_text_field.getText().equals("email")) {
+					email_text_field.clear();
+				}
+			}
+		});
+		email_text_field_container.getChildren().addAll(email_icon, email_text_field);
+		HBox password_field_container = new HBox();
+		password_field_container.setId("password_field_container");
+		Button password_icon = new Button();
+		password_icon.setId("password_icon");
+		PasswordField password_field = new PasswordField();
+		password_field.setId("password_field");
+		password_field.setText("password");
+		password_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				if (password_field.getText().equals("password")) {
+					password_field.clear();
+				}
+			}
+		});
+		password_field_container.getChildren().addAll(password_icon, password_field);
+		Button login_button = new Button("Login");
+		login_button.setId("login_button");
+		login_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				email_app.setUser(txtUserName.getText());
-				email_app.setPassword(pf.getText());
+				email_app.setUser(email_text_field.getText());
+				email_app.setPassword(password_field.getText());
 				pop_up_stage.close();
 				
 			}
 		});
-		pop_up_container.getChildren().addAll(gridPane);
-		pop_up_window_root_pane.setCenter(pop_up_container);
+		login_container.getChildren().addAll(email_text_field_container, password_field_container, login_button);
+		pop_up_window_root_pane.setCenter(login_container);
 	}
 
 	private void startPopUpStage() {
