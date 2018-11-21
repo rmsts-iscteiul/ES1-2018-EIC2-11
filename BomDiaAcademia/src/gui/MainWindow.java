@@ -67,6 +67,7 @@ public class MainWindow extends Application {
 
 	private Service<Void> twitterThread;
 	private Service<Void> facebookThread;
+	private Service<Void> emailThread;
 
 	/**
 	 * This is the main method.
@@ -721,5 +722,39 @@ public class MainWindow extends Application {
 			}
 		});
 		facebookThread.restart();
+	}
+
+	private void getEmailTimeline(){
+		/*
+		 * The thread has a service for FACEBOOK that has only one task.
+		 */
+		emailThread = new Service<Void>() {
+			@Override
+			protected Task<Void> createTask() {
+				return new Task<Void>() {
+					/*
+					 * What the thread needs to do
+					 */
+					@Override
+					protected Void call() throws Exception {
+						//buildEmailApp(email_app.getTimeline(email_app.getUser()));
+						return null;
+					}
+				};
+			};
+		};
+		/*
+		 * What the thread does after it did what is describred above
+		 */
+		emailThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+
+			@Override
+			public void handle(WorkerStateEvent arg0) {
+				//apps_pane.getChildren().add(email_app_pane);
+				//if (!email_app_pane.isVisible())
+				//	email_app_pane.setVisible(true);
+			}
+		});
+		emailThread.restart();
 	}
 }
