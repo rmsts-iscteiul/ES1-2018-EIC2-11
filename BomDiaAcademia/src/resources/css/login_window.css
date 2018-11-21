@@ -80,12 +80,12 @@
 #login_button {
 	-fx-background-color: transparent;
     -fx-border-style: none;
-    -fx-graphic: "/resources/icons/login_gray_32.png";
+    -fx-graphic: "/resources/icons/email_login_gray_32.png";
 }
 
 #login_button:hover {
 	-fx-background-color: #53d769;
 	-fx-background-radius: 50.0px;
     -fx-border-style: none;
-    -fx-graphic: "/resources/icons/login_white_32.png";
+    -fx-graphic: "/resources/icons/email_login_white_32.png";
 }

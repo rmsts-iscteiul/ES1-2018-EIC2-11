@@ -39,7 +39,7 @@ public class FacebookApp {
 	 */
 	@SuppressWarnings("deprecation")
 	public FacebookApp() {
-		String accessToken = "EAAD4C79u9UYBACnARaGxxde8D8pwQsbiLCnAQh5yxygkFfxn3dKw4GxzWUy822R3xS0OzvYKGxFrHqYXk65Wpq5u8GJEhTAugBfRKsHjGte3jhouUt8JKCIpl6gKl4xaKYrXhVInAiEneohCXxQZAxO5ZAaLrRYVP4qwXVVvbonIST4iHPjnprnCNQKUtTpk6lTEDnmQZDZD";
+		String accessToken = "EAAQSXbaizwwBAK2M96ZBGFaYFw7Ez8yaZAM6Ap9ZB1Lrou1kKi2PoGE1E96CUNE4pVokBfhAgZCIucDlb7r9J45O9mCkZAxZAZA9GIvWE27ZB8wtS6CUhIwjcoPVNGaChu87YH04taeksWTcmHuBKHI2M6oZAOR6EdYWTn1ka791HFwZDZD";
 		fbClient = new DefaultFacebookClient(accessToken);
 
 		me = fbClient.fetchObject("me", User.class, Parameter.with("fields", "picture"));

@@ -72,10 +72,10 @@ public class MainWindow extends Application {
 	private static final int WINDOW_TOP_BAR_HEIGHT = 20;
 
 	private static final int POST_WIDTH = 240;
-
+	
 	private Service<Void> twitterThread;
 	private Service<Void> facebookThread;
-	private Service<Void> emailThread;
+//	private Service<Void> emailThread;
 
 	/**
 	 * This is the main method.
@@ -229,7 +229,9 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(ActionEvent actionEvent) {
 				if (email_app_pane == null) {
-					getEmailTimeline();
+					new LoginWindow(main_stage, PopUpType.WARNING, email_app);
+					buildEmailApp(email_app.getTimeline());
+					apps_pane.getChildren().add(email_app_pane);
 				}
 				if (left_menu_email_toggle_button.isSelected()) {
 					email_app_pane.setVisible(true);
@@ -568,8 +570,8 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to refresh the Twitter App pane (twitter_app_pane), using
-	 * a keyword to filter the posts.
+	 * This method is used to refresh the Twitter App pane (twitter_app_pane),
+	 * using a keyword to filter the posts.
 	 * 
 	 * @param filter
 	 */
@@ -608,13 +610,15 @@ public class MainWindow extends Application {
 		apps_pane.getChildren().remove(facebook_app_pane);
 		getFacebookTimeline(filter);
 	}
+	
 
 	/**
 	 * This method is used to refresh the Email App pane (email_app_pane).
 	 */
 	private void refreshEmailApp() {
 		apps_pane.getChildren().remove(email_app_pane);
-		getEmailTimeline();
+		buildEmailApp(email_app.getTimeline());
+		apps_pane.getChildren().add(email_app_pane);
 	}
 
 	/**
@@ -657,18 +661,18 @@ public class MainWindow extends Application {
 		Text post_text = new Text(post.getMessage());
 		post_text.setId("post_texto");
 		post_text.setWrappingWidth(POST_WIDTH);
-		// BOTTOM BAR
+		//BOTTOM BAR
 		HBox facebook_post_bottom_bar = new HBox();
 		facebook_post_bottom_bar.setId("facebook_post_bottom_bar");
-
+		
 		Label likes_label = new Label(post.getLikesCount().toString());
 		likes_label.setId("likes_label");
 		Label comments_label = new Label(post.getCommentsCount().toString());
 		comments_label.setId("comments_label");
 		Label shares_label = new Label(post.getSharesCount().toString());
 		shares_label.setId("shares_label");
-
-		facebook_post_bottom_bar.getChildren().addAll(likes_label, comments_label, shares_label);
+		
+		facebook_post_bottom_bar.getChildren().addAll(likes_label, comments_label,shares_label);
 		facebook_post_pane.setTop(facebook_post_top_bar);
 		facebook_post_pane.setCenter(post_text);
 		facebook_post_pane.setBottom(facebook_post_bottom_bar);
@@ -715,10 +719,9 @@ public class MainWindow extends Application {
 		facebook_app = new FacebookApp();
 		email_app = new EmailApp();
 	}
-
+	
 	/**
-	 * This method is responsible for getting the the twitters timeline without a
-	 * filter
+	 *This method is responsible for getting the the twitters timeline without a filter
 	 */
 	private void getTwitterTimeline() {
 		/*
@@ -753,10 +756,8 @@ public class MainWindow extends Application {
 		});
 		twitterThread.restart();
 	}
-
 	/**
 	 * This method is responsible for getting the twitters timeline with a filter
-	 * 
 	 * @param filter
 	 */
 	private void getTwitterTimeline(String filter) {
@@ -790,10 +791,8 @@ public class MainWindow extends Application {
 		});
 		twitterThread.restart();
 	}
-
 	/**
-	 * This method is responsible for getting the the facebooks timeline without a
-	 * filter.
+	 * This method is responsible for getting the the facebooks timeline without a filter.
 	 */
 	private void getFacebookTimeline() {
 		/*
@@ -829,15 +828,12 @@ public class MainWindow extends Application {
 		});
 		facebookThread.restart();
 	}
-
 	/**
-	 * This method is responsible for getting the the facebooks timeline with a
-	 * filter
-	 * 
+	 * This method is responsible for getting the the facebooks timeline with a filter
 	 * @param filter
 	 */
 	private void getFacebookTimeline(String filter) {
-
+		
 		facebookThread = new Service<Void>() {
 			@Override
 			protected Task<Void> createTask() {
@@ -866,37 +862,37 @@ public class MainWindow extends Application {
 		facebookThread.restart();
 	}
 
-	private void getEmailTimeline() {
-		/*
-		 * The thread has a service for FACEBOOK that has only one task.
-		 */
-		emailThread = new Service<Void>() {
-			@Override
-			protected Task<Void> createTask() {
-				return new Task<Void>() {
-					/*
-					 * What the thread needs to do
-					 */
-					@Override
-					protected Void call() throws Exception {
-						buildEmailApp(email_app.getTimeline());
-						return null;
-					}
-				};
-			};
-		};
-		/*
-		 * What the thread does after it did what is describred above
-		 */
-		emailThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				apps_pane.getChildren().add(email_app_pane);
-				if (!email_app_pane.isVisible())
-					email_app_pane.setVisible(true);
-			}
-		});
-		emailThread.restart();
-	}
+//	private void getEmailTimeline(){
+//		/*
+//		 * The thread has a service for FACEBOOK that has only one task.
+//		 */
+//		emailThread = new Service<Void>() {
+//			@Override
+//			protected Task<Void> createTask() {
+//				return new Task<Void>() {
+//					/*
+//					 * What the thread needs to do
+//					 */
+//					@Override
+//					protected Void call() throws Exception {
+//						buildEmailApp(email_app.getTimeline());
+//						return null;
+//					}
+//				};
+//			};
+//		};
+//		/*
+//		 * What the thread does after it did what is describred above
+//		 */
+//		emailThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+//
+//			@Override
+//			public void handle(WorkerStateEvent arg0) {
+//				apps_pane.getChildren().add(email_app_pane);
+//				if (!email_app_pane.isVisible())
+//					email_app_pane.setVisible(true);
+//			}
+//		});
+//		emailThread.restart();
+//	}
 }
