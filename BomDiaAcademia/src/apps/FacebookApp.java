@@ -1,3 +1,4 @@
+
 package apps;
 
 import java.util.LinkedList;
@@ -57,7 +58,7 @@ public class FacebookApp {
 		List<Post> posts = new LinkedList<>();
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
-					Parameter.with("fields", "picture,likes.summary(true),comments.summary(true),message,shares"));
+					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares"));
 		} catch (FacebookNetworkException e) {
 			System.out.println("System is Offline");
 		} finally {
@@ -102,8 +103,10 @@ public class FacebookApp {
 		}
 	}
 	
+	
+	
 	/**
-	 * return user's
+	 * return user
 	 * 
 	 * @return String that equals user's name
 	 */
@@ -119,4 +122,5 @@ public class FacebookApp {
 	public String getUserName() {
 		return me.getName();
 	}
+
 }

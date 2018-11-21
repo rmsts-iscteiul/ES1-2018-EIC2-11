@@ -93,7 +93,7 @@ class TestFacebookApp {
 			System.out.println("\n-----------------------------------------------------------------------");
 			System.out.println("Post number: " + i);
 			System.out.println("Message: " + a.getMessage()); // Returns all the messages
-			System.out.println("Likes: " + a.getLikesCount()); // Returns the post's likes count
+			System.out.println("Likes: " + a.getLikesCount(); // Returns the post's likes count
 			System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
 			System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
 			i++;
