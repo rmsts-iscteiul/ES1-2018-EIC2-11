@@ -36,7 +36,11 @@ public class EmailApp {
 		List<Message> emails = new LinkedList<Message>();
 		try {
 
-			// create properties field
+			/**
+			 * 
+			 * Creating properties field to connect to outlook pop server
+			 * 
+			 */
 			Properties properties = new Properties();
 
 			properties.put("mail.pop3.host", "pop-mail.outlook.com");
@@ -52,7 +56,9 @@ public class EmailApp {
 			emailFolder = store.getFolder("INBOX");
 			emailFolder.open(Folder.READ_ONLY);
 
-			// retrieve the messages from the folder in an array and print it
+			/**
+			 * create the messages array, retrieves the emails from the folder and places them on the messages` array
+			 */
 			Message[] messages = emailFolder.getMessages();
 			System.out.println("messages.length---" + messages.length);
 			for (int i = messages.length-1; i != messages.length-21; i--) {
@@ -74,7 +80,7 @@ public class EmailApp {
 		return emails;
 	}
 
-	private void sendEmail(String to, String text) {
+	protected void sendEmail(String to, String text) {
 		String host = "smtp-mail.outlook.com";
 
 		Properties props = new Properties();
@@ -83,7 +89,9 @@ public class EmailApp {
 		props.put("mail.smtp.host", host);
 		props.put("mail.smtp.port", "587");
 
-		// Get the Session object.
+		/**
+		 * This session object requires another connection because we are connection to another server who forwards the emails
+		 */
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password);
@@ -116,7 +124,7 @@ public class EmailApp {
 
 	}
 
-	private void sendEmailWithAttachment(String to, String text) {
+	protected void sendEmailWithAttachment(String to, String text) {
 		String host = "smtp-mail.outlook.com";
 
 		Properties props = new Properties();
@@ -148,7 +156,7 @@ public class EmailApp {
 			BodyPart messageBodyPart = new MimeBodyPart();
 
 			// Now set the actual message
-			messageBodyPart.setText("This is message body");
+			messageBodyPart.setText(text);
 
 			// Create a multipar message
 			Multipart multipart = new MimeMultipart();
@@ -158,10 +166,10 @@ public class EmailApp {
 
 			// Part two is attachment
 			messageBodyPart = new MimeBodyPart();
-			String filename = "/home/manisha/file.txt";
+			String filename = "C:\\Users\\matia\\Desktop/redes.txt"; /** Change to the desired a file directory */
 			DataSource source = new FileDataSource(filename);
 			messageBodyPart.setDataHandler(new DataHandler(source));
-			messageBodyPart.setFileName(filename);
+			messageBodyPart.setFileName("redes.txt"); /** Change to the desired file name */
 			multipart.addBodyPart(messageBodyPart);
 
 			// Send the complete message parts
