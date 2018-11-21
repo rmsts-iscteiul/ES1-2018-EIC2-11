@@ -108,5 +108,8 @@ public class TwitterApp {
 	public String getUser() {
 		return user;
 	}
-
+	public void setUser(String user) {
+		this.user = user;
+		
+	}
 }
