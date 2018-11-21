@@ -87,8 +87,26 @@
 #facebook_post_pane{
 	-fx-background-color: #ffffff;
 	-fx-background-radius: 10px;
+	-fx-alignment: top-center;
+	-fx-hgap: 10px;
 }
 
 #facebook_post_top_bar {
 	-fx-alignment: center;
+}
+
+#facebook_post_bottom_bar {
+	-fx-spacing: 20px;
+}
+
+#likes_label {
+	-fx-graphic: "/resources/icons/facebook_like_fcolor_14.png";
+}
+
+#comments_label {
+	-fx-graphic: "/resources/icons/facebook_comment_fcolor_14.png";
+}
+
+#shares_label {
+	-fx-graphic: "/resources/icons/facebook_share_fcolor_14.png";
 }

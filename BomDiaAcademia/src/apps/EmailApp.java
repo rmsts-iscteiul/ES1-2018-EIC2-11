@@ -251,13 +251,13 @@ public class EmailApp {
 		}
 		// TO
 		if ((a = m.getRecipients(Message.RecipientType.TO)) != null) {
-			email_envelope += "\nTO: ";
+			email_envelope += "\n TO: ";
 			for (int j = 0; j < a.length; j++)
 				email_envelope += a[j].toString();
 		}
 		// SUBJECT
 		if (m.getSubject() != null) {
-			email_envelope += "\nSUBJECT: " + m.getSubject();
+			email_envelope += "\n SUBJECT: " + m.getSubject();
 		}
 		return email_envelope;
 

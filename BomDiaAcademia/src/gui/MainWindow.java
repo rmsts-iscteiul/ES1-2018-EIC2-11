@@ -457,7 +457,7 @@ public class MainWindow extends Application {
 		facebook_app_pane.setId("facebook_app_pane");
 		HBox facebook_app_tool_bar = new HBox();
 		facebook_app_tool_bar.setId("facebook_app_tool_bar");
-		Label facebook_app_top_bar_icon = new Label(facebook_app.getUser());
+		Label facebook_app_top_bar_icon = new Label(facebook_app.getUserName());
 		facebook_app_top_bar_icon.setId("facebook_app_top_bar_icon");
 		Button facebook_app_top_bar_refresh_button = new Button();
 		facebook_app_top_bar_refresh_button.setId("facebook_app_top_bar_refresh_button");
@@ -643,18 +643,34 @@ public class MainWindow extends Application {
 	 * @param post
 	 * @return facebook_post_pane
 	 */
-	private FlowPane newFacebookPost(Post post) {
-		FlowPane facebook_post_pane = new FlowPane(Orientation.VERTICAL);
+	private BorderPane newFacebookPost(Post post) {
+		BorderPane facebook_post_pane = new BorderPane();
 		facebook_post_pane.setId("facebook_post_pane");
 		facebook_post_pane.setPrefWidth(POST_WIDTH);
 		// TOP BAR
-		HBox facebook_post_top_bar = new HBox(new Label(post.getMessage()));
+		ImageView imgv = new ImageView(new Image(facebook_app.getUser().getPicture().getUrl()));
+		imgv.resize(50, 20);
+		HBox facebook_post_top_bar = new HBox(imgv);
 		facebook_post_top_bar.setId("post_top_bar");
 		// CENTER PANE
 		Text post_text = new Text(post.getMessage());
 		post_text.setId("post_texto");
 		post_text.setWrappingWidth(POST_WIDTH);
-		facebook_post_pane.getChildren().addAll(facebook_post_top_bar, post_text);
+		//BOTTOM BAR
+		HBox facebook_post_bottom_bar = new HBox();
+		facebook_post_bottom_bar.setId("facebook_post_bottom_bar");
+		
+		Label likes_label = new Label(post.getLikesCount().toString());
+		likes_label.setId("likes_label");
+		Label comments_label = new Label(post.getCommentsCount().toString());
+		comments_label.setId("comments_label");
+		Label shares_label = new Label(post.getSharesCount().toString());
+		shares_label.setId("shares_label");
+		
+		facebook_post_bottom_bar.getChildren().addAll(likes_label, comments_label,shares_label);
+		facebook_post_pane.setTop(facebook_post_top_bar);
+		facebook_post_pane.setCenter(post_text);
+		facebook_post_pane.setBottom(facebook_post_bottom_bar);
 		return facebook_post_pane;
 	}
 
@@ -663,25 +679,25 @@ public class MainWindow extends Application {
 	 * 
 	 * @param message
 	 * @return email_post_pane
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private FlowPane newEmailPost(Message message) throws Exception {
 		FlowPane email_post_pane = new FlowPane(Orientation.VERTICAL);
 		try {
 			email_post_pane.setId("email_post_pane");
 			email_post_pane.setPrefWidth(POST_WIDTH);
-			
+
 			HBox email_post_top_bar;
 			email_post_top_bar = new HBox(new Label(""));
 			email_post_top_bar.setId("email_post_top_bar");
-			
-			WebView post_text  = new WebView();
+
+			WebView post_text = new WebView();
 			StringBuilder sb = new StringBuilder();
 			sb.append(email_app.writePart(message));
 			post_text.getEngine().loadContent(sb.toString());
-			//Text post_text = new Text();
+			// Text post_text = new Text();
 			post_text.setId("post_text");
-			//post_text.setWrappingWidth(POST_WIDTH);
+			// post_text.setWrappingWidth(POST_WIDTH);
 
 			email_post_pane.getChildren().addAll(email_post_top_bar, post_text);
 		} catch (MessagingException | IOException e) {
