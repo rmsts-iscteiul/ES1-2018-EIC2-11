@@ -1,4 +1,4 @@
-package jUnitTests;
+package tests;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.restfb.types.Post;
 
-import facebook_app.FacebookApp;
+import apps.FacebookApp;
 
 class TestFacebookApp {
 

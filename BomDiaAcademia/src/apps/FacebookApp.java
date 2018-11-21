@@ -1,5 +1,5 @@
 
-package facebook_app;
+package apps;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +24,8 @@ public class FacebookApp {
 	 */
 	private static FacebookClient fbClient;
 	/**
-	 * result is the list where posts are placed when fetching info from Facebook	 */
+	 * result is the list where posts are placed when fetching info from Facebook	 
+	 */
 	private Connection<Post> result;
 
 	/**
@@ -47,6 +48,7 @@ public class FacebookApp {
 	/**
 	 * Returns all non-null message posts from user feed
 	 * 
+	 * @throws FacebookNetworkException when system is offline, returning posts from previous list    
 	 * @return List where all non-null message posts from user feed are included.
 	 */
 
@@ -76,6 +78,7 @@ public class FacebookApp {
 	 * 
 	 * @return List where all non-null message posts based on a filter are included,
 	 *         from user feed.
+	 * @throws FacebookNetworkException when system is offline, returning posts from previous list(with filter)        
 	 * @param filter chosen by user to get specific posts.
 	 */
 
