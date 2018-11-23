@@ -121,3 +121,15 @@
 #twitter_post_top_bar {
 	-fx-alignment: center;
 }
+
+#twitter_post_bottom_bar {
+	-fx-spacing: 20px;
+}
+
+#favourites_label {
+	-fx-graphic: "/resources/icons/twitter_favourite_tcolor_14.png";
+}
+
+#retweets_label {
+	-fx-graphic: "/resources/icons/twitter_retweet_tcolor_14.png";
+}

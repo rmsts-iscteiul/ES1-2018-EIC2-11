@@ -38,6 +38,7 @@ import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import twitter4j.MediaEntity;
 import twitter4j.Status;
 
 /**
@@ -71,8 +72,8 @@ public class MainWindow extends Application {
 	private static final int WINDOW_LEFT_MENU_WIDTH = 50;
 	private static final int WINDOW_TOP_BAR_HEIGHT = 20;
 
-	private static final int POST_WIDTH = 240;
-	
+	private static final int POST_WIDTH = 300;
+
 	private Service<Void> twitterThread;
 	private Service<Void> facebookThread;
 //	private Service<Void> emailThread;
@@ -570,8 +571,8 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to refresh the Twitter App pane (twitter_app_pane),
-	 * using a keyword to filter the posts.
+	 * This method is used to refresh the Twitter App pane (twitter_app_pane), using
+	 * a keyword to filter the posts.
 	 * 
 	 * @param filter
 	 */
@@ -610,7 +611,6 @@ public class MainWindow extends Application {
 		apps_pane.getChildren().remove(facebook_app_pane);
 		getFacebookTimeline(filter);
 	}
-	
 
 	/**
 	 * This method is used to refresh the Email App pane (email_app_pane).
@@ -627,18 +627,44 @@ public class MainWindow extends Application {
 	 * @param status
 	 * @return twitter_post_pane
 	 */
-	private FlowPane newTwitterPost(Status status) {
-		FlowPane twitter_post_pane = new FlowPane(Orientation.VERTICAL);
+	private BorderPane newTwitterPost(Status status) {
+		BorderPane twitter_post_pane = new BorderPane();
 		twitter_post_pane.setId("twitter_post_pane");
 		twitter_post_pane.setPrefWidth(POST_WIDTH);
 
 		HBox twitter_post_top_bar = new HBox(new ImageView(new Image(status.getUser().getProfileImageURL())),
 				new Label(status.getUser().getName()));
 		twitter_post_top_bar.setId("twitter_post_top_bar");
+		
+		//CENTER
+		VBox twitter_post_center_container = new VBox();
+		twitter_post_center_container.setId("twitter_post_center_container");
 		Text post_text = new Text(status.getText());
 		post_text.setId("post_texto");
 		post_text.setWrappingWidth(POST_WIDTH);
-		twitter_post_pane.getChildren().addAll(twitter_post_top_bar, post_text);
+		
+		MediaEntity[] media = status.getMediaEntities(); //get the media entities from the status
+		for(MediaEntity m : media){ //search trough your entities
+			ImageView img = new ImageView(new Image(m.getMediaURL()));
+			img.setFitWidth((window_pane.getWidth() * 0.38));
+			img.setFitHeight((window_pane.getWidth() * 0.38));
+			twitter_post_center_container.getChildren().add(img);
+		}
+		
+		twitter_post_center_container.getChildren().addAll(post_text);
+		// BOTTOM BAR
+		HBox twitter_post_bottom_bar = new HBox();
+		twitter_post_bottom_bar.setId("twitter_post_bottom_bar");
+		
+		Label favourites_label = new Label(status.getFavoriteCount() + "");
+		favourites_label.setId("favourites_label");
+		Label retweets_label = new Label(status.getRetweetCount() + "");
+		retweets_label.setId("retweets_label");
+
+		twitter_post_bottom_bar.getChildren().addAll(favourites_label, retweets_label);
+		twitter_post_pane.setTop(twitter_post_top_bar);
+		twitter_post_pane.setCenter(twitter_post_center_container);
+		twitter_post_pane.setBottom(twitter_post_bottom_bar);
 		return twitter_post_pane;
 	}
 
@@ -661,18 +687,18 @@ public class MainWindow extends Application {
 		Text post_text = new Text(post.getMessage());
 		post_text.setId("post_texto");
 		post_text.setWrappingWidth(POST_WIDTH);
-		//BOTTOM BAR
+		// BOTTOM BAR
 		HBox facebook_post_bottom_bar = new HBox();
 		facebook_post_bottom_bar.setId("facebook_post_bottom_bar");
-		
+
 		Label likes_label = new Label(post.getLikesCount().toString());
 		likes_label.setId("likes_label");
 		Label comments_label = new Label(post.getCommentsCount().toString());
 		comments_label.setId("comments_label");
 		Label shares_label = new Label(post.getSharesCount().toString());
 		shares_label.setId("shares_label");
-		
-		facebook_post_bottom_bar.getChildren().addAll(likes_label, comments_label,shares_label);
+
+		facebook_post_bottom_bar.getChildren().addAll(likes_label, comments_label, shares_label);
 		facebook_post_pane.setTop(facebook_post_top_bar);
 		facebook_post_pane.setCenter(post_text);
 		facebook_post_pane.setBottom(facebook_post_bottom_bar);
@@ -719,9 +745,10 @@ public class MainWindow extends Application {
 		facebook_app = new FacebookApp();
 		email_app = new EmailApp();
 	}
-	
+
 	/**
-	 *This method is responsible for getting the the twitters timeline without a filter
+	 * This method is responsible for getting the the twitters timeline without a
+	 * filter
 	 */
 	private void getTwitterTimeline() {
 		/*
@@ -756,8 +783,10 @@ public class MainWindow extends Application {
 		});
 		twitterThread.restart();
 	}
+
 	/**
 	 * This method is responsible for getting the twitters timeline with a filter
+	 * 
 	 * @param filter
 	 */
 	private void getTwitterTimeline(String filter) {
@@ -791,8 +820,10 @@ public class MainWindow extends Application {
 		});
 		twitterThread.restart();
 	}
+
 	/**
-	 * This method is responsible for getting the the facebooks timeline without a filter.
+	 * This method is responsible for getting the the facebooks timeline without a
+	 * filter.
 	 */
 	private void getFacebookTimeline() {
 		/*
@@ -828,12 +859,15 @@ public class MainWindow extends Application {
 		});
 		facebookThread.restart();
 	}
+
 	/**
-	 * This method is responsible for getting the the facebooks timeline with a filter
+	 * This method is responsible for getting the the facebooks timeline with a
+	 * filter
+	 * 
 	 * @param filter
 	 */
 	private void getFacebookTimeline(String filter) {
-		
+
 		facebookThread = new Service<Void>() {
 			@Override
 			protected Task<Void> createTask() {
