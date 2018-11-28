@@ -42,7 +42,7 @@ public class FacebookApp {
 		String accessToken = "EAAQSXbaizwwBAK2M96ZBGFaYFw7Ez8yaZAM6Ap9ZB1Lrou1kKi2PoGE1E96CUNE4pVokBfhAgZCIucDlb7r9J45O9mCkZAxZAZA9GIvWE27ZB8wtS6CUhIwjcoPVNGaChu87YH04taeksWTcmHuBKHI2M6oZAOR6EdYWTn1ka791HFwZDZD";
 		fbClient = new DefaultFacebookClient(accessToken);
 
-		me = fbClient.fetchObject("me", User.class, Parameter.with("fields", "picture"));
+		me = fbClient.fetchObject("me", User.class, Parameter.with("fields", "picture, name"));
 	}
 
 	/**

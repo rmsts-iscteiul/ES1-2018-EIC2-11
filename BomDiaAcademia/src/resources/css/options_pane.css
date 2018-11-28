@@ -1,0 +1,44 @@
+#options_pane {
+	-fx-background-color: transparent;
+}
+
+#options_content_pane {
+	-fx-background-color: #f2f2f2;
+	-fx-background-radius: 10.0px;
+	-fx-padding: 4.0px;
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+}
+
+#users_pane {
+	-fx-background-color: transparent;
+	-fx-hgap: 10.0px;
+}
+
+#add_user_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/add_gray_64.png";
+    -fx-content-display: top;
+}
+
+#settings_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/settings_gray_24.png";
+}
+
+#dark_theme_toggle_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/toggle_off_gray_24.png";
+}
+
+#dark_theme_toggle_button:selected {
+    -fx-graphic: "/resources/icons/toggle_on_gray_24.png";
+}
+
+#about_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/about_gray_24.png";
+}

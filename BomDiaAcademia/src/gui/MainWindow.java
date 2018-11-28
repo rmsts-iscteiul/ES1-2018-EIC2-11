@@ -23,6 +23,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
@@ -33,6 +34,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
@@ -55,10 +57,12 @@ public class MainWindow extends Application {
 	private BorderPane window_pane;
 	private HBox apps_pane;
 	private HBox window_top_bar;
+	private BorderPane options_pane = null;
 
 	private VBox twitter_app_pane = null;
 	private VBox facebook_app_pane = null;
 	private VBox email_app_pane = null;
+	
 
 	private TwitterApp twitter_app;
 	private FacebookApp facebook_app;
@@ -103,6 +107,8 @@ public class MainWindow extends Application {
 			buildScene();
 			initApps();
 			startStage();
+			
+			System.out.println("W -> " + window_pane.getWidth() + "\n H -> " + window_pane.getHeight());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -154,6 +160,7 @@ public class MainWindow extends Application {
 		scene.getStylesheets().add("/resources/css/twitter_app.css");
 		scene.getStylesheets().add("/resources/css/facebook_app.css");
 		scene.getStylesheets().add("/resources/css/email_app.css");
+		scene.getStylesheets().add("/resources/css/options_pane.css");
 		scene.setFill(null);
 	}
 
@@ -303,9 +310,88 @@ public class MainWindow extends Application {
 				main_stage.setIconified(true);
 			}
 		});
-		window_top_bar_buttons_container.getChildren().addAll(minimize_button, close_button);
+		Button options_button = new Button();
+		options_button.setId("window_top_bar_options_button");
+		options_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				if (options_pane == null) {
+					buildOptionsPane();
+				} else {
+					if (!options_pane.isVisible()) {
+						options_pane.setVisible(true);
+					} else {
+						options_pane.setVisible(false);
+					}
+				}
+			}
+		});
+		window_top_bar_buttons_container.getChildren().addAll(options_button, minimize_button, close_button);
 		window_top_bar.getChildren().addAll(createSearch(), window_top_bar_buttons_container);
 		window_pane.setTop(window_top_bar);
+	}
+	
+	/**
+	 * This method is used to build the options pane (options_root_pane) which
+	 * contains the users info, settings and the about button
+	 */
+	private void buildOptionsPane() {
+		
+		options_pane = new BorderPane();
+		options_pane.setId("options_pane");
+		options_pane.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				options_pane.setVisible(false);
+			}
+		});
+		options_pane.setPrefSize(300, 200);
+		options_pane.setMinSize(300, 200);
+		options_pane.setLayoutX(window_pane.getWidth() - 360);
+		options_pane.setLayoutY(window_top_bar.getHeight());
+		
+		BorderPane options_content_pane = new BorderPane();
+		options_content_pane.setId("options_content_pane");
+		
+		//Users pane
+		TilePane users_pane = new TilePane();
+		users_pane.setId("users_pane");
+		users_pane.setPrefColumns(5);
+	    Button add_user_button = new Button("Add user");
+	    add_user_button.setId("add_user_button");
+	    add_user_button.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				
+			}
+		});
+	    users_pane.getChildren().add(add_user_button);
+	    options_content_pane.setCenter(users_pane);
+	    
+		VBox bottom_options_container = new VBox();
+		bottom_options_container.setId("bottom_options_container");
+		ToggleButton dark_theme_toggle_button = new ToggleButton("Dark Theme");
+		dark_theme_toggle_button.setId("dark_theme_toggle_button");
+		dark_theme_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				if (dark_theme_toggle_button.isSelected()) {
+					window_pane.setId("window_pane_dt");
+				} else {
+					window_pane.setId("window_pane");
+				}
+			}
+		});
+		Button settings_button = new Button("Settings");
+		settings_button.setId("settings_button");
+		Button about_button = new Button("About");
+		about_button.setId("about_button");
+		bottom_options_container.getChildren().addAll(new Separator(), dark_theme_toggle_button, settings_button,
+				about_button);
+		options_content_pane.setBottom(bottom_options_container);
+		
+		options_pane.setCenter(options_content_pane);
+		window_pane.getChildren().add(options_pane);
 	}
 
 	/**
@@ -635,27 +721,27 @@ public class MainWindow extends Application {
 		HBox twitter_post_top_bar = new HBox(new ImageView(new Image(status.getUser().getProfileImageURL())),
 				new Label(status.getUser().getName()));
 		twitter_post_top_bar.setId("twitter_post_top_bar");
-		
-		//CENTER
+
+		// CENTER
 		VBox twitter_post_center_container = new VBox();
 		twitter_post_center_container.setId("twitter_post_center_container");
 		Text post_text = new Text(status.getText());
 		post_text.setId("post_texto");
 		post_text.setWrappingWidth(POST_WIDTH);
-		
-		MediaEntity[] media = status.getMediaEntities(); //get the media entities from the status
-		for(MediaEntity m : media){ //search trough your entities
+
+		MediaEntity[] media = status.getMediaEntities(); // get the media entities from the status
+		for (MediaEntity m : media) { // search trough your entities
 			ImageView img = new ImageView(new Image(m.getMediaURL()));
 			img.setFitWidth((window_pane.getWidth() * 0.38));
 			img.setFitHeight((window_pane.getWidth() * 0.38));
 			twitter_post_center_container.getChildren().add(img);
 		}
-		
+
 		twitter_post_center_container.getChildren().addAll(post_text);
 		// BOTTOM BAR
 		HBox twitter_post_bottom_bar = new HBox();
 		twitter_post_bottom_bar.setId("twitter_post_bottom_bar");
-		
+
 		Label favourites_label = new Label(status.getFavoriteCount() + "");
 		favourites_label.setId("favourites_label");
 		Label retweets_label = new Label(status.getRetweetCount() + "");

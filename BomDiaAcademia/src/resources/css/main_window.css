@@ -4,10 +4,17 @@
 
 #window_root_pane {
 	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
 }
 
 #window_pane {
 	-fx-background-color: #f4f4f4;
+	-fx-background-radius: 0.0px 10.0px 10.0px 0.0px;
+	-fx-alignment: center;
+}
+
+#window_pane_dt {
+	-fx-background-color: #202020;
 	-fx-background-radius: 0.0px 10.0px 10.0px 0.0px;
 	-fx-alignment: center;
 }
@@ -17,7 +24,7 @@
 }
 
 #window_left_menu {
-	-fx-background-color: #202020;
+	-fx-background-color: rgba(32.0,32.0,32.0,0.6);
 	-fx-background-radius: 10.0px 0.0px 0.0px 10.0px;
 	-fx-padding: 50.0px 0.0px 0.0px 0.0px;
 	-fx-spacing: 50.0px;
@@ -89,6 +96,18 @@
 	-fx-graphic: "/resources/icons/exit_window_white_14.png";
 }
 
+#window_top_bar_options_button {
+	-fx-background-color: transparent;
+	-fx-background-radius: 0.0px;
+	-fx-graphic: "/resources/icons/expand_down_gray_14.png";
+}
+
+#window_top_bar_options_button:hover {
+	-fx-background-color: #202020;
+	-fx-background-radius: 0.0px;
+	-fx-graphic: "/resources/icons/expand_down_white_14.png";
+}
+
 #window_top_bar_minimize_button {
 	-fx-background-color: transparent;
     -fx-border-style: none;
@@ -104,7 +123,7 @@
 
 #window_top_bar_search_container {
 	-fx-padding: 4.0px 0.0px 4.0px 0.0px;
-	-fx-hgap: 10px;
+	-fx-hgap: 10.0px;
 }
 #search_pane {
 	-fx-background-color: #ffffff;
@@ -115,12 +134,12 @@
 #app_check_pane {
 	-fx-background-color: transparent;
 	-fx-border-style: none;
-	-fx-spacing: 4px;
+	-fx-spacing: 4.0px;
 }
 
 #search_facebook_toggle_button {
     -fx-background-color: transparent;
-	-fx-background-radius: 50px;
+	-fx-background-radius: 50.0px;
     -fx-graphic: "/resources/icons/facebook_gray_14.png";
     -fx-cursor: hand;
 }
@@ -132,7 +151,7 @@
 
 #search_twitter_toggle_button {
     -fx-background-color: transparent;
-    -fx-background-radius: 50px;
+    -fx-background-radius: 50.0px;
     -fx-graphic: "/resources/icons/twitter_gray_14.png";
     -fx-cursor: hand;
 }
@@ -144,7 +163,7 @@
 
 #search_email_toggle_button {
     -fx-background-color: transparent;
-    -fx-background-radius: 50px;
+    -fx-background-radius: 50.0px;
     -fx-graphic: "/resources/icons/email_gray_14.png";
     -fx-cursor: hand;
 }
@@ -169,5 +188,5 @@
 #apps_pane {
 	-fx-background-color: transparent;
 	-fx-alignment: center;
-	-fx-spacing: 20px;
+	-fx-spacing: 20.0px;
 }
