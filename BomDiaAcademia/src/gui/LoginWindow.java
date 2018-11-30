@@ -33,12 +33,12 @@ public class LoginWindow {
 
 	private double xOffset, yOffset;
 
-	public LoginWindow(Stage main_stage, PopUpType type, EmailApp email_app) {
+	public LoginWindow(Stage main_stage, EmailApp email_app) {
 		this.email_app = email_app;
 		configurePopUpStage(main_stage);
 		createPopUpRootPane();
 		buildPopUpWindowRootPane();
-		buildPopUpContent(type);
+		buildPopUpContent();
 		buildPopUpScene();
 		startPopUpStage();
 	}
@@ -125,7 +125,7 @@ public class LoginWindow {
 		pop_up_window_root_pane.setTop(pop_up_window_top_bar);
 	}
 
-	private void buildPopUpContent(PopUpType type) {
+	private void buildPopUpContent() {
 		FlowPane login_container = new FlowPane(Orientation.VERTICAL);
 		login_container.setId("login_container");
 		

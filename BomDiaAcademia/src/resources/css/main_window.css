@@ -38,6 +38,8 @@
 }
 
 #left_menu_facebook_toggle_button:hover {
+	-fx-scale-x: 1.2;
+	-fx-scale-y: 1.2;
 	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
 }
 
@@ -53,6 +55,8 @@
 }
 
 #left_menu_twitter_toggle_button:hover {
+	-fx-scale-x: 1.2;
+	-fx-scale-y: 1.2;
 	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
 }
 
@@ -68,11 +72,30 @@
 }
 
 #left_menu_email_toggle_button:hover {
+	-fx-scale-x: 1.2;
+	-fx-scale-y: 1.2;
 	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
 }
 
 #left_menu_email_toggle_button:selected {
     -fx-graphic: "/resources/icons/email_red_32.png";
+}
+
+#left_menu_combine_apps_toggle_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/combine_apps_white_32.png";
+    -fx-cursor: hand;
+}
+
+#left_menu_combine_apps_toggle_button:hover {
+	-fx-scale-x: 1.2;
+	-fx-scale-y: 1.2;
+	-fx-effect: dropshadow(gaussian, #ffffff, 20.0, 0.5, 0.0, 0.0);
+}
+
+#left_menu_combine_apps_toggle_button:selected {
+	 -fx-graphic: "/resources/icons/combine_apps_white_32.png";
 }
 
 #window_top_bar {
@@ -144,6 +167,11 @@
     -fx-cursor: hand;
 }
 
+#search_facebook_toggle_button:hover {
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+}
+
 #search_facebook_toggle_button:selected {
     -fx-background-color: #3b5998;
     -fx-graphic: "/resources/icons/facebook_white_14.png";
@@ -156,6 +184,11 @@
     -fx-cursor: hand;
 }
 
+#search_twitter_toggle_button:hover {
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+}
+
 #search_twitter_toggle_button:selected {
     -fx-background-color: #33ccff;
     -fx-graphic: "/resources/icons/twitter_white_14.png";
@@ -166,6 +199,11 @@
     -fx-background-radius: 50.0px;
     -fx-graphic: "/resources/icons/email_gray_14.png";
     -fx-cursor: hand;
+}
+
+#search_email_toggle_button:hover {
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
 }
 
 #search_email_toggle_button:selected {

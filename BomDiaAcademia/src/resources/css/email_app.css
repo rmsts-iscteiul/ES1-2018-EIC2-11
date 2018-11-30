@@ -116,6 +116,7 @@
 #email_post_pane{
 	-fx-background-color: #ffffff;
 	-fx-background-radius: 10px;
+	-fx-padding: 4px;
 }
 
 #email_post_top_bar {

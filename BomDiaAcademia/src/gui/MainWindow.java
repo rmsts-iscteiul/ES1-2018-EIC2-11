@@ -1,6 +1,5 @@
 package gui;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.mail.Message;
@@ -37,7 +36,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import twitter4j.MediaEntity;
@@ -62,7 +60,6 @@ public class MainWindow extends Application {
 	private VBox twitter_app_pane = null;
 	private VBox facebook_app_pane = null;
 	private VBox email_app_pane = null;
-	
 
 	private TwitterApp twitter_app;
 	private FacebookApp facebook_app;
@@ -107,7 +104,7 @@ public class MainWindow extends Application {
 			buildScene();
 			initApps();
 			startStage();
-			
+
 			System.out.println("W -> " + window_pane.getWidth() + "\n H -> " + window_pane.getHeight());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -237,9 +234,11 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(ActionEvent actionEvent) {
 				if (email_app_pane == null) {
-					new LoginWindow(main_stage, PopUpType.WARNING, email_app);
-					buildEmailApp(email_app.getTimeline());
-					apps_pane.getChildren().add(email_app_pane);
+					new LoginWindow(main_stage, email_app);
+					if( !email_app.getUser().equals(null)) {
+						buildEmailApp(email_app.getTimeline());
+						apps_pane.getChildren().add(email_app_pane);
+					}
 				}
 				if (left_menu_email_toggle_button.isSelected()) {
 					email_app_pane.setVisible(true);
@@ -248,8 +247,19 @@ public class MainWindow extends Application {
 				}
 			}
 		});
+
+		ToggleButton left_menu_combine_apps_toggle_button = new ToggleButton();
+		left_menu_combine_apps_toggle_button.setId("left_menu_combine_apps_toggle_button");
+		left_menu_combine_apps_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent actionEvent) {
+
+			}
+		});
+
 		window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button, left_menu_twitter_toggle_button,
-				left_menu_email_toggle_button);
+				left_menu_email_toggle_button, left_menu_combine_apps_toggle_button);
 		window_root_pane.getChildren().add(window_left_menu);
 	}
 
@@ -330,13 +340,13 @@ public class MainWindow extends Application {
 		window_top_bar.getChildren().addAll(createSearch(), window_top_bar_buttons_container);
 		window_pane.setTop(window_top_bar);
 	}
-	
+
 	/**
 	 * This method is used to build the options pane (options_root_pane) which
 	 * contains the users info, settings and the about button
 	 */
 	private void buildOptionsPane() {
-		
+
 		options_pane = new BorderPane();
 		options_pane.setId("options_pane");
 		options_pane.setOnMouseExited(new EventHandler<MouseEvent>() {
@@ -349,25 +359,25 @@ public class MainWindow extends Application {
 		options_pane.setMinSize(300, 200);
 		options_pane.setLayoutX(window_pane.getWidth() - 360);
 		options_pane.setLayoutY(window_top_bar.getHeight());
-		
+
 		BorderPane options_content_pane = new BorderPane();
 		options_content_pane.setId("options_content_pane");
-		
-		//Users pane
+
+		// Users pane
 		TilePane users_pane = new TilePane();
 		users_pane.setId("users_pane");
 		users_pane.setPrefColumns(5);
-	    Button add_user_button = new Button("Add user");
-	    add_user_button.setId("add_user_button");
-	    add_user_button.setOnAction(new EventHandler<ActionEvent>() {
+		Button add_user_button = new Button("Add user");
+		add_user_button.setId("add_user_button");
+		add_user_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				
+
 			}
 		});
-	    users_pane.getChildren().add(add_user_button);
-	    options_content_pane.setCenter(users_pane);
-	    
+		users_pane.getChildren().add(add_user_button);
+		options_content_pane.setCenter(users_pane);
+
 		VBox bottom_options_container = new VBox();
 		bottom_options_container.setId("bottom_options_container");
 		ToggleButton dark_theme_toggle_button = new ToggleButton("Dark Theme");
@@ -389,7 +399,7 @@ public class MainWindow extends Application {
 		bottom_options_container.getChildren().addAll(new Separator(), dark_theme_toggle_button, settings_button,
 				about_button);
 		options_content_pane.setBottom(bottom_options_container);
-		
+
 		options_pane.setCenter(options_content_pane);
 		window_pane.getChildren().add(options_pane);
 	}
@@ -798,28 +808,29 @@ public class MainWindow extends Application {
 	 * @return email_post_pane
 	 * @throws Exception
 	 */
-	private FlowPane newEmailPost(Message message) throws Exception {
-		FlowPane email_post_pane = new FlowPane(Orientation.VERTICAL);
-		try {
-			email_post_pane.setId("email_post_pane");
-			email_post_pane.setPrefWidth(POST_WIDTH);
-
-			HBox email_post_top_bar;
-			email_post_top_bar = new HBox(new Label(""));
-			email_post_top_bar.setId("email_post_top_bar");
-
-			WebView post_text = new WebView();
-			StringBuilder sb = new StringBuilder();
-			sb.append(email_app.writePart(message));
-			post_text.getEngine().loadContent(sb.toString());
-			// Text post_text = new Text();
-			post_text.setId("post_text");
-			// post_text.setWrappingWidth(POST_WIDTH);
-
-			email_post_pane.getChildren().addAll(email_post_top_bar, post_text);
-		} catch (MessagingException | IOException e) {
-			e.printStackTrace();
-		}
+	private BorderPane newEmailPost(Message message) throws Exception {
+		BorderPane email_post_pane = new BorderPane();
+		email_post_pane.setId("email_post_pane");
+		email_post_pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				if (mouseEvent.getClickCount() == 2 && !mouseEvent.isConsumed()) {
+					mouseEvent.consume();
+					try {
+						new EmailPostWindow(main_stage, email_app, message);
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		email_post_pane.setPrefWidth(POST_WIDTH);
+		
+		//TOP
+		String[] email_envelope = email_app.writeEnvelope(message);
+		email_post_pane.setTop(new HBox(new Label(email_envelope[0])));
+		//BOTTOM
+		email_post_pane.setBottom(new HBox(new Label(email_envelope[2]), new Label(message.getSentDate().toString())));
 		return email_post_pane;
 	}
 

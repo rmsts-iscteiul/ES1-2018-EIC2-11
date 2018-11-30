@@ -1,6 +1,6 @@
 package apps;
 
-import java.io.InputStream;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -26,11 +26,13 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 public class EmailApp {
-	
+
 	private String user;
 	public String password;
 
 	private Folder emailFolder;
+
+	private final static String TEMP_DIRECTORY = "C:/temp";
 
 	public List<Message> getTimeline() {
 		List<Message> emails = new LinkedList<Message>();
@@ -57,11 +59,12 @@ public class EmailApp {
 			emailFolder.open(Folder.READ_ONLY);
 
 			/**
-			 * create the messages array, retrieves the emails from the folder and places them on the messages` array
+			 * create the messages array, retrieves the emails from the folder and places
+			 * them on the messages` array
 			 */
 			Message[] messages = emailFolder.getMessages();
 			System.out.println("messages.length---" + messages.length);
-			for (int i = messages.length-1; i != messages.length-21; i--) {
+			for (int i = messages.length - 1; i != messages.length - 21; i--) {
 				Message message = messages[i];
 				emails.add(message);
 			}
@@ -90,7 +93,8 @@ public class EmailApp {
 		props.put("mail.smtp.port", "587");
 
 		/**
-		 * This session object requires another connection because we are connection to another server who forwards the emails
+		 * This session object requires another connection because we are connection to
+		 * another server who forwards the emails
 		 */
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
@@ -184,89 +188,79 @@ public class EmailApp {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/*
 	 * This method checks for content-type based on which, it processes and fetches
 	 * the content of the message
 	 */
-	public String writePart(Part p) throws Exception {
-		String text = "";
-		if (p instanceof Message) {
-			text = writeEnvelope((Message) p);
-		}
+	public String writePart(Part message) throws Exception {
+		System.out.println(message.getDescription());
+		System.out.println(message.toString());
+		String messageContent = "";
+		String contentType = message.getContentType();
 
-		// check if the content is plain text
-		if (p.isMimeType("text/plain")) {
-			System.out.println("This is plain text");
-			System.out.println("---------------------------");
-			System.out.println((String) p.getContent());
-			text += (String) p.getContent();
-		}
-		// check if the content has attachment
-		else if (p.isMimeType("multipart/*")) {
-//			System.out.println("This is a Multipart");
-//			System.out.println("---------------------------");
-//			Multipart mp = (Multipart) p.getContent();
-//			int count = mp.getCount();
-//			for (int i = 0; i < count; i++)
-//				writePart(mp.getBodyPart(i));
-		}
-		// check if the content is a nested message
-		else if (p.isMimeType("message/rfc822")) {
-//			System.out.println("This is a Nested Message");
-//			System.out.println("---------------------------");
-			writePart((Part) p.getContent());
-		}
-		// check if the content is an inline image
-		else if (p.isMimeType("image/jpeg")) {
-			// TO-DO
-		} else if (p.getContentType().contains("image/")) {
-			// TO-DO
-		} else {
-			Object o = p.getContent();
-			if (o instanceof String) {
-//				System.out.println("This is a string");
-//				System.out.println("---------------------------");
-				text += (String) o;
-			} else if (o instanceof InputStream) {
-				System.out.println("This is just an input stream");
-				System.out.println("---------------------------");
-				InputStream is = (InputStream) o;
-				is = (InputStream) o;
-				int c;
-				while ((c = is.read()) != -1)
-					text += c;
-			} else {
-//				System.out.println("This is an unknown type");
-//				System.out.println("---------------------------");
-				text += o;
+		// store attachment file name, separated by comma
+		String attachFiles = "";
+
+		if (contentType.contains("multipart")) {
+			// content may contain attachments
+			Multipart multiPart = (Multipart) message.getContent();
+			int numberOfParts = multiPart.getCount();
+			for (int partCount = 0; partCount < numberOfParts; partCount++) {
+				MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
+				if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+					// this part is attachment
+					String fileName = part.getFileName();
+					attachFiles += fileName + ", ";
+					File dir = new File(TEMP_DIRECTORY + File.separator + message.toString());
+					if (!dir.exists()) {
+						dir.mkdirs();
+					}
+					part.saveFile(dir + File.separator + fileName);
+				} else {
+					// this part may be the message content
+					messageContent = part.getContent().toString();
+				}
+			}
+
+			if (attachFiles.length() > 1) {
+				attachFiles = attachFiles.substring(0, attachFiles.length() - 2);
+			}
+		} else if (contentType.contains("text/plain") || contentType.contains("text/html")) {
+			Object content = message.getContent();
+			if (content != null) {
+				messageContent = content.toString();
 			}
 		}
-		return text;
+		return messageContent;
 	}
 
 	/*
 	 * This method would print FROM,TO and SUBJECT of the message
 	 */
-	private String writeEnvelope(Message m) throws Exception {
-		String email_envelope = "";
+	public String[] writeEnvelope(Message m) throws Exception {
+		String[] email_envelope = new String[3];
 		Address[] a;
+		String aux = "";
 		// FROM
 		if ((a = m.getFrom()) != null) {
-			email_envelope += "FROM: ";
 			for (int j = 0; j < a.length; j++)
-				email_envelope += a[j].toString();
+				aux += a[j].toString();
 		}
+		email_envelope[0] = aux;
+		aux = "";
 		// TO
 		if ((a = m.getRecipients(Message.RecipientType.TO)) != null) {
-			email_envelope += "\n TO: ";
 			for (int j = 0; j < a.length; j++)
-				email_envelope += a[j].toString();
+				aux += a[j].toString();
 		}
+		email_envelope[1] = aux;
+		aux = "";
 		// SUBJECT
 		if (m.getSubject() != null) {
-			email_envelope += "\n SUBJECT: " + m.getSubject();
+			aux += m.getSubject();
 		}
+		email_envelope[2] = aux;
 		return email_envelope;
 
 	}
@@ -288,11 +282,11 @@ public class EmailApp {
 	public Folder getEmailFolder() {
 		return emailFolder;
 	}
-	
+
 	public void setUser(String user) {
 		this.user = user;
 	}
-	
+
 	public void setPassword(String password) {
 		this.password = password;
 	}

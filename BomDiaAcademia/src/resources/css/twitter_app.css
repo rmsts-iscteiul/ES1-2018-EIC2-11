@@ -109,13 +109,14 @@
 
 #twitter_feed {
 	-fx-background-color: transparent;
-	-fx-spacing: 10px;
+	-fx-spacing: 10.0px;
 	-fx-alignment: top-center;
 }
 
-#twitter_post_pane{
+#twitter_post_pane {
 	-fx-background-color: #ffffff;
-	-fx-background-radius: 10px;
+	-fx-background-radius: 10.0px;
+	-fx-padding: 4.0px;
 }
 
 #twitter_post_top_bar {
@@ -123,7 +124,7 @@
 }
 
 #twitter_post_bottom_bar {
-	-fx-spacing: 20px;
+	-fx-spacing: 20.0px;
 }
 
 #favourites_label {
