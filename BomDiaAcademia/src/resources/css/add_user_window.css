@@ -1,0 +1,110 @@
+#add_user_root_pane {
+	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+}
+
+#add_user_window_root_pane {
+	-fx-background-color: #f4f4f4;
+	-fx-background-radius: 10.0px;
+	-fx-alignment: center;
+}
+
+#add_user_shadow_gap {
+	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
+}
+
+#add_user_window_top_bar {
+	-fx-background-color: #f4f4f4;
+	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
+	-fx-alignment: top-right;
+}
+
+#add_user_window_top_bar_buttons_container {
+	-fx-alignment: top-right;
+}
+
+#add_user_window_top_bar_close_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/exit_window_gray_14.png";
+}
+
+#add_user_window_top_bar_close_button:hover {
+	-fx-background-color: #ff3b30;
+	-fx-background-radius: 0.0px 10.0px 0.0px 0.0px;
+	-fx-graphic: "/resources/icons/exit_window_white_14.png";
+}
+
+#add_user_container {
+	-fx-padding: 20.0px;
+	-fx-alignment: top-center;
+	-fx-spacing: 50.0px;
+	-fx-vgap: 20.0px;
+}
+
+#add_user_welcome_container {
+	
+}
+
+#add_user_field_container {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 50.0px;
+	-fx-padding: 4.0px 2.0px 4.0px 4.0px;
+}
+
+#add_user_field_container:hover {
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+}
+
+#add_user_password_field_container {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 50.0px;
+	-fx-padding: 4.0px 2.0px 4.0px 4.0px;
+}
+
+#add_user_wrong_password_field_container {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 50.0px;
+	-fx-padding: 4.0px 2.0px 4.0px 4.0px;
+	-fx-border-radius: 50.0px;
+	-fx-border-color: #ff3b30;
+}
+
+#add_user_password_field_container:hover, #add_user_wrong_password_field_container:hover{
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+}
+
+#name_text_field {
+	-fx-background-color: transparent;
+	-fx-border-style: none;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+}
+
+#password_field {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 50.0px;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+}
+
+#password_icon {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+	-fx-graphic: "/resources/icons/password_gray_14.png";
+}
+
+#add_user_create_account_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+}
+
+#add_user_create_account_button_container {
+	-fx-alignment: center;
+	-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #3b5998, #ff3b30);
+	-fx-background-radius: 50.0px;
+	-fx-padding: 4.0px 2.0px 4.0px 4.0px;
+	-fx-cursor: hand;
+}
+
+#add_user_create_account_button_container:hover {
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+}

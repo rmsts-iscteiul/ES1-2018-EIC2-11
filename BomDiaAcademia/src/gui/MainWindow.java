@@ -373,7 +373,7 @@ public class MainWindow extends Application {
 		add_user_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-
+				new AddUserWindow(main_stage);
 			}
 		});
 		users_pane.getChildren().add(add_user_button);
@@ -841,8 +841,8 @@ public class MainWindow extends Application {
 	 * This method is used to initialize the Facebook, Twitter and Email Apps.
 	 */
 	private void initApps() {
-		twitter_app = new TwitterApp();
-		facebook_app = new FacebookApp();
+//		twitter_app = new TwitterApp();
+//		facebook_app = new FacebookApp();
 		email_app = new EmailApp();
 	}
 

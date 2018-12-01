@@ -19,6 +19,7 @@
     -fx-border-style: none;
     -fx-graphic: "/resources/icons/add_gray_64.png";
     -fx-content-display: top;
+    -fx-cursor: hand;
 }
 
 #settings_button {
