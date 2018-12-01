@@ -109,5 +109,8 @@ public class TwitterApp {
 	public String getUser() {
 		return user;
 	}
+	public List<Status> getStatuses(){
+		return statuses;
+	}
 
 }
