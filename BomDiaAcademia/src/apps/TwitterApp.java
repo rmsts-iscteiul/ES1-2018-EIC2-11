@@ -23,13 +23,15 @@ public class TwitterApp {
 	 * value of "ISCTEIUL" (default value).
 	 */
 	private String user = "ISCTEIUL";
-
+	
 	/**
 	 * twitter refers to the twitter object from the twitterfactory that uses an
 	 * ConsumerKey and a Access Token.
 	 */
 	private Twitter twitter;
 
+	private String owner = "";
+	
 	/**
 	 * Deprecated list of a users tweets
 	 */
@@ -47,9 +49,20 @@ public class TwitterApp {
 				.setOAuthAccessTokenSecret("onDIulYjcQCvb3rVk6N3cYp0DxytW0ew86fM2Kyp8JQOj");
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		twitter = tf.getInstance();
-
+		try {
+			owner = twitter.getScreenName();
+		} catch (IllegalStateException | TwitterException e) {
+			e.printStackTrace();
+		}
 	}
-
+	/**
+	 * timeline of the user that is logged-in
+	 * @return the timeline of the user that is logged-in
+	 */
+	public List<Status> homepage(){
+		return getTimeline(owner);
+	}
+	
 	/**
 	 * Gets the most recent 20 posts from a users timeline.
 	 * 
@@ -102,6 +115,20 @@ public class TwitterApp {
 	}
 
 	/**
+	 * Publishes a tweet on the logged users timeline and redirects its user to his homepage
+	 * @param text - Tweets text
+	 */
+	public List<Status> tweet(Status text){
+		try {
+			twitter.updateStatus(text + "\n" + "\n" + "-Tweet sent through BomDiaAcademia Application <3");
+			return homepage();
+		} catch (TwitterException e) {
+			System.out.println("CHECK CONNECTION - Tweet was possibly not published.");
+			return statuses;
+		}
+	}
+	
+	/**
 	 * Returns the user that is being displayed.
 	 * 
 	 * @return user(String) - (Getter) gets the user attribute.
@@ -109,8 +136,21 @@ public class TwitterApp {
 	public String getUser() {
 		return user;
 	}
-	public List<Status> getStatuses(){
-		return statuses;
+	
+	/**
+	 * Changes users page
+	 * @param user
+	 */
+	public void setUser(String user) {
+		this.user = user;
+	}
+	
+	/**
+	 * User that is logged-in
+	 * @return the "@"name of the user that is logged-in
+	 */
+	public String getOwner(){
+		return owner;
 	}
 
 }
