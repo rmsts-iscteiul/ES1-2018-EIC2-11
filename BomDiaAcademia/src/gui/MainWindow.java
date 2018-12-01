@@ -236,15 +236,18 @@ public class MainWindow extends Application {
 			public void handle(ActionEvent actionEvent) {
 				if (email_app_pane == null) {
 					new LoginWindow(main_stage, email_app);
-					if( !email_app.getUser().equals(null)) {
+					if( !(email_app.getUser() == null)) {
 						buildEmailApp(email_app.getTimeline());
 						apps_pane.getChildren().add(email_app_pane);
+					}else {
+						left_menu_email_toggle_button.setSelected(false);
 					}
-				}
-				if (left_menu_email_toggle_button.isSelected()) {
-					email_app_pane.setVisible(true);
-				} else {
-					email_app_pane.setVisible(false);
+				}else {
+					if (left_menu_email_toggle_button.isSelected()) {
+						email_app_pane.setVisible(true);
+					} else {
+						email_app_pane.setVisible(false);
+					}
 				}
 			}
 		});

@@ -1,12 +1,22 @@
 #email_post_root_pane {
 	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
-}
-
-#email_post_root_pane {
 	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
 }
 
 #email_post_window_root_pane {
+	-fx-background-color: transparent;
+	-fx-background-radius: 10.0px;
+	-fx-alignment: top-center;
+	-fx-spacing: 20.0px;
+}
+
+#view_email_post_window_root_pane {
+	-fx-background-color: #f4f4f4;
+	-fx-background-radius: 10.0px;
+	-fx-alignment: center;
+}
+
+#write_email_post_window_root_pane {
 	-fx-background-color: #f4f4f4;
 	-fx-background-radius: 10.0px;
 	-fx-alignment: center;
@@ -16,8 +26,14 @@
 	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
 }
 
-#email_post_window_top_bar {
+#view_email_post_window_top_bar {
 	-fx-background-color: #ff3b30;
+	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
+	-fx-alignment: center;
+}
+
+#write_email_post_window_top_bar {
+	-fx-background-color: #f2f2f2;
 	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
 	-fx-alignment: center;
 }
@@ -25,6 +41,10 @@
 #email_post_window_top_bar_buttons_container {
 	-fx-alignment: center;
 	-fx-padding: 0.0px 0.0px 0.0px 4.0px;
+}
+
+#view_email_post_top_container {
+	-fx-alignment: center-right ;
 }
 
 #subject_label {
@@ -44,11 +64,54 @@
 	-fx-background-radius: 0.0px 10.0px 0.0px 0.0px;
 }
 
+#view_email_post_container {
+	
+}
+
+#write_email_post_container {
+	-fx-padding: 10.0px;
+	-fx-alignment: top-center;
+	-fx-spacing: 10.0px;
+	-fx-vgap: 10.0px;
+}
+
+#view_fill_bottom {
+	-fx-background-color: #ffffff;
+}
+
 #reply_button {
 	-fx-background-color: transparent;
     -fx-border-style: none;
     -fx-graphic: "/resources/icons/reply_gray_24.png";
     -fx-cursor: hand;
+}
+
+#forward_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/reply_gray_24.png";
+    -fx-cursor: hand;
+}
+
+#send_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/send_gray_24.png";
+    -fx-cursor: hand;
+}
+#send_button:hover {
+    -fx-graphic: "/resources/icons/send_red_24.png";
+}
+
+#remove_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/remove_gray_24.png";
+    -fx-cursor: hand;
+}
+
+#remove_button:hover {
+    -fx-graphic: "/resources/icons/remove_black_24.png";
 }
 
 #file_button {
@@ -101,4 +164,45 @@
     -fx-background-color :derive(#4D4C4F,10.0%);
     -fx-background-insets : 2.0, 0.0, 0.0;
     -fx-background-radius : 2.0em;
+}
+
+#write_email_post_top_container {
+	-fx-padding: 4.0px;
+	-fx-alignment: top-center;
+	-fx-spacing: 10.0px;
+	-fx-vgap: 10.0px;
+}
+
+#write_email_top_field_container {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 50.0px;
+	-fx-padding: 2.0px 4.0px 2.0px 4.0px;
+}
+
+#name_text_field {
+	-fx-background-color: transparent;
+	-fx-border-style: none;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+}
+
+#write_email_post_text_area_container {
+	-fx-alignment: center;
+	-fx-background-radius: 10.0px;
+	-fx-background-color: #ffffff;
+}
+
+#write_email_post_text_area {
+    -fx-background-insets: 0.0;
+    -fx-background-color: #ffffff;
+    -fx-pref-height: 300.0px;
+    -fx-pref-width: 280.0px;
+}
+
+#write_email_post_text_area .content {
+    -fx-background-insets: 0.0;
+    -fx-background-color: #ffffff;
+}
+
+#write_email_post_text_area:focused {
+    -fx-highlight-fill: #202020;
 }

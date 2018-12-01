@@ -83,7 +83,7 @@ public class EmailApp {
 		return emails;
 	}
 
-	protected void sendEmail(String to, String text) {
+	public boolean sendEmail(String to, String text) {
 		String host = "smtp-mail.outlook.com";
 
 		Properties props = new Properties();
@@ -121,9 +121,10 @@ public class EmailApp {
 			Transport.send(message);
 
 			System.out.println("Sent message successfully....");
+			return true;
 
 		} catch (MessagingException e) {
-			throw new RuntimeException(e);
+			return false;
 		}
 
 	}
