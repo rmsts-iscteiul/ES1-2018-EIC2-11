@@ -7,7 +7,7 @@
 }
 
 #login_window_root_pane {
-	-fx-background-color: #f4f4f4;
+	-fx-background-color: #f2f2f2;
 	-fx-background-radius: 10.0px;
 	-fx-alignment: center;
 }
@@ -17,7 +17,7 @@
 }
 
 #login_window_top_bar {
-	-fx-background-color: #202020;
+	-fx-background-color: #f2f2f2;
 	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
 	-fx-alignment: top-right;
 }
@@ -29,24 +29,31 @@
 #login_window_top_bar_close_button {
 	-fx-background-color: transparent;
     -fx-border-style: none;
-    -fx-graphic: "/resources/icons/exit_window_white_14.png";
+    -fx-graphic: "/resources/icons/exit_window_gray_14.png";
 }
 
 #login_window_top_bar_close_button:hover {
 	-fx-background-color: #ff3b30;
+	-fx-graphic: "/resources/icons/exit_window_white_14.png";
 	-fx-background-radius: 0.0px 10.0px 0.0px 0.0px;
 }
 
 #login_container {
-	-fx-padding: 20.0px 0.0px 0.0px 0.0px;
+	-fx-padding: 20.0px;
 	-fx-alignment: top-center;
-	-fx-vgap: 20px;
+	-fx-spacing: 20.0px;
+	-fx-vgap: 20.0px;
 }
 
 #email_text_field_container {
 	-fx-background-color: #ffffff;
 	-fx-background-radius: 50.0px;
 	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+	-fx-alignment: center-left;
+}
+
+#email_text_field_container:hover {
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
 }
 
 #email_icon {
@@ -63,7 +70,12 @@
 #password_field_container {
 	-fx-background-color: #ffffff;
 	-fx-background-radius: 50.0px;
-	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+	-fx-padding: 4.0px;
+	-fx-alignment: center-left;
+}
+
+#password_field_container:hover {
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
 }
 
 #password_icon {
@@ -73,19 +85,24 @@
 }
 
 #password_field {
-	-fx-background-color: transparent;
-	-fx-border-style: none;
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 50.0px;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+}
+
+#login_button_container {
+	-fx-alignment: center;
+	-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #3b5998, #ff3b30);
+	-fx-background-radius: 50.0px;
+	-fx-padding: 4.0px 2.0px 4.0px 4.0px;
+	-fx-cursor: hand;
+}
+
+#login_button_container:hover {
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
 }
 
 #login_button {
 	-fx-background-color: transparent;
     -fx-border-style: none;
-    -fx-graphic: "/resources/icons/email_login_gray_32.png";
-}
-
-#login_button:hover {
-	-fx-background-color: #53d769;
-	-fx-background-radius: 50.0px;
-    -fx-border-style: none;
-    -fx-graphic: "/resources/icons/email_login_white_32.png";
 }

@@ -32,22 +32,22 @@ public class AddUserWindow {
 	private double xOffset, yOffset;
 
 	public AddUserWindow(Stage main_stage) {
-		configurePopUpStage(main_stage);
-		createPopUpRootPane();
-		buildPopUpWindowRootPane();
-		buildPopUpContent();
-		buildPopUpScene();
-		startPopUpStage();
+		configureAddUserStage(main_stage);
+		createAddUserRootPane();
+		buildAddUserWindowRootPane();
+		buildAddUserContent();
+		buildAddUserScene();
+		startAddUserStage();
 	}
 
-	private void configurePopUpStage(Stage main_stage) {
+	private void configureAddUserStage(Stage main_stage) {
 		add_user_stage = new Stage();
 		add_user_stage.initModality(Modality.APPLICATION_MODAL);
 		add_user_stage.initOwner(main_stage);
 		add_user_stage.initStyle(StageStyle.TRANSPARENT);
 	}
 
-	private void createPopUpRootPane() {
+	private void createAddUserRootPane() {
 		BorderPane add_user_root_pane = new BorderPane();
 		this.add_user_root_pane = add_user_root_pane;
 		add_user_root_pane.setPrefSize(ADD_USER_ROOT_PANE_WIDTH + ADD_USER_SHADOW_GAP,
@@ -87,13 +87,13 @@ public class AddUserWindow {
 		});
 	}
 
-	private void buildPopUpScene() {
+	private void buildAddUserScene() {
 		add_user_scene = new Scene(add_user_root_pane, ADD_USER_ROOT_PANE_WIDTH, ADD_USER_ROOT_PANE_HEIGHT);
 		add_user_scene.getStylesheets().add("/resources/css/add_user_window.css");
 		add_user_scene.setFill(null);
 	}
 
-	private void buildPopUpWindowRootPane() {
+	private void buildAddUserWindowRootPane() {
 		add_user_window_root_pane = new BorderPane();
 		add_user_window_root_pane.setId("add_user_window_root_pane");
 		add_user_window_root_pane.setPrefSize(ADD_USER_ROOT_PANE_WIDTH, ADD_USER_ROOT_PANE_HEIGHT);
@@ -122,7 +122,7 @@ public class AddUserWindow {
 		add_user_window_root_pane.setTop(add_user_window_top_bar);
 	}
 
-	private void buildPopUpContent() {
+	private void buildAddUserContent() {
 		FlowPane add_user_container = new FlowPane(Orientation.VERTICAL);
 		add_user_container.setId("add_user_container");
 		
@@ -217,7 +217,7 @@ public class AddUserWindow {
 		add_user_window_root_pane.setCenter(add_user_container);
 	}
 
-	private void startPopUpStage() {
+	private void startAddUserStage() {
 		add_user_stage.setScene(add_user_scene);
 		add_user_stage.showAndWait();
 	}

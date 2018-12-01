@@ -6,18 +6,18 @@
 #email_post_window_root_pane {
 	-fx-background-color: transparent;
 	-fx-background-radius: 10.0px;
-	-fx-alignment: top-center;
+	-fx-alignment: center-left;
 	-fx-spacing: 20.0px;
 }
 
 #view_email_post_window_root_pane {
-	-fx-background-color: #f4f4f4;
+	-fx-background-color: #f2f2f2;
 	-fx-background-radius: 10.0px;
 	-fx-alignment: center;
 }
 
 #write_email_post_window_root_pane {
-	-fx-background-color: #f4f4f4;
+	-fx-background-color: #f2f2f2;
 	-fx-background-radius: 10.0px;
 	-fx-alignment: center;
 }
@@ -59,7 +59,7 @@
 }
 
 #email_post_window_top_bar_close_button:hover {
-	-fx-background-color: #f4f4f4;
+	-fx-background-color: #f2f2f2;
 	-fx-graphic: "/resources/icons/exit_window_gray_14.png";
 	-fx-background-radius: 0.0px 10.0px 0.0px 0.0px;
 }
@@ -76,7 +76,15 @@
 }
 
 #view_fill_bottom {
-	-fx-background-color: #ffffff;
+	-fx-background-color: #f2f2f2;
+	-fx-background-radius: 0.0px 0.0px 10.0px 10.0px;
+}
+
+#return_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/return_gray_24.png";
+    -fx-cursor: hand;
 }
 
 #reply_button {

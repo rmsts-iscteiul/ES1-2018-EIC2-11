@@ -38,7 +38,7 @@
 #add_user_container {
 	-fx-padding: 20.0px;
 	-fx-alignment: top-center;
-	-fx-spacing: 50.0px;
+	-fx-spacing: 20.0px;
 	-fx-vgap: 20.0px;
 }
 
@@ -62,6 +62,10 @@
 	-fx-padding: 4.0px 2.0px 4.0px 4.0px;
 }
 
+#add_user_password_field_container:hover, #add_user_wrong_password_field_container:hover{
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+}
+
 #add_user_wrong_password_field_container {
 	-fx-background-color: #ffffff;
 	-fx-background-radius: 50.0px;
@@ -70,8 +74,8 @@
 	-fx-border-color: #ff3b30;
 }
 
-#add_user_password_field_container:hover, #add_user_wrong_password_field_container:hover{
-	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+#add_user_wrong_password_field_container:hover {
+	-fx-effect: dropshadow(gaussian, #ff3b30, 10.0, 0.2, 0.0, 0.0);
 }
 
 #name_text_field {

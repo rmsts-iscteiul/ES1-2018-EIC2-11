@@ -35,8 +35,11 @@ public class EmailPostWindow {
 	private Scene email_post_scene;
 	private BorderPane email_post_root_pane;
 	private HBox email_post_window_root_pane;
-	private BorderPane view_email_post_window_root_pane;
-	private BorderPane write_email_post_window_root_pane;
+	private BorderPane view_email_post_window_root_pane = null;
+	private BorderPane write_email_post_window_root_pane = null;
+
+	private FlowPane write_email_post_container;
+	private BorderPane view_email_post_container;
 
 	private EmailApp email_app;
 	private Message message;
@@ -65,7 +68,7 @@ public class EmailPostWindow {
 		configureEmailPostStage(main_stage);
 		createEmailPostRootPane();
 		buildViewEmailPostWindowRootPane();
-		buildEmailPostContent();
+		buildViewEmailPostContent();
 		buildEmailPostScene();
 		startEmailPostStage();
 	}
@@ -183,35 +186,47 @@ public class EmailPostWindow {
 		// TOP
 		HBox view_email_post_top_container = new HBox();
 		view_email_post_top_container.setId("view_email_post_top_container");
+		// Return
+		Button return_button = new Button("Return");
+		return_button.setId("return_button");
+		return_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				write_email_post_window_root_pane.setVisible(false);
+			}
+		});
+		// Send
 		Button send_button = new Button("Send");
 		send_button.setId("send_button");
 		send_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				if (email_app.sendEmail(to_text_field.getText(), write_email_post_text_area.getText())) {
-					write_email_post_window_root_pane.setVisible(false);
+					email_post_window_root_pane.getChildren().remove(write_email_post_window_root_pane);
 				}
 			}
 		});
+		// Remove
 		Button remove_button = new Button("Remove");
 		remove_button.setId("remove_button");
 		remove_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				email_post_window_root_pane.getChildren().remove(write_email_post_window_root_pane);
+				write_email_post_window_root_pane = null;
 			}
 		});
 		view_email_post_top_container.getChildren().addAll(remove_button, send_button);
 		final Pane spacer = new Pane();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
-		email_post_window_top_bar_buttons_container.getChildren().addAll(spacer, view_email_post_top_container);
+		email_post_window_top_bar_buttons_container.getChildren().addAll(return_button, spacer, view_email_post_top_container);
 		email_post_window_top_bar.getChildren().addAll(email_post_window_top_bar_buttons_container);
 		write_email_post_window_root_pane.setTop(email_post_window_top_bar);
 	}
 
-	private void buildEmailPostContent() {
-		BorderPane email_post_container = new BorderPane();
-		email_post_container.setId("view_email_post_container");
+	private void buildViewEmailPostContent() {
+		view_email_post_container = new BorderPane();
+		view_email_post_container.setId("view_email_post_container");
 		// TOP
 		HBox view_email_post_top_container = new HBox();
 		view_email_post_top_container.setId("view_email_post_top_container");
@@ -220,10 +235,14 @@ public class EmailPostWindow {
 		reply_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				try {
-					buildWriteEmailPostWindowRootPane();
-				} catch (MessagingException e) {
-					e.printStackTrace();
+				if(write_email_post_window_root_pane == null) {
+					try {
+						buildWriteEmailPostWindowRootPane();
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+				} else {
+					write_email_post_window_root_pane.setVisible(true);
 				}
 			}
 		});
@@ -232,15 +251,19 @@ public class EmailPostWindow {
 		forward_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				try {
-					buildWriteEmailPostWindowRootPane();
-				} catch (MessagingException e) {
-					e.printStackTrace();
+				if(write_email_post_window_root_pane == null) {
+					try {
+						buildWriteEmailPostWindowRootPane();
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+				}else {
+					write_email_post_window_root_pane.setVisible(true);
 				}
 			}
 		});
 		view_email_post_top_container.getChildren().addAll(reply_button, forward_button);
-		email_post_container.setTop(view_email_post_top_container);
+		view_email_post_container.setTop(view_email_post_top_container);
 		// CENTER
 		VBox email_post_center_container = new VBox();
 		try {
@@ -273,20 +296,20 @@ public class EmailPostWindow {
 			}
 			email_post_center_container.getChildren().add(attachments_pane);
 		}
-		email_post_container.setCenter(email_post_center_container);
+		view_email_post_container.setCenter(email_post_center_container);
 		// BOTTOM
 		FlowPane view_fill_bottom = new FlowPane();
 		view_fill_bottom.setId("view_fill_bottom");
 		view_fill_bottom.setPrefHeight(EMAIL_POST_WINDOW_TOP_BAR_HEIGHT);
 		view_fill_bottom.setMaxHeight(EMAIL_POST_WINDOW_TOP_BAR_HEIGHT);
-		email_post_container.setBottom(view_fill_bottom);
+		view_email_post_container.setBottom(view_fill_bottom);
 
-		view_email_post_window_root_pane.setCenter(email_post_container);
+		view_email_post_window_root_pane.setCenter(view_email_post_container);
 
 	}
 
 	private void buildWriteEmailPostContent() {
-		FlowPane write_email_post_container = new FlowPane(Orientation.VERTICAL);
+		write_email_post_container = new FlowPane(Orientation.VERTICAL);
 		write_email_post_container.setId("write_email_post_container");
 		// From
 		HBox from_write_email_post_top_container = new HBox();

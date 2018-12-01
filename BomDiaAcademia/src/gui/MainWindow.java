@@ -105,8 +105,6 @@ public class MainWindow extends Application {
 			buildScene();
 			initApps();
 			startStage();
-
-			System.out.println("W -> " + window_pane.getWidth() + "\n H -> " + window_pane.getHeight());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -117,6 +115,7 @@ public class MainWindow extends Application {
 	 */
 	private void configureStage() {
 		main_stage.setTitle("Bom dia Academia");
+		main_stage.getIcons().add(new Image("/resources/images/logo_24.png"));
 		main_stage.initStyle(StageStyle.TRANSPARENT);
 	}
 
@@ -236,13 +235,13 @@ public class MainWindow extends Application {
 			public void handle(ActionEvent actionEvent) {
 				if (email_app_pane == null) {
 					new LoginWindow(main_stage, email_app);
-					if( !(email_app.getUser() == null)) {
+					if (!(email_app.getUser() == null)) {
 						buildEmailApp(email_app.getTimeline());
 						apps_pane.getChildren().add(email_app_pane);
-					}else {
+					} else {
 						left_menu_email_toggle_button.setSelected(false);
 					}
-				}else {
+				} else {
 					if (left_menu_email_toggle_button.isSelected()) {
 						email_app_pane.setVisible(true);
 					} else {
@@ -255,13 +254,12 @@ public class MainWindow extends Application {
 		ToggleButton left_menu_combine_apps_toggle_button = new ToggleButton();
 		left_menu_combine_apps_toggle_button.setId("left_menu_combine_apps_toggle_button");
 		left_menu_combine_apps_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
-
 			@Override
 			public void handle(ActionEvent actionEvent) {
-
+				new PopUpWindow(main_stage, PopUpType.WARNING,
+						"Por enquanto esta função ainda não está implementada :(\n");
 			}
 		});
-
 		window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button, left_menu_twitter_toggle_button,
 				left_menu_email_toggle_button, left_menu_combine_apps_toggle_button);
 		window_root_pane.getChildren().add(window_left_menu);
@@ -831,11 +829,11 @@ public class MainWindow extends Application {
 			}
 		});
 		email_post_pane.setPrefWidth(POST_WIDTH);
-		
-		//TOP
+
+		// TOP
 		String[] email_envelope = email_app.writeEnvelope(message);
 		email_post_pane.setTop(new HBox(new Label(email_envelope[0])));
-		//BOTTOM
+		// BOTTOM
 		email_post_pane.setBottom(new HBox(new Label(email_envelope[2]), new Label(message.getSentDate().toString())));
 		return email_post_pane;
 	}
@@ -844,7 +842,7 @@ public class MainWindow extends Application {
 	 * This method is used to initialize the Facebook, Twitter and Email Apps.
 	 */
 	private void initApps() {
-//		twitter_app = new TwitterApp();
+		twitter_app = new TwitterApp();
 //		facebook_app = new FacebookApp();
 		email_app = new EmailApp();
 	}

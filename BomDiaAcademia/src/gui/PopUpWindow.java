@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -23,7 +24,7 @@ public class PopUpWindow {
 
 	private static final int POP_UP_SHADOW_GAP = 10;
 	private static final int POP_UP_ROOT_PANE_WIDTH = 400;
-	private static final int POP_UP_ROOT_PANE_HEIGHT = 300;
+	private static final int POP_UP_ROOT_PANE_HEIGHT = 240;
 	private static final int POP_UP_WINDOW_TOP_BAR_HEIGHT = 20;
 
 	private double xOffset, yOffset;
@@ -122,6 +123,15 @@ public class PopUpWindow {
 	private void buildPopUpContent(PopUpType type, String text) {
 		VBox pop_up_container = new VBox();
 		pop_up_container.setId("pop_up_container");
+		if (type.equals(PopUpType.WARNING)) {
+			Label warning_label = new Label();
+			warning_label.setId("warning_label");
+			pop_up_container.getChildren().add(warning_label);
+		} else if (type.equals(PopUpType.WARNING)) {
+			Label warning_label = new Label();
+			warning_label.setId("warning_label");
+			pop_up_container.getChildren().add(warning_label);
+		}
 		Button ok_button = new Button();
 		ok_button.setId("ok_button");
 		ok_button.setOnAction(new EventHandler<ActionEvent>() {
