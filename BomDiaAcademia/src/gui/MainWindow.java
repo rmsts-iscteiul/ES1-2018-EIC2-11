@@ -52,6 +52,7 @@ public class MainWindow extends Application {
 	private Scene scene;
 	private BorderPane root_pane;
 	private FlowPane window_root_pane;
+	private VBox window_left_menu;
 	private BorderPane window_pane;
 	private HBox apps_pane;
 	private HBox window_top_bar;
@@ -188,7 +189,7 @@ public class MainWindow extends Application {
 	 * This method is used to build the left menu (window_left_menu).
 	 */
 	private void buildWindowRootLeftMenu() {
-		VBox window_left_menu = new VBox();
+		window_left_menu = new VBox();
 		window_left_menu.setPrefSize(WINDOW_LEFT_MENU_WIDTH, WINDOW_ROOT_PANE_HEIGHT);
 		window_left_menu.setMaxSize(WINDOW_LEFT_MENU_WIDTH, WINDOW_ROOT_PANE_HEIGHT);
 		window_left_menu.setId("window_left_menu");
@@ -387,8 +388,10 @@ public class MainWindow extends Application {
 			public void handle(ActionEvent actionEvent) {
 				if (dark_theme_toggle_button.isSelected()) {
 					window_pane.setId("window_pane_dt");
+					window_left_menu.setId("window_left_menu_dt");
 				} else {
 					window_pane.setId("window_pane");
+					window_left_menu.setId("window_left_menu");
 				}
 			}
 		});

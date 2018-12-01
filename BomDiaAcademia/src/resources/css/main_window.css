@@ -24,6 +24,13 @@
 }
 
 #window_left_menu {
+	-fx-background-color: rgba(244.0,244.0,244.0,0.6);
+	-fx-background-radius: 10.0px 0.0px 0.0px 10.0px;
+	-fx-padding: 50.0px 0.0px 0.0px 0.0px;
+	-fx-spacing: 50.0px;
+}
+
+#window_left_menu_dt {
 	-fx-background-color: rgba(32.0,32.0,32.0,0.6);
 	-fx-background-radius: 10.0px 0.0px 0.0px 10.0px;
 	-fx-padding: 50.0px 0.0px 0.0px 0.0px;
