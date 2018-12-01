@@ -53,7 +53,7 @@ public class Encryptation {
     public boolean verifyUserPassword(String providedPassword, String securedPassword, String salt){
         boolean returnValue = false;
         
-        // Generate New secure password with the same salt
+        //Generate New secure password with the same salt
         String newSecurePassword = generateSecurePassword(providedPassword, salt);
         
         // Check if two passwords are equal
