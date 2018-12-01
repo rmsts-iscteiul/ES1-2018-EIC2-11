@@ -78,7 +78,7 @@ public class MainWindow extends Application {
 
 	private Service<Void> twitterThread;
 	private Service<Void> facebookThread;
-//	private Service<Void> emailThread;
+	private Service<Void> emailThread;
 
 	/**
 	 * This is the main method.
@@ -121,9 +121,9 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to create and configure the root pane (root_pane). This
-	 * pane is only used to configure the size of the window and to apply to it the
-	 * shadow effect.
+	 * This method is used to create and configure the root pane (root_pane).
+	 * This pane is only used to configure the size of the window and to apply
+	 * to it the shadow effect.
 	 */
 	private void createRootPane() {
 		BorderPane root_pane = new BorderPane();
@@ -163,8 +163,8 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to start the stage (main_stage). It must be the be the
-	 * last method to be called in start method.
+	 * This method is used to start the stage (main_stage). It must be the be
+	 * the last method to be called in start method.
 	 */
 	private void startStage() {
 		main_stage.setScene(scene);
@@ -236,15 +236,14 @@ public class MainWindow extends Application {
 			public void handle(ActionEvent actionEvent) {
 				if (email_app_pane == null) {
 					new LoginWindow(main_stage, email_app);
-					if( !email_app.getUser().equals(null)) {
-						buildEmailApp(email_app.getTimeline());
-						apps_pane.getChildren().add(email_app_pane);
+					if (!(email_app.getUser() == null)) {
+						getEmailTimeline();
 					}
-				}
-				if (left_menu_email_toggle_button.isSelected()) {
-					email_app_pane.setVisible(true);
 				} else {
-					email_app_pane.setVisible(false);
+					if (left_menu_email_toggle_button.isSelected())
+						email_app_pane.setVisible(true);
+					else
+						email_app_pane.setVisible(false);
 				}
 			}
 		});
@@ -460,8 +459,8 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to build the Apps pane (apps_pane). This pane is where
-	 * the Facebook, Twitter and Email Apps is going to be added.
+	 * This method is used to build the Apps pane (apps_pane). This pane is
+	 * where the Facebook, Twitter and Email Apps is going to be added.
 	 */
 	private void buildAppsPane() {
 		apps_pane = new HBox();
@@ -472,9 +471,9 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to build the Twitter App pane (twitter_app_pane), using a
-	 * list of status. Note that this method doesn't set visible the App. It only
-	 * build it back scene.
+	 * This method is used to build the Twitter App pane (twitter_app_pane),
+	 * using a list of status. Note that this method doesn't set visible the
+	 * App. It only build it back scene.
 	 * 
 	 * @param statuses
 	 */
@@ -554,9 +553,9 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to build the Facebook App pane (facebook_app_pane), using
-	 * a list of posts. Note that this method doesn't set visible the App. It only
-	 * build it back scene.
+	 * This method is used to build the Facebook App pane (facebook_app_pane),
+	 * using a list of posts. Note that this method doesn't set visible the App.
+	 * It only build it back scene.
 	 * 
 	 * @param posts
 	 */
@@ -607,8 +606,8 @@ public class MainWindow extends Application {
 
 	/**
 	 * This method is used to build the Email App pane (email_app_pane), using a
-	 * list of emails. Note that this method doesn't set visible the App. It only
-	 * build it back scene.
+	 * list of emails. Note that this method doesn't set visible the App. It
+	 * only build it back scene.
 	 * 
 	 * @param emails
 	 */
@@ -670,8 +669,8 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to refresh the Twitter App pane (twitter_app_pane), using
-	 * a keyword to filter the posts.
+	 * This method is used to refresh the Twitter App pane (twitter_app_pane),
+	 * using a keyword to filter the posts.
 	 * 
 	 * @param filter
 	 */
@@ -716,7 +715,7 @@ public class MainWindow extends Application {
 	 */
 	private void refreshEmailApp() {
 		apps_pane.getChildren().remove(email_app_pane);
-		buildEmailApp(email_app.getTimeline());
+		getEmailTimeline();
 		apps_pane.getChildren().add(email_app_pane);
 	}
 
@@ -742,7 +741,9 @@ public class MainWindow extends Application {
 		post_text.setId("post_texto");
 		post_text.setWrappingWidth(POST_WIDTH);
 
-		MediaEntity[] media = status.getMediaEntities(); // get the media entities from the status
+		MediaEntity[] media = status.getMediaEntities(); // get the media
+															// entities from the
+															// status
 		for (MediaEntity m : media) { // search trough your entities
 			ImageView img = new ImageView(new Image(m.getMediaURL()));
 			img.setFitWidth((window_pane.getWidth() * 0.38));
@@ -828,11 +829,11 @@ public class MainWindow extends Application {
 			}
 		});
 		email_post_pane.setPrefWidth(POST_WIDTH);
-		
-		//TOP
+
+		// TOP
 		String[] email_envelope = email_app.writeEnvelope(message);
 		email_post_pane.setTop(new HBox(new Label(email_envelope[0])));
-		//BOTTOM
+		// BOTTOM
 		email_post_pane.setBottom(new HBox(new Label(email_envelope[2]), new Label(message.getSentDate().toString())));
 		return email_post_pane;
 	}
@@ -842,13 +843,13 @@ public class MainWindow extends Application {
 	 */
 	private void initApps() {
 		twitter_app = new TwitterApp();
-		facebook_app = new FacebookApp();
+		// facebook_app = new FacebookApp();
 		email_app = new EmailApp();
 	}
 
 	/**
-	 * This method is responsible for getting the the twitters timeline without a
-	 * filter
+	 * This method is responsible for getting the the twitters timeline without
+	 * a filter
 	 */
 	private void getTwitterTimeline() {
 		/*
@@ -885,7 +886,8 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is responsible for getting the twitters timeline with a filter
+	 * This method is responsible for getting the twitters timeline with a
+	 * filter
 	 * 
 	 * @param filter
 	 */
@@ -922,8 +924,8 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is responsible for getting the the facebooks timeline without a
-	 * filter.
+	 * This method is responsible for getting the the facebooks timeline without
+	 * a filter.
 	 */
 	private void getFacebookTimeline() {
 		/*
@@ -996,37 +998,37 @@ public class MainWindow extends Application {
 		facebookThread.restart();
 	}
 
-//	private void getEmailTimeline(){
-//		/*
-//		 * The thread has a service for FACEBOOK that has only one task.
-//		 */
-//		emailThread = new Service<Void>() {
-//			@Override
-//			protected Task<Void> createTask() {
-//				return new Task<Void>() {
-//					/*
-//					 * What the thread needs to do
-//					 */
-//					@Override
-//					protected Void call() throws Exception {
-//						buildEmailApp(email_app.getTimeline());
-//						return null;
-//					}
-//				};
-//			};
-//		};
-//		/*
-//		 * What the thread does after it did what is describred above
-//		 */
-//		emailThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-//
-//			@Override
-//			public void handle(WorkerStateEvent arg0) {
-//				apps_pane.getChildren().add(email_app_pane);
-//				if (!email_app_pane.isVisible())
-//					email_app_pane.setVisible(true);
-//			}
-//		});
-//		emailThread.restart();
-//	}
+	private void getEmailTimeline() {
+		/*
+		 * The thread has a service for FACEBOOK that has only one task.
+		 */
+		emailThread = new Service<Void>() {
+			@Override
+			protected Task<Void> createTask() {
+				return new Task<Void>() {
+					/*
+					 * What the thread needs to do
+					 */
+					@Override
+					protected Void call() throws Exception {
+						buildEmailApp(email_app.getTimeline());
+						return null;
+					}
+				};
+			};
+		};
+		/*
+		 * What the thread does after it did what is describred above
+		 */
+		emailThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+
+			@Override
+			public void handle(WorkerStateEvent arg0) {
+				apps_pane.getChildren().add(email_app_pane);
+				if (!email_app_pane.isVisible())
+					email_app_pane.setVisible(true);
+			}
+		});
+		emailThread.restart();
+	}
 }
