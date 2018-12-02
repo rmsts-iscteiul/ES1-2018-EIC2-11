@@ -3,6 +3,7 @@ package apps;
 import java.util.LinkedList;
 import java.util.List;
 
+import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
@@ -25,6 +26,19 @@ public class TwitterApp {
 	 */
 	private String user = "ISCTEIUL";
 
+	/**
+	 * Time filter that is being used
+	 */
+	TimeFilter timeFilter;
+
+	/**
+	 * word filter that is being used
+	 */
+	String wordFilter;
+
+	/**
+	 * It's a simple watermark at the bottom of every tweet
+	 */
 	private final String WATERMARK = "\n" + "\n" + "-Tweet sent through BomDiaAcademia Application <3";
 
 	/**
@@ -53,6 +67,7 @@ public class TwitterApp {
 				.setOAuthAccessTokenSecret("onDIulYjcQCvb3rVk6N3cYp0DxytW0ew86fM2Kyp8JQOj");
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		twitter = tf.getInstance();
+		timeFilter = TimeFilter.ALL_TIME;
 		try {
 			owner = twitter.getScreenName();
 		} catch (IllegalStateException | TwitterException e) {
@@ -80,16 +95,23 @@ public class TwitterApp {
 	public List<Status> getTimeline(String user) { // The argument need to be
 													// the @ of the user. DON'T
 													// WRITE THE '@'
+		List<Status> list = new LinkedList<>();
 		try {
-			statuses = twitter.getUserTimeline(user);
+			statuses = twitter.getUserTimeline(user, new Paging(1, 100));
 			this.user = user;
-
-		} catch (TwitterException e) { // when Twitter service or network is
-										// unavailable this will return the
-										// un-updated LIST
-			System.out.println("CHECK NETWORK CONNECTION");
+		} catch (TwitterException e) {
+			System.out.println("CHECK NETWORK CONNECTION - using an un-updated feed");
 		} finally {
-			return statuses;
+			if (timeFilter.equals(TimeFilter.ALL_TIME))
+				return statuses; // If its all time then there is no need to
+									// alterations.
+			for (Status s : statuses) {
+				System.out.println(System.currentTimeMillis());
+				if (System.currentTimeMillis() - s.getCreatedAt().getTime() < timeFilter.date.getTime()) {
+					list.add(s);
+				}
+			}
+			return list;
 		}
 	}
 
@@ -106,22 +128,34 @@ public class TwitterApp {
 	 *         argument) of the user.
 	 */
 	@SuppressWarnings("finally")
-	public List<Status> getTimeline(String user, String filter) {
-		List<Status> list = new LinkedList<>();
+	public List<Status> getTimeline(String user, String wordfilter) {
+		List<Status> listWithTimeFilter = new LinkedList<>();
+		List<Status> listWithFilters = new LinkedList<>();
+		this.wordFilter = wordfilter;
 		try {
-			statuses = twitter.getUserTimeline(user);
+			statuses = twitter.getUserTimeline(user, new Paging(1, 100));
 			this.user = user;
 
 		} catch (TwitterException e) { // when Twitter service or network is
 										// unavailable
-			System.out.println("CHECK NETWORK CONNECTION");
+			System.out.println("CHECK NETWORK CONNECTION - using an un-updated feed");
+			
 		} finally {
-			for (Status status : statuses) {
-				if (status.getText().contains(filter)) {
-					list.add(status);
+			if (!timeFilter.equals(TimeFilter.ALL_TIME)) {
+				for (Status s : statuses) {
+					if (System.currentTimeMillis() - s.getCreatedAt().getTime() < timeFilter.date.getTime()) {
+						listWithTimeFilter.add(s);
+					}
+				}
+			} else
+				listWithTimeFilter = statuses;
+
+			for (Status status : listWithTimeFilter) {
+				if (status.getText().contains(wordfilter)) {
+					listWithFilters.add(status);
 				}
 			}
-			return list;
+			return listWithFilters;
 
 		}
 	}
@@ -130,9 +164,11 @@ public class TwitterApp {
 	 * Publishes a tweet on the logged users timeline and redirects its user to
 	 * his homepage
 	 * 
-	 * @param text - tweets this text
+	 * @param text
+	 *            - tweets this text
 	 * @return returns the owners timeline
 	 */
+
 	public List<Status> tweet(String text) {
 		try {
 			StatusUpdate newStatus = new StatusUpdate(text + WATERMARK);
@@ -146,10 +182,14 @@ public class TwitterApp {
 
 	/**
 	 * Replies to a status (comment)
-	 * @param text - the text you want to comment
-	 * @param postID - the id of the status you want to comment
+	 * 
+	 * @param text
+	 *            - the text you want to comment
+	 * @param postID
+	 *            - the id of the status you want to comment
 	 */
-	public void replyTo(String text, Status status) { // Comment as a reply to @user.
+	public void replyTo(String text, Status status) { // Comment as a reply to
+														// @user.
 		try {
 			StatusUpdate newStatus = new StatusUpdate("@" + user + "\n" + text + WATERMARK);
 			newStatus.setInReplyToStatusId(status.getId());
@@ -160,12 +200,13 @@ public class TwitterApp {
 
 	}
 
-	
 	/**
 	 * Retweets a certain status
-	 * @param postID - the id of the status you want to retweet
+	 * 
+	 * @param postID
+	 *            - the id of the status you want to retweet
 	 */
-	public void retweet(Status status) { //Share a post
+	public void retweet(Status status) { // Share a post
 		try {
 			if (!status.isRetweetedByMe())
 				twitter.retweetStatus(status.getId());
@@ -175,29 +216,36 @@ public class TwitterApp {
 			System.out.println("CHECK CONNECTION - retweet was possibly not done");
 		}
 	}
-	
+
 	/**
 	 * Retweets a certain status with a message (comment and share basically)
-	 * @param postID - the id of the status you want to retweet
-	 * @param text - the text you want to comment
+	 * 
+	 * @param postID
+	 *            - the id of the status you want to retweet
+	 * @param text
+	 *            - the text you want to comment
 	 */
-	public void retweet(String text, Status status){ //Basically It's to comment and share a post
-		try{
+	public void retweet(String text, Status status) { // Basically It's to
+														// comment and share a
+														// post
+		try {
 			StatusUpdate newStatus = new StatusUpdate(text + WATERMARK);
 			newStatus.setAttachmentUrl("https://twitter.com/" + user + "/status/" + status.getId());
 			twitter.updateStatus(newStatus);
-		}catch (TwitterException e){
+		} catch (TwitterException e) {
 			System.out.println("CHECK CONNECTION - retweet was possibly not done");
 		}
 	}
 
 	/**
 	 * Favorites/un-favorites a certain users status
-	 * @param postID of the status you want to favorite
+	 * 
+	 * @param postID
+	 *            of the status you want to favorite
 	 */
-	public void favorite(Status status){
+	public void favorite(Status status) {
 		try {
-			if(!status.isFavorited())
+			if (!status.isFavorited())
 				twitter.createFavorite(status.getId());
 			else
 				twitter.destroyFavorite(status.getId());
@@ -205,7 +253,7 @@ public class TwitterApp {
 			System.out.println("CHECK CONNECTION - favorite was possibly not done");
 		}
 	}
-	
+
 	/**
 	 * Returns the user that is being displayed.
 	 * 
@@ -233,14 +281,28 @@ public class TwitterApp {
 		return owner;
 	}
 
-	//BEFORE JUNIT
-//	public static void main(String[] args) {
-//		TwitterApp t = new TwitterApp();
-//		Status s = t.getTimeline("ISCTEIUL").get(0);
-//		t.replyTo("Random !", s);
-//		t.retweet(s);
-//		t.retweet("something something", s);
-//		t.favorite(s);
-//	}
+	
+	/**
+	 * 
+	 * @param timeFilter
+	 */
+	public void setTimeFilter(TimeFilter timeFilter) {
+		this.timeFilter = timeFilter;
+		getTimeline(user, wordFilter);
+	}
+	// BEFORE JUNIT
+//	 public static void main(String[] args) throws InterruptedException {
+//	 TwitterApp t = new TwitterApp();
+//	 Status s = t.getTimeline("ISCTEIUL").get(0);
+//	 System.out.println(t.getTimeline("Slbenfica"));
+//	 Thread.currentThread().sleep(5000);
+//	 System.out.println("\n" + "-------------------------------------" + "\n");
+//	 t.setTimeFilter(TimeFilter.LAST_24H);
+//	 System.out.println(t.getTimeline("Slbenfica"));
+//	 t.replyTo("Random !", s);
+//	 t.retweet(s);
+//	 t.retweet("something something", s);
+//	 t.favorite(s);
+//	 }
 
 }
