@@ -135,8 +135,8 @@ public class TwitterApp {
 	 */
 	public List<Status> tweet(String text) {
 		try {
-			StatusUpdate newStatus = new StatusUpdate(text);
-			twitter.updateStatus(newStatus.getStatus() + WATERMARK);
+			StatusUpdate newStatus = new StatusUpdate(text + WATERMARK);
+			twitter.updateStatus(newStatus.getStatus());
 			return homepage();
 		} catch (TwitterException e) {
 			System.out.println("CHECK CONNECTION - Tweet was possibly not published.");
@@ -149,13 +149,13 @@ public class TwitterApp {
 	 * @param text - the text you want to comment
 	 * @param postID - the id of the status you want to comment
 	 */
-	public void replyTo(String text, long postID) { // Comment as a reply to @user.
+	public void replyTo(String text, Status status) { // Comment as a reply to @user.
 		try {
-			StatusUpdate newStatus = new StatusUpdate("@" + user + "\n" + text);
-			newStatus.setInReplyToStatusId(postID);
-			twitter.updateStatus(newStatus + WATERMARK);
+			StatusUpdate newStatus = new StatusUpdate("@" + user + "\n" + text + WATERMARK);
+			newStatus.setInReplyToStatusId(status.getId());
+			twitter.updateStatus(newStatus);
 		} catch (TwitterException e) {
-			e.printStackTrace();
+			System.out.println("CHECK CONNECTION - reply was possibly not sent.");
 		}
 
 	}
@@ -165,12 +165,14 @@ public class TwitterApp {
 	 * Retweets a certain status
 	 * @param postID - the id of the status you want to retweet
 	 */
-	public void retweet(long postID) { //Share a post
+	public void retweet(Status status) { //Share a post
 		try {
-			twitter.retweetStatus(postID);
+			if (!status.isRetweetedByMe())
+				twitter.retweetStatus(status.getId());
+			else
+				twitter.unRetweetStatus(status.getId());
 		} catch (TwitterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("CHECK CONNECTION - retweet was possibly not done");
 		}
 	}
 	
@@ -179,16 +181,30 @@ public class TwitterApp {
 	 * @param postID - the id of the status you want to retweet
 	 * @param text - the text you want to comment
 	 */
-	public void retweet(long postID, String text){ //Basically It's to comment and share a post
+	public void retweet(String text, Status status){ //Basically It's to comment and share a post
 		try{
-			StatusUpdate newStatus = new StatusUpdate(text);
-			newStatus.setAttachmentUrl("https://twitter.com/" + user + "/status/" + postID);
-			twitter.updateStatus(newStatus + WATERMARK);
+			StatusUpdate newStatus = new StatusUpdate(text + WATERMARK);
+			newStatus.setAttachmentUrl("https://twitter.com/" + user + "/status/" + status.getId());
+			twitter.updateStatus(newStatus);
 		}catch (TwitterException e){
-			e.printStackTrace();
+			System.out.println("CHECK CONNECTION - retweet was possibly not done");
 		}
 	}
 
+	/**
+	 * Favorites/un-favorites a certain users status
+	 * @param postID of the status you want to favorite
+	 */
+	public void favorite(Status status){
+		try {
+			if(!status.isFavorited())
+				twitter.createFavorite(status.getId());
+			else
+				twitter.destroyFavorite(status.getId());
+		} catch (TwitterException e) {
+			System.out.println("CHECK CONNECTION - favorite was possibly not done");
+		}
+	}
 	
 	/**
 	 * Returns the user that is being displayed.
@@ -220,11 +236,11 @@ public class TwitterApp {
 	//BEFORE JUNIT
 //	public static void main(String[] args) {
 //		TwitterApp t = new TwitterApp();
-//		System.out.println(t.getTimeline("Slbenfica").get(0).getText());
-//		System.out.println(t.getTimeline("Slbenfica").get(0).getId());
-//		long id = (long) t.getTimeline("Slbenfica").get(0).getId();
-//		//t.replyTo("Random !", id);
-//		t.retweet(id, "something something");
+//		Status s = t.getTimeline("ISCTEIUL").get(0);
+//		t.replyTo("Random !", s);
+//		t.retweet(s);
+//		t.retweet("something something", s);
+//		t.favorite(s);
 //	}
 
 }
