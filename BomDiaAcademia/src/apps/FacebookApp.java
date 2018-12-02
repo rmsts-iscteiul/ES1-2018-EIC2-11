@@ -27,6 +27,7 @@ public class FacebookApp {
 	 * result is the list where posts are placed when fetching info from Facebook
 	 */
 	private Connection<Post> result;
+	private List<Post> offlineList = new LinkedList<>();
 
 	/**
 	 * Object fetched from facebook
@@ -52,6 +53,17 @@ public class FacebookApp {
 	 *                                  previous list
 	 * @return List where all non-null message posts from user feed are included.
 	 */
+	Runnable updateOfflineList = new Runnable() {
+		public void run() {
+			for (List<Post> page : result) {
+				for (Post rPost : page) {
+					if (rPost.getMessage() != null) {
+						offlineList.add(rPost);
+					}
+				}
+			}
+		}
+	};
 
 	@SuppressWarnings("finally")
 	public List<Post> getTimeline() {
@@ -59,9 +71,7 @@ public class FacebookApp {
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
 					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares"));
-		} catch (FacebookNetworkException e) {
-			System.out.println("System is Offline");
-		} finally {
+			new Thread(updateOfflineList).start();
 			for (List<Post> page : result) {
 				for (Post rPost : page) {
 					if (rPost.getMessage() != null) {
@@ -69,8 +79,11 @@ public class FacebookApp {
 					}
 				}
 			}
-			return posts;
+		} catch (FacebookNetworkException e) {
+			System.out.println("System is Offline, using backup data");
+			return offlineList;
 		}
+		return posts;
 	}
 
 	/**
@@ -89,9 +102,7 @@ public class FacebookApp {
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
 					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares"));
-		} catch (FacebookNetworkException e) {
-			System.out.println("System is Offline");
-		} finally {
+			new Thread(updateOfflineList).start();
 			for (List<Post> page : result) {
 				for (Post rPost : page) {
 					if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
@@ -99,11 +110,21 @@ public class FacebookApp {
 					}
 				}
 			}
-			return posts;
+		} catch (FacebookNetworkException e) {
+			System.out.println("System is Offline, using backup data");
+			return getOffline(posts, filter);
 		}
+		return posts;
 	}
-	
-	
+
+	public List<Post> getOffline(List<Post> posts, String filter) {
+		for (Post rPost : offlineList) {
+			if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
+				posts.add(rPost);
+			}
+		}
+		return posts;
+	}
 
 	/**
 	 * return user
