@@ -620,6 +620,18 @@ public class MainWindow extends Application {
 		email_app_tool_bar.setId("email_app_tool_bar");
 		Label email_app_top_bar_icon = new Label(email_app.getUser());
 		email_app_top_bar_icon.setId("email_app_top_bar_icon");
+		Button email_app_top_bar_new_message_button = new Button();
+		email_app_top_bar_new_message_button.setId("email_app_top_bar_new_message_button");
+		email_app_top_bar_new_message_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				try {
+					new EmailPostWindow(main_stage, email_app);
+				} catch (MessagingException e) {
+					e.printStackTrace();
+				}
+			}
+		});		
 		Button email_app_top_bar_refresh_button = new Button();
 		email_app_top_bar_refresh_button.setId("email_app_top_bar_refresh_button");
 		email_app_top_bar_refresh_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -638,7 +650,7 @@ public class MainWindow extends Application {
 		});
 		final Pane spacer = new Pane();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
-		email_app_tool_bar.getChildren().addAll(email_app_top_bar_icon, spacer, email_app_top_bar_refresh_button,
+		email_app_tool_bar.getChildren().addAll(email_app_top_bar_icon, spacer, email_app_top_bar_new_message_button, email_app_top_bar_refresh_button,
 				email_app_top_bar_minimize_button);
 		ScrollPane email_app_scroll_pane = new ScrollPane();
 		email_app_scroll_pane.setId("email_app_scroll_pane");
@@ -750,7 +762,7 @@ public class MainWindow extends Application {
 			img.setFitHeight((window_pane.getWidth() * 0.38));
 			twitter_post_center_container.getChildren().add(img);
 		}
-
+		
 		twitter_post_center_container.getChildren().addAll(post_text);
 		// BOTTOM BAR
 		HBox twitter_post_bottom_bar = new HBox();
@@ -832,7 +844,11 @@ public class MainWindow extends Application {
 
 		// TOP
 		String[] email_envelope = email_app.writeEnvelope(message);
-		email_post_pane.setTop(new HBox(new Label(email_envelope[0])));
+		Label email_label = new Label(email_envelope[0]);
+		email_label.setId("email_label");
+		Label name_label = new Label(email_envelope[1] + "    ");
+		name_label.setId("name_label");
+		email_post_pane.setTop(new HBox(name_label, email_label));
 		// BOTTOM
 		email_post_pane.setBottom(new HBox(new Label(email_envelope[2]), new Label(message.getSentDate().toString())));
 		return email_post_pane;

@@ -1,5 +1,5 @@
 package gui;
 
 public enum PopUpType {
-	WARNING
+	WARNING, CONFIRMATION
 }

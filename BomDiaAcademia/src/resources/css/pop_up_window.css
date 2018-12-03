@@ -1,8 +1,5 @@
 #pop_up_root_pane {
 	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
-}
-
-#pop_up_root_pane {
 	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
 }
 
@@ -17,13 +14,20 @@
 }
 
 #pop_up_window_top_bar {
-	-fx-background-color: #f4f4f4;
+	-fx-background-color: #ffcc00;
 	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
 	-fx-alignment: top-right;
 }
 
 #pop_up_window_top_bar_buttons_container {
 	-fx-alignment: top-right;
+	-fx-padding: 0.0px 0.0px 0.0px 4.0px
+}
+
+#warning_top_bar_label {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/warning_white_14.png";
 }
 
 #pop_up_window_top_bar_close_button {
@@ -40,7 +44,12 @@
 
 #pop_up_container {
 	-fx-padding: 20.0px 0.0px 0.0px 0.0px;
-	-fx-alignment: top-center;
+	-fx-alignment: center;
+	-fx-spacing: 20.0px;
+}
+
+#pop_up_buttons_container {
+	-fx-alignment: center;
 	-fx-spacing: 20.0px;
 }
 
@@ -55,10 +64,32 @@
 	-fx-background-radius: 50.0px;
     -fx-border-style: none;
     -fx-graphic: "/resources/icons/ok_white_32.png";
+    -fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+}
+
+#cancel_button {
+	-fx-background-color: transparent;
+	-fx-background-radius: 50.0px;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/cancel_gray_32.png";
+}
+
+#cancel_button:hover {
+	-fx-background-color: #ff3b30;
+	-fx-background-radius: 50.0px;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/cancel_white_32.png";
+    -fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
 }
 
 #warning_label {
 	-fx-background-color: transparent;
     -fx-border-style: none;
     -fx-graphic: "/resources/icons/warning_yellow_32.png";
+}
+
+#confirmation_label {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/confirmation_yellow_32.png";
 }

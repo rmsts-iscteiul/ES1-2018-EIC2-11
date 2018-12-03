@@ -46,7 +46,7 @@ public class LoginWindow {
 
 	private void configureLoginStage(Stage main_stage) {
 		login_stage = new Stage();
-		login_stage.initModality(Modality.APPLICATION_MODAL);
+		login_stage.initModality(Modality.NONE);
 		login_stage.initOwner(main_stage);
 		login_stage.initStyle(StageStyle.TRANSPARENT);
 	}

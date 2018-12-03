@@ -14,6 +14,14 @@
 	-fx-graphic: "/resources/icons/email_white_14.png";
 }
 
+#email_app_top_bar_new_message_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/new_message_white_14.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
+	-fx-tooltip-visible: true;
+}
+
 #email_app_top_bar_refresh_button {
 	-fx-background-color: transparent;
 	-fx-graphic: "/resources/icons/refresh_white_14.png";
@@ -121,4 +129,14 @@
 
 #email_post_top_bar {
 	-fx-alignment: center;
+}
+
+#email_label {
+	-fx-font-size: 12px;
+}
+
+#name_label {
+	-fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }

@@ -240,30 +240,51 @@ public class EmailApp {
 	 * This method would print FROM,TO and SUBJECT of the message
 	 */
 	public String[] writeEnvelope(Message m) throws Exception {
-		String[] email_envelope = new String[3];
+		String[] email_envelope = new String[4];
 		Address[] a;
 		String aux = "";
-		// FROM
+		// FROM: EMAIL 0, NAME 1
 		if ((a = m.getFrom()) != null) {
 			for (int j = 0; j < a.length; j++)
 				aux += a[j].toString();
 		}
-		email_envelope[0] = aux;
+		email_envelope[0] = getOnlyEmail(aux);
+		email_envelope[1] = getOnlyName(aux);
 		aux = "";
-		// TO
+		// TO 2
 		if ((a = m.getRecipients(Message.RecipientType.TO)) != null) {
 			for (int j = 0; j < a.length; j++)
 				aux += a[j].toString();
 		}
-		email_envelope[1] = aux;
+		email_envelope[2] = aux;
 		aux = "";
-		// SUBJECT
+		// SUBJECT 3
 		if (m.getSubject() != null) {
 			aux += m.getSubject();
 		}
-		email_envelope[2] = aux;
+		email_envelope[3] = aux;
 		return email_envelope;
 
+	}
+	
+	private String getOnlyEmail(String string) {
+		if(string.contains("<") && string.contains(">")) {
+			String[] splitted1 = string.split("<");
+			String[] splitted2 = splitted1[1].split(">");
+			return splitted2[0];
+		}else {
+			return string;
+		}
+		
+	}
+	
+	private String getOnlyName(String string) {
+		if(string.contains("<") && string.contains(">")) {
+			String[] splitted1 = string.split("<");
+			return splitted1[0];
+		}else {
+			return "";
+		}
 	}
 
 	/**

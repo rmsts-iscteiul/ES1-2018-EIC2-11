@@ -30,7 +30,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class EmailPostWindow {
-
 	private Stage email_post_stage;
 	private Scene email_post_scene;
 	private BorderPane email_post_root_pane;
@@ -69,6 +68,16 @@ public class EmailPostWindow {
 		createEmailPostRootPane();
 		buildViewEmailPostWindowRootPane();
 		buildViewEmailPostContent();
+		buildEmailPostScene();
+		startEmailPostStage();
+	}
+
+	public EmailPostWindow(Stage main_stage, EmailApp email_app) throws MessagingException {
+		this.email_app = email_app;
+		configureEmailPostStage(main_stage);
+		createEmailPostRootPane();
+		buildWriteEmailPostWindowRootPane("");
+		buildWriteEmailPostContent(null, "subject");
 		buildEmailPostScene();
 		startEmailPostStage();
 	}
@@ -137,10 +146,9 @@ public class EmailPostWindow {
 		view_email_post_window_root_pane.setMaxSize(VIEW_EMAIL_POST_ROOT_PANE_WIDTH, VIEW_EMAIL_POST_ROOT_PANE_HEIGHT);
 		email_post_window_root_pane.getChildren().add(view_email_post_window_root_pane);
 		buildViewEmailPostWindowTopBar();
-
 	}
 
-	private void buildWriteEmailPostWindowRootPane() throws MessagingException {
+	private void buildWriteEmailPostWindowRootPane(String what_called) {
 		write_email_post_window_root_pane = new BorderPane();
 		write_email_post_window_root_pane.setId("write_email_post_window_root_pane");
 		write_email_post_window_root_pane.setPrefSize(WRITE_EMAIL_POST_ROOT_PANE_WIDTH,
@@ -148,8 +156,29 @@ public class EmailPostWindow {
 		write_email_post_window_root_pane.setMaxSize(WRITE_EMAIL_POST_ROOT_PANE_WIDTH,
 				WRITE_EMAIL_POST_ROOT_PANE_HEIGHT);
 		email_post_window_root_pane.getChildren().add(write_email_post_window_root_pane);
-		buildWriteEmailPostWindowTopBar();
-		buildWriteEmailPostContent();
+		if (what_called.equals("R")) {
+			buildWriteEmailPostWindowTopBar(true);
+			try {
+				String[] email_envelope = email_app.writeEnvelope(message);
+				buildWriteEmailPostContent(email_envelope[0], "[RE]: " + email_envelope[3]);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} else if (what_called.equals("F")) {
+			buildWriteEmailPostWindowTopBar(true);
+			try {
+				String[] email_envelope = email_app.writeEnvelope(message);
+				buildWriteEmailPostContent("email@example.com", "[RE]: " + email_envelope[3]);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		} else {
+			buildWriteEmailPostWindowTopBar(false);
+			buildWriteEmailPostContent("email@example.com", "subject");
+		}
+
 	}
 
 	private void buildViewEmailPostWindowTopBar() throws MessagingException {
@@ -176,7 +205,7 @@ public class EmailPostWindow {
 		view_email_post_window_root_pane.setTop(email_post_window_top_bar);
 	}
 
-	private void buildWriteEmailPostWindowTopBar() throws MessagingException {
+	private void buildWriteEmailPostWindowTopBar(boolean can_return) {
 		VBox email_post_window_top_bar = new VBox();
 		email_post_window_top_bar.setId("write_email_post_window_top_bar");
 		email_post_window_top_bar.setPrefSize(WRITE_EMAIL_POST_ROOT_PANE_WIDTH, EMAIL_POST_WINDOW_TOP_BAR_HEIGHT);
@@ -187,14 +216,26 @@ public class EmailPostWindow {
 		HBox view_email_post_top_container = new HBox();
 		view_email_post_top_container.setId("view_email_post_top_container");
 		// Return
-		Button return_button = new Button("Return");
-		return_button.setId("return_button");
-		return_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				write_email_post_window_root_pane.setVisible(false);
-			}
-		});
+		if (can_return) {
+			Button return_button = new Button("Return");
+			return_button.setId("return_button");
+			return_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent mouseEvent) {
+					if(!view_email_post_window_root_pane.isVisible()) {
+						if (new PopUpWindow(email_post_stage, PopUpType.CONFIRMATION,
+								"Are you sure you want to discard this email?").getConfirmation()) {
+							email_post_window_root_pane.getChildren().remove(write_email_post_window_root_pane);
+							email_post_stage.close();
+						}	
+					}else {
+						write_email_post_window_root_pane.setVisible(false);
+					}
+					
+				}
+			});
+			email_post_window_top_bar_buttons_container.getChildren().addAll(return_button);
+		}
 		// Send
 		Button send_button = new Button("Send");
 		send_button.setId("send_button");
@@ -212,14 +253,17 @@ public class EmailPostWindow {
 		remove_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				email_post_window_root_pane.getChildren().remove(write_email_post_window_root_pane);
-				write_email_post_window_root_pane = null;
+				if (new PopUpWindow(email_post_stage, PopUpType.CONFIRMATION,
+						"Are you sure you want to discard this email?").getConfirmation()) {
+					email_post_window_root_pane.getChildren().remove(write_email_post_window_root_pane);
+					write_email_post_window_root_pane = null;
+				}
 			}
 		});
 		view_email_post_top_container.getChildren().addAll(remove_button, send_button);
 		final Pane spacer = new Pane();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
-		email_post_window_top_bar_buttons_container.getChildren().addAll(return_button, spacer, view_email_post_top_container);
+		email_post_window_top_bar_buttons_container.getChildren().addAll(spacer, view_email_post_top_container);
 		email_post_window_top_bar.getChildren().addAll(email_post_window_top_bar_buttons_container);
 		write_email_post_window_root_pane.setTop(email_post_window_top_bar);
 	}
@@ -230,15 +274,31 @@ public class EmailPostWindow {
 		// TOP
 		HBox view_email_post_top_container = new HBox();
 		view_email_post_top_container.setId("view_email_post_top_container");
+		//Return
+		Button return_button = new Button("Return");
+		return_button.setId("return_button");
+		return_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				if(write_email_post_window_root_pane == null) {
+					email_post_stage.close();
+				}else {
+					if(write_email_post_window_root_pane.isVisible()) {
+						view_email_post_window_root_pane.setVisible(false);
+					}
+				}
+			}
+		});
+		//Reply
 		Button reply_button = new Button("Reply");
 		reply_button.setId("reply_button");
 		reply_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				if(write_email_post_window_root_pane == null) {
+				if (write_email_post_window_root_pane == null) {
 					try {
-						buildWriteEmailPostWindowRootPane();
-					} catch (MessagingException e) {
+						buildWriteEmailPostWindowRootPane("R");
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				} else {
@@ -246,23 +306,22 @@ public class EmailPostWindow {
 				}
 			}
 		});
+		//Forward
 		Button forward_button = new Button("Forward");
 		forward_button.setId("forward_button");
 		forward_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				if(write_email_post_window_root_pane == null) {
-					try {
-						buildWriteEmailPostWindowRootPane();
-					} catch (MessagingException e) {
-						e.printStackTrace();
-					}
-				}else {
+				if (write_email_post_window_root_pane == null) {
+					buildWriteEmailPostWindowRootPane("F");
+				} else {
 					write_email_post_window_root_pane.setVisible(true);
 				}
 			}
 		});
-		view_email_post_top_container.getChildren().addAll(reply_button, forward_button);
+		final Pane spacer = new Pane();
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+		view_email_post_top_container.getChildren().addAll(return_button, spacer, reply_button, forward_button);
 		view_email_post_container.setTop(view_email_post_top_container);
 		// CENTER
 		VBox email_post_center_container = new VBox();
@@ -305,10 +364,9 @@ public class EmailPostWindow {
 		view_email_post_container.setBottom(view_fill_bottom);
 
 		view_email_post_window_root_pane.setCenter(view_email_post_container);
-
 	}
 
-	private void buildWriteEmailPostContent() {
+	private void buildWriteEmailPostContent(String to_email, String subject) {
 		write_email_post_container = new FlowPane(Orientation.VERTICAL);
 		write_email_post_container.setId("write_email_post_container");
 		// From
@@ -322,7 +380,7 @@ public class EmailPostWindow {
 		HBox to_write_email_post_top_container = new HBox();
 		to_write_email_post_top_container.setId("write_email_top_field_container");
 		Label to_label = new Label("To: ");
-		to_text_field = new TextField("email@example.com");
+		to_text_field = new TextField(to_email);
 		to_text_field.setId("name_text_field");
 		to_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
@@ -337,7 +395,7 @@ public class EmailPostWindow {
 		HBox subject_write_email_post_top_container = new HBox();
 		subject_write_email_post_top_container.setId("write_email_top_field_container");
 		Label subject_label = new Label("Subject: ");
-		subject_text_field = new TextField("subject");
+		subject_text_field = new TextField(subject);
 		subject_text_field.setId("name_text_field");
 		subject_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
