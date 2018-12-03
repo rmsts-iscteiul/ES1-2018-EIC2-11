@@ -17,7 +17,7 @@ public class Encryptation {
     private static final int ITERATIONS = 10000;
     private static final int KEY_LENGTH = 256;
     
-     public String getSalt(int length) {
+     protected String getSalt(int length) {
         StringBuilder returnValue = new StringBuilder(length);
 
         for (int i = 0; i < length; i++) {
@@ -27,7 +27,7 @@ public class Encryptation {
         return new String(returnValue);
     }
 
-    public byte[] hash(char[] password, byte[] salt) {
+    protected byte[] hash(char[] password, byte[] salt) {
         PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, KEY_LENGTH);
         Arrays.fill(password, Character.MIN_VALUE);
         try {
@@ -40,7 +40,7 @@ public class Encryptation {
         }
     }
 
-    public String generateSecurePassword(String password, String salt) {
+    protected String generateSecurePassword(String password, String salt) {
         String returnValue = null;
 
         byte[] securePassword = hash(password.toCharArray(), salt.getBytes());
@@ -50,7 +50,7 @@ public class Encryptation {
         return returnValue;
     }
     
-    public boolean verifyUserPassword(String providedPassword, String securedPassword, String salt){
+    protected boolean verifyUserPassword(String providedPassword, String securedPassword, String salt){
         boolean returnValue = false;
         
         //Generate New secure password with the same salt
@@ -62,15 +62,15 @@ public class Encryptation {
         return returnValue;
     }
     
-    public static void main(String[] args) {
-		Encryptation encrypt = new Encryptation();
-		String pwd = "jorge";
-		String salt = encrypt.getSalt(30);
-		String providedPassword = encrypt.generateSecurePassword(pwd, salt);
-		System.out.println(providedPassword);
-		boolean passwordMatch = encrypt.verifyUserPassword("Maria", providedPassword, salt);
-		System.out.println(passwordMatch);
-	}
+//    public static void main(String[] args) {
+//		Encryptation encrypt = new Encryptation();
+//		String pwd = "jorge";
+//		String salt = encrypt.getSalt(30);
+//		String providedPassword = encrypt.generateSecurePassword(pwd, salt);
+//		System.out.println(providedPassword);
+//		boolean passwordMatch = encrypt.verifyUserPassword("Maria", providedPassword, salt);
+//		System.out.println(passwordMatch);
+//	}
     
 }
 

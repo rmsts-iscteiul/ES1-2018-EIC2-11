@@ -108,9 +108,9 @@ public class User {
 		
 	}
 	
-	public static void main(String[] args) {
-		User gay = new User("ma","ti","as");
-		gay.saveNewUser(gay);
-		System.out.println(gay.isUsrRegistered(gay));
-	}
+//	public static void main(String[] args) {
+//		User gay = new User("ma","ti","as");
+//		gay.saveNewUser(gay);
+//		System.out.println(gay.isUsrRegistered(gay));
+//	}
 }
