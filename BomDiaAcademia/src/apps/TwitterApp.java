@@ -29,12 +29,12 @@ public class TwitterApp {
 	/**
 	 * Time filter that is being used
 	 */
-	TimeFilter timeFilter;
+	private TimeFilter timeFilter;
 
 	/**
 	 * word filter that is being used
 	 */
-	String wordFilter;
+	private String wordFilter;
 
 	/**
 	 * It's a simple watermark at the bottom of every tweet
@@ -47,6 +47,9 @@ public class TwitterApp {
 	 */
 	private Twitter twitter;
 
+	/**
+	 * logged in user
+	 */
 	private String owner = "";
 
 	/**
@@ -106,8 +109,8 @@ public class TwitterApp {
 				return statuses; // If its all time then there is no need to
 									// alterations.
 			for (Status s : statuses) {
-				System.out.println(System.currentTimeMillis());
-				if (System.currentTimeMillis() - s.getCreatedAt().getTime() < timeFilter.date.getTime()) {
+				long date = ((timeFilter.getDate() - s.getCreatedAt().getTime()) / (24*60*60*1000));
+				if ( date >= 0 && date <= timeFilter.getDif()) {
 					list.add(s);
 				}
 			}
@@ -143,11 +146,13 @@ public class TwitterApp {
 		} finally {
 			if (!timeFilter.equals(TimeFilter.ALL_TIME)) {
 				for (Status s : statuses) {
-					if (System.currentTimeMillis() - s.getCreatedAt().getTime() < timeFilter.date.getTime()) {
+					long date = Math.abs((timeFilter.getDate() - s.getCreatedAt().getTime()) / (24*60*60*1000));
+					if ( date >= 0 && date  <= timeFilter.getDif()) {
 						listWithTimeFilter.add(s);
 					}
 				}
-			} else
+				
+			} else // If ALL_TIME
 				listWithTimeFilter = statuses;
 
 			for (Status status : listWithTimeFilter) {
@@ -280,29 +285,29 @@ public class TwitterApp {
 	public String getOwner() {
 		return owner;
 	}
+	
+	/**
+	 * timefilter getter
+	 * @return timefilter
+	 */
+	public TimeFilter getTimeFilter() {
+		return timeFilter;
+	}
+	/**
+	 * wordFilter getter
+	 * @return wordFilter
+	 */
+	public String getWordFilter() {
+		return wordFilter;
+	}
 
 	
 	/**
-	 * 
+	 * Change time filter
 	 * @param timeFilter
 	 */
 	public void setTimeFilter(TimeFilter timeFilter) {
 		this.timeFilter = timeFilter;
-		getTimeline(user, wordFilter);
 	}
-	// BEFORE JUNIT
-//	 public static void main(String[] args) throws InterruptedException {
-//	 TwitterApp t = new TwitterApp();
-//	 Status s = t.getTimeline("ISCTEIUL").get(0);
-//	 System.out.println(t.getTimeline("Slbenfica"));
-//	 Thread.currentThread().sleep(5000);
-//	 System.out.println("\n" + "-------------------------------------" + "\n");
-//	 t.setTimeFilter(TimeFilter.LAST_24H);
-//	 System.out.println(t.getTimeline("Slbenfica"));
-//	 t.replyTo("Random !", s);
-//	 t.retweet(s);
-//	 t.retweet("something something", s);
-//	 t.favorite(s);
-//	 }
 
 }
