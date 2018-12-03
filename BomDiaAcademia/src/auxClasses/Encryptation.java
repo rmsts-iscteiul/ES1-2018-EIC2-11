@@ -1,4 +1,4 @@
-package gui;
+package auxClasses;
 
 import java.awt.print.Printable;
 import java.security.NoSuchAlgorithmException;
