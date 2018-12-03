@@ -31,7 +31,7 @@ public class FacebookApp {
 	 */
 	private Connection<Post> result;
 	private List<Post> offlineList = new LinkedList<>();
-	private TimeFilter timeFilter = TimeFilter.LAST_YEAR;
+	private TimeFilter timeFilter = TimeFilter.ALL_TIME;
 	private String textFilter;
 //	private boolean textFilterChosen = false;
 
@@ -89,43 +89,43 @@ public class FacebookApp {
 
 	@SuppressWarnings("finally")
 	public List<Post> getTimeline() {
-		List<Post> posts = new LinkedList<>();
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
 					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares,created_time"));
-			new Thread(updateOfflineList).start();
+			Thread a = new Thread(updateOfflineList);
+			a.start();
+			a.join();
 		} catch (FacebookNetworkException e) {
 			System.out.println("System is Offline, using backup data");
-			return getTimelineWithTime(offlineList);
+			return getTimelineWithTime();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		return getTimelineWithTime(posts);
+		return getTimelineWithTime();
 	}
 
-	public List<Post> getTimelineWithTime(List<Post> posts) {
+	public List<Post> getTimelineWithTime() {
+		List<Post> posts = new LinkedList<>();
 		Calendar calendar = Calendar.getInstance();
 		Date date = calendar.getTime();
 		if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
-			for (List<Post> page : result) {
-				for (Post rPost : page) {
-					if (rPost.getMessage() != null) {
-						long timeDiff = (Math.abs(date.getTime() - rPost.getCreatedTime().getTime())
-								/ (24 * 60 * 60 * 1000));
-						if (timeDiff <= timeFilter.dif) {
-							posts.add(rPost);
-						}
+			for (Post rPost : offlineList) {
+				if (rPost.getMessage() != null) {
+					long timeDiff = (Math.abs(date.getTime() - rPost.getCreatedTime().getTime())
+							/ (24 * 60 * 60 * 1000));
+					if (timeDiff <= timeFilter.dif) {
+						posts.add(rPost);
 					}
 				}
-
 			}
+
 		} else {
-			for (List<Post> page : result) {
-				for (Post rPost : page) {
+				for (Post rPost : offlineList) {
 					if (rPost.getMessage() != null) {
 						posts.add(rPost);
 					}
 				}
 			}
-		}
 		return posts;
 	}
 
@@ -141,24 +141,27 @@ public class FacebookApp {
 
 	@SuppressWarnings("finally")
 	public List<Post> getTimeline(String filter) {
-		List<Post> posts = new LinkedList<>();
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
 					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares,created_time"));
-			new Thread(updateOfflineList).start();
+			Thread a = new Thread(updateOfflineList);
+			a.start();
+			a.join();
 		} catch (FacebookNetworkException e) {
 			System.out.println("System is Offline, using backup data");
-			return getTimelineWithTimeFilter(offlineList, filter);
+			return getTimelineWithTimeFilter(filter);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		return getTimelineWithTimeFilter(posts, filter);
+		return getTimelineWithTimeFilter(filter);
 	}
 
-	public List<Post> getTimelineWithTimeFilter(List<Post> posts, String filter) {
+	public List<Post> getTimelineWithTimeFilter(String filter) {
+		List<Post> posts = new LinkedList<>();
 		Calendar calendar = Calendar.getInstance();
 		Date date = calendar.getTime();
 		if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
-			for (List<Post> page : result) {
-				for (Post rPost : page) {
+				for (Post rPost : offlineList) {
 					if (rPost.getMessage() != null) {
 						long timeDiff = (Math.abs(date.getTime() - rPost.getCreatedTime().getTime())
 								/ (24 * 60 * 60 * 1000));
@@ -168,16 +171,14 @@ public class FacebookApp {
 					}
 				}
 
-			}
 		} else {
-			for (List<Post> page : result) {
-				for (Post rPost : page) {
+				for (Post rPost : offlineList) {
 					if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
 						posts.add(rPost);
+						System.out.println(rPost.getMessage());
 					}
 				}
 			}
-		}
 		return posts;
 	}
 
@@ -214,7 +215,7 @@ public class FacebookApp {
 
 	public static void main(String[] args) {
 		FacebookApp a = new FacebookApp();
-		a.getTimeline();
+		a.getTimeline("a");
 	}
 
 }
