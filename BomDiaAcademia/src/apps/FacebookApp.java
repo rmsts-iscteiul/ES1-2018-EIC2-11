@@ -112,7 +112,6 @@ public class FacebookApp {
 								/ (24 * 60 * 60 * 1000));
 						if (timeDiff <= timeFilter.dif) {
 							posts.add(rPost);
-							System.out.println(rPost.getMessage());
 						}
 					}
 				}
@@ -123,7 +122,6 @@ public class FacebookApp {
 				for (Post rPost : page) {
 					if (rPost.getMessage() != null) {
 						posts.add(rPost);
-						System.out.println(rPost.getMessage());
 					}
 				}
 			}
@@ -146,7 +144,7 @@ public class FacebookApp {
 		List<Post> posts = new LinkedList<>();
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
-					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares"));
+					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares,created_time"));
 			new Thread(updateOfflineList).start();
 		} catch (FacebookNetworkException e) {
 			System.out.println("System is Offline, using backup data");
