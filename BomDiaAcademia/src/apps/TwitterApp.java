@@ -57,6 +57,10 @@ public class TwitterApp {
 	 */
 	private List<Status> statuses;
 
+	private static final int NUMBER_OF_TWEETS = 40;
+
+	private int pagingNumber = 1;
+
 	/**
 	 * Constructor of the TwitterApp. It uses an Access token and an Consumer
 	 * key to build the twitter factory which uses to build the twitter
@@ -74,8 +78,7 @@ public class TwitterApp {
 		try {
 			owner = twitter.getScreenName();
 		} catch (IllegalStateException | TwitterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("CHECK CONNECTION - Init");
 		}
 	}
 
@@ -100,7 +103,7 @@ public class TwitterApp {
 													// WRITE THE '@'
 		List<Status> list = new LinkedList<>();
 		try {
-			statuses = twitter.getUserTimeline(user, new Paging(1, 100));
+			statuses = twitter.getUserTimeline(user, new Paging(pagingNumber, NUMBER_OF_TWEETS));
 			this.user = user;
 		} catch (TwitterException e) {
 			System.out.println("CHECK NETWORK CONNECTION - using an un-updated feed");
@@ -109,8 +112,8 @@ public class TwitterApp {
 				return statuses; // If its all time then there is no need to
 									// alterations.
 			for (Status s : statuses) {
-				long date = ((timeFilter.getDate() - s.getCreatedAt().getTime()) / (24*60*60*1000));
-				if ( date >= 0 && date <= timeFilter.getDif()) {
+				long date = ((timeFilter.getDate() - s.getCreatedAt().getTime()) / (24 * 60 * 60 * 1000));
+				if (date >= 0 && date <= timeFilter.getDif()) {
 					list.add(s);
 				}
 			}
@@ -136,22 +139,22 @@ public class TwitterApp {
 		List<Status> listWithFilters = new LinkedList<>();
 		this.wordFilter = wordfilter;
 		try {
-			statuses = twitter.getUserTimeline(user, new Paging(1, 100));
+			statuses = twitter.getUserTimeline(user, new Paging(pagingNumber, NUMBER_OF_TWEETS));
 			this.user = user;
 
 		} catch (TwitterException e) { // when Twitter service or network is
 										// unavailable
 			System.out.println("CHECK NETWORK CONNECTION - using an un-updated feed");
-			
+
 		} finally {
 			if (!timeFilter.equals(TimeFilter.ALL_TIME)) {
 				for (Status s : statuses) {
-					long date = Math.abs((timeFilter.getDate() - s.getCreatedAt().getTime()) / (24*60*60*1000));
-					if ( date >= 0 && date  <= timeFilter.getDif()) {
+					long date = Math.abs((timeFilter.getDate() - s.getCreatedAt().getTime()) / (24 * 60 * 60 * 1000));
+					if (date >= 0 && date <= timeFilter.getDif()) {
 						listWithTimeFilter.add(s);
 					}
 				}
-				
+
 			} else // If ALL_TIME
 				listWithTimeFilter = statuses;
 
@@ -260,6 +263,25 @@ public class TwitterApp {
 	}
 
 	/**
+	 * Increase tweets in timeline
+	 * @return the next x tweets
+	 */
+	public List<Status> loadMoreWithoutFilter() {
+		incrementPaging();
+		return getTimeline(getUser());
+	}
+
+	/**
+	 * Increase tweets in timeline
+	 * @param wordFilter
+	 * @return the next x tweets
+	 */
+	public List<Status> loadMoreWithFilter(String wordFilter) {
+		incrementPaging();
+		return getTimeline(getUser(), wordFilter);
+	}
+
+	/**
 	 * Returns the user that is being displayed.
 	 * 
 	 * @return user(String) - (Getter) gets the user attribute.
@@ -285,29 +307,54 @@ public class TwitterApp {
 	public String getOwner() {
 		return owner;
 	}
-	
+
 	/**
 	 * timefilter getter
+	 * 
 	 * @return timefilter
 	 */
 	public TimeFilter getTimeFilter() {
 		return timeFilter;
 	}
+
 	/**
 	 * wordFilter getter
+	 * 
 	 * @return wordFilter
 	 */
 	public String getWordFilter() {
 		return wordFilter;
 	}
 
-	
 	/**
 	 * Change time filter
+	 * 
 	 * @param timeFilter
 	 */
 	public void setTimeFilter(TimeFilter timeFilter) {
 		this.timeFilter = timeFilter;
+	}
+	/**
+	 * getter of the page
+	 * @return page number
+	 */
+	public int getPagingNumber() {
+		return pagingNumber;
+	}
+
+	/**
+	 * Increments the number of the page related with the timeline (more tweets)
+	 */
+	public void incrementPaging() {
+		pagingNumber++;
+	}
+
+	/**
+	 * Resets the number of the page related with the timeline (back to x
+	 * tweets)
+	 */
+	public void resetPaging() {
+		pagingNumber = 1;
 	}
 
 }
