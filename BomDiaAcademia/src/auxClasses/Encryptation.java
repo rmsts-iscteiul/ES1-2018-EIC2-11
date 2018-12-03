@@ -62,15 +62,15 @@ public class Encryptation {
         return returnValue;
     }
     
-//    public static void main(String[] args) {
-//		Encryptation encrypt = new Encryptation();
-//		String pwd = "jorge";
-//		String salt = encrypt.getSalt(30);
-//		String providedPassword = encrypt.generateSecurePassword(pwd, salt);
-//		System.out.println(providedPassword);
-//		boolean passwordMatch = encrypt.verifyUserPassword("Maria", providedPassword, salt);
-//		System.out.println(passwordMatch);
-//	}
+    public static void main(String[] args) {
+		Encryptation encrypt = new Encryptation();
+		String pwd = "jorge";
+		String salt = encrypt.getSalt(30);
+		String providedPassword = encrypt.generateSecurePassword(pwd, salt);
+		System.out.println(providedPassword);
+		boolean passwordMatch = encrypt.verifyUserPassword("Maria", providedPassword, salt);
+		System.out.println(passwordMatch);
+	}
     
 }
 

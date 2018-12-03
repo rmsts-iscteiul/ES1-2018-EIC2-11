@@ -24,7 +24,7 @@ public class User {
 
 	private String fn, ln, pw;
 	private Encryptation encrypt = new Encryptation();
-	private String salt = encrypt.getSalt(30);
+	private String salt = "GPIHqhlAdTKLG2EDX8mq3S3EZFuoEM";
 	
 	public User(String fn, String ln, String pw) {
 		this.fn = fn;
@@ -50,22 +50,16 @@ public class User {
 	public void saveNewUser(User usr) {
 		try {	
 	         File inputFile = new File("src\\resources\\files\\credentials.xml");
-	         System.out.println(inputFile.exists());
 	         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	         Document doc = dBuilder.parse(inputFile);
-	         doc.getDocumentElement().normalize();         
-	         System.out.println("\n----- Search the XML document with xpath queries -----");  
-	         // Query 1 
-	         System.out.println("Query 1: ");
+	         doc.getDocumentElement().normalize();         	      
 	         XPathFactory xpathFactory = XPathFactory.newInstance();
 	         XPath xpath = xpathFactory.newXPath();
 	         XPathExpression expr = xpath.compile("/XML/User/@*");
 	         NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 	         	        	         
-	         // Adding new element Service with attributes to the XML document (root node)
-	         System.out.println("\n----- Adding new element <User> with attributes to the XML document -----");
-	         
+	             
 	         if(!isUsrRegistered(nl, usr)) {
 	        	 Element newElement1 = doc.createElement("User");
 		         newElement1.setAttribute("fn", usr.getFn());
@@ -74,10 +68,7 @@ public class User {
 		         Node n = doc.getDocumentElement();
 		         n.appendChild(newElement1); 
 	         }
-	         
 	       
-	         // Save XML document
-	         System.out.println("\nSave XML document.");
 	         Transformer transformer = TransformerFactory.newInstance().newTransformer();
 	         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 	         StreamResult result = new StreamResult(new FileOutputStream("src\\resources\\files\\credentials.xml"));
@@ -95,8 +86,31 @@ public class User {
 		return false;
 	}
 	
+	protected boolean isUsrRegistered(User usr) {
+		
+		try {
+			File inputFile = new File("src\\resources\\files\\credentials.xml");
+	         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	         Document doc = dBuilder.parse(inputFile);
+	         doc.getDocumentElement().normalize();         
+	         XPathFactory xpathFactory = XPathFactory.newInstance();
+	         XPath xpath = xpathFactory.newXPath();
+	         XPathExpression expr = xpath.compile("/XML/User/@*");
+	         NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+	         for (int i = 0; i < nl.getLength(); i++) {
+	        	 	if(nl.item(i).getFirstChild().getNodeValue().equals(usr.getFn()) && nl.item(i+1).getFirstChild().getNodeValue().equals(usr.getLn()) && encrypt.verifyUserPassword(usr.getPw(),nl.item(i+2).getFirstChild().getNodeValue() , salt)) {
+	        	 		return true;
+	        	 	}
+	         }
+		}catch (Exception e) { e.printStackTrace(); }		
+		return false;
+		
+	}
+	
 	public static void main(String[] args) {
 		User gay = new User("ma","ti","as");
 		gay.saveNewUser(gay);
+		System.out.println(gay.isUsrRegistered(gay));
 	}
 }
