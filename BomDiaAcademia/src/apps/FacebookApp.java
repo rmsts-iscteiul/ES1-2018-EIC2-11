@@ -32,7 +32,6 @@ public class FacebookApp {
 	private Connection<Post> result;
 	private List<Post> offlineList = new LinkedList<>();
 	private TimeFilter timeFilter = TimeFilter.ALL_TIME;
-	private String textFilter;
 //	private boolean textFilterChosen = false;
 
 	/**
@@ -53,18 +52,33 @@ public class FacebookApp {
 	}
 
 	public enum TimeFilter {
-		LAST_HOUR(1 / 24), LAST_24H(1), LAST_WEEK(7), LAST_MONTH(30), LAST_YEAR(365), ALL_TIME, SPECIFIC_DAY();
+		LAST_HOUR(1 / 24), LAST_24H(1), LAST_WEEK(7), LAST_MONTH(30), LAST_YEAR(365), ALL_TIME, SPECIFIC_DAY(1);
 
 		@SuppressWarnings("unused")
-		private int dif;
-
-		TimeFilter(int dif) {
-			this.dif = dif;
-
+		private int daysDif;
+		private long date = System.currentTimeMillis();
+		
+		private TimeFilter(int daysDif) {
+			this.daysDif = daysDif;
 		}
 
-		TimeFilter() {
-
+		private TimeFilter() {
+		}
+		
+		public long getDate() {
+			return date;
+		}
+		
+		public int getDaysDif() {
+			return daysDif;
+		}
+		
+		public void setDate(int year, int month, int day) {
+			if(this.equals(SPECIFIC_DAY)) {
+				Calendar c = Calendar.getInstance();
+				c.set(year, month - 1, day);
+				date = c.getTime().getTime();
+			}
 		}
 	}
 
@@ -92,16 +106,16 @@ public class FacebookApp {
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
 					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares,created_time"));
-			Thread a = new Thread(updateOfflineList);
-			a.start();
-			a.join();
+			Thread updater = new Thread(updateOfflineList);
+			updater.start();
+			updater.join();
 		} catch (FacebookNetworkException e) {
 			System.out.println("System is Offline, using backup data");
-			return getTimelineWithTime();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} finally {
+			return getTimelineWithTime();
 		}
-		return getTimelineWithTime();
 	}
 
 	public List<Post> getTimelineWithTime() {
@@ -111,21 +125,22 @@ public class FacebookApp {
 		if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
 			for (Post rPost : offlineList) {
 				if (rPost.getMessage() != null) {
-					long timeDiff = (Math.abs(date.getTime() - rPost.getCreatedTime().getTime())
+					long timeDiff = (Math.abs(timeFilter.getDate() - rPost.getCreatedTime().getTime())
 							/ (24 * 60 * 60 * 1000));
-					if (timeDiff <= timeFilter.dif) {
+					if (timeDiff <= timeFilter.daysDif) {
 						posts.add(rPost);
 					}
 				}
 			}
 
 		} else {
-				for (Post rPost : offlineList) {
-					if (rPost.getMessage() != null) {
-						posts.add(rPost);
-					}
+			for (Post rPost : offlineList) {
+				if (rPost.getMessage() != null) {
+					posts.add(rPost);
+					System.out.println(rPost.getMessage());
 				}
 			}
+		}
 		return posts;
 	}
 
@@ -144,16 +159,17 @@ public class FacebookApp {
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
 					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares,created_time"));
-			Thread a = new Thread(updateOfflineList);
-			a.start();
-			a.join();
+			Thread updater = new Thread(updateOfflineList);
+			updater.start();
+			updater.join();
 		} catch (FacebookNetworkException e) {
 			System.out.println("System is Offline, using backup data");
-			return getTimelineWithTimeFilter(filter);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} finally {
+			return getTimelineWithTimeFilter(filter);
 		}
-		return getTimelineWithTimeFilter(filter);
+
 	}
 
 	public List<Post> getTimelineWithTimeFilter(String filter) {
@@ -161,35 +177,26 @@ public class FacebookApp {
 		Calendar calendar = Calendar.getInstance();
 		Date date = calendar.getTime();
 		if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
-				for (Post rPost : offlineList) {
-					if (rPost.getMessage() != null) {
-						long timeDiff = (Math.abs(date.getTime() - rPost.getCreatedTime().getTime())
-								/ (24 * 60 * 60 * 1000));
-						if (timeDiff <= timeFilter.dif && rPost.getMessage().contains(filter)) {
-							posts.add(rPost);
-						}
-					}
-				}
-
-		} else {
-				for (Post rPost : offlineList) {
-					if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
+			for (Post rPost : offlineList) {
+				if (rPost.getMessage() != null) {
+					long timeDiff = (Math.abs(date.getTime() - rPost.getCreatedTime().getTime())
+							/ (24 * 60 * 60 * 1000));
+					if (timeDiff <= timeFilter.daysDif && rPost.getMessage().contains(filter)) {
 						posts.add(rPost);
-						System.out.println(rPost.getMessage());
 					}
 				}
 			}
+
+		} else {
+			for (Post rPost : offlineList) {
+				if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
+					posts.add(rPost);
+					System.out.println(rPost.getMessage());
+				}
+			}
+		}
 		return posts;
 	}
-
-//	public List<Post> getOffline(List<Post> posts, String filter) {
-//		for (Post rPost : offlineList) {
-//			if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
-//				posts.add(rPost);
-//			}
-//		}
-//		return posts;
-//	}
 
 	/**
 	 * return user
@@ -213,9 +220,5 @@ public class FacebookApp {
 		this.timeFilter = timeFilter;
 	}
 
-	public static void main(String[] args) {
-		FacebookApp a = new FacebookApp();
-		a.getTimeline("a");
-	}
 
 }
