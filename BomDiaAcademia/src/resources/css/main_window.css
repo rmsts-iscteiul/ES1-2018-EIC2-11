@@ -218,6 +218,84 @@
     -fx-graphic: "/resources/icons/email_white_14.png";
 }
 
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-padding: 3.0 0.0 2.0 7.0;
+    -fx-cell-size: 1.66667em;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: transparent;
+    -fx-padding: 5.0 0.0 0.0 0.0;
+}    
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #ffffff;
+}
+
+.combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover  {
+    -fx-background: -fx-accent;
+    -fx-background-color: -fx-selection-bar;
+    -fx-text-fill: -fx-selection-bar-text;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: #f2f2f2;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
+.combo-box-base  {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5.0, 5.0, 4.0, 3.0;
+    -fx-background-insets: 0.0 0.0 -1.0 0.0, 0.0, 1.0, 2.0;
+    -fx-padding: 0.0;
+    -fx-background-radius: 50.0px;
+    -fx-scale-x: 0.7px;
+    -fx-scale-y: 0.7px;
+    
+}
+
+.combo-box-base:hover {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5.0, 5.0, 4.0, 3.0;
+    -fx-background-insets: 0.0 0.0 -1.0 0.0, 0.0, 1.0, 2.0;
+    -fx-padding: 0.0;
+    -fx-background-radius: 50.0px;
+    -fx-scale-x: 0.9px;
+    -fx-scale-y: 0.9px;
+}
+
+.combo-box-base:showing {
+	-fx-background-color: #ffffff;
+    -fx-background-radius: 5.0, 5.0, 4.0, 3.0;
+    -fx-background-insets: 0.0 0.0 -1.0 0.0, 0.0, 1.0, 2.0;
+    -fx-padding: 0.0;
+    -fx-background-radius: 50.0px;
+    -fx-scale-x: 0.9px;
+    -fx-scale-y: 0.9px;
+}
+
+.combo-box-base:focused {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5.0, 5.0, 4.0, 3.0;
+    -fx-background-insets: 0.0 0.0 -1.0 0.0, 0.0, 1.0, 2.0;
+    -fx-padding: 0.0;
+    -fx-background-radius: 50.0px;
+    -fx-scale-x: 0.9px;
+    -fx-scale-y: 0.9px;
+}
+
+.combo-box-base:disabled {
+    -fx-background-color: #00ff00;
+    -fx-background-radius: 5.0, 5.0, 4.0, 3.0;
+    -fx-background-insets: 0.0 0.0 -1.0 0.0, 0.0, 1.0, 2.0;
+    -fx-padding: 0.0;
+    -fx-background-radius: 50.0px;
+    -fx-scale-x: 0.9px;
+    -fx-scale-y: 0.9px;
+}
+
 #search_text_field {
 	-fx-background-color: transparent;
 	-fx-border-style: none;

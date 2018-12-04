@@ -20,6 +20,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
@@ -424,8 +425,21 @@ public class MainWindow extends Application {
 		search_twitter_toggle_button.setId("search_twitter_toggle_button");
 		ToggleButton search_email_toggle_button = new ToggleButton();
 		search_email_toggle_button.setId("search_email_toggle_button");
+		
+		//ALTERAR STRING PARA ENUMERADO DO RUBEN
+		ComboBox<String> filter_combo_box = new ComboBox<String>();
+		filter_combo_box.setId("filter_combo_box");
+		filter_combo_box.getItems().addAll(
+	            "ALL",
+	            "LAST 24H",
+	            "THIS WEEK",
+	            "THIS YEAR",
+	            "CUSTOMIZE"
+	        );
+		
+		
 		app_check_pane.getChildren().addAll(search_facebook_toggle_button, search_twitter_toggle_button,
-				search_email_toggle_button);
+				search_email_toggle_button, filter_combo_box);
 		HBox search_pane = new HBox();
 		search_pane.setId("search_pane");
 		TextField search_text_field = new TextField("Filter...");
@@ -631,7 +645,7 @@ public class MainWindow extends Application {
 					e.printStackTrace();
 				}
 			}
-		});		
+		});
 		Button email_app_top_bar_refresh_button = new Button();
 		email_app_top_bar_refresh_button.setId("email_app_top_bar_refresh_button");
 		email_app_top_bar_refresh_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -650,8 +664,8 @@ public class MainWindow extends Application {
 		});
 		final Pane spacer = new Pane();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
-		email_app_tool_bar.getChildren().addAll(email_app_top_bar_icon, spacer, email_app_top_bar_new_message_button, email_app_top_bar_refresh_button,
-				email_app_top_bar_minimize_button);
+		email_app_tool_bar.getChildren().addAll(email_app_top_bar_icon, spacer, email_app_top_bar_new_message_button,
+				email_app_top_bar_refresh_button, email_app_top_bar_minimize_button);
 		ScrollPane email_app_scroll_pane = new ScrollPane();
 		email_app_scroll_pane.setId("email_app_scroll_pane");
 		email_app_scroll_pane.setPrefSize((window_pane.getWidth() * 0.4),
@@ -762,7 +776,7 @@ public class MainWindow extends Application {
 			img.setFitHeight((window_pane.getWidth() * 0.38));
 			twitter_post_center_container.getChildren().add(img);
 		}
-		
+
 		twitter_post_center_container.getChildren().addAll(post_text);
 		// BOTTOM BAR
 		HBox twitter_post_bottom_bar = new HBox();
