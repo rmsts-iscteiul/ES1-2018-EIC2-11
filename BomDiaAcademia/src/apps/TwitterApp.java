@@ -3,7 +3,9 @@ package apps;
 import java.util.LinkedList;
 import java.util.List;
 
+import twitter4j.Paging;
 import twitter4j.Status;
+import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -25,19 +27,44 @@ public class TwitterApp {
 	private String user = "ISCTEIUL";
 
 	/**
+	 * Time filter that is being used
+	 */
+	private TimeFilter timeFilter;
+
+	/**
+	 * word filter that is being used
+	 */
+	private String wordFilter;
+
+	/**
+	 * It's a simple watermark at the bottom of every tweet
+	 */
+	private final String WATERMARK = "\n" + "\n" + "-Tweet sent through BomDiaAcademia Application <3";
+
+	/**
 	 * twitter refers to the twitter object from the twitterfactory that uses an
 	 * ConsumerKey and a Access Token.
 	 */
 	private Twitter twitter;
 
 	/**
+	 * logged in user
+	 */
+	private String owner = "";
+
+	/**
 	 * Deprecated list of a users tweets
 	 */
 	private List<Status> statuses;
 
+	private static final int NUMBER_OF_TWEETS = 40;
+
+	private int pagingNumber = 1;
+
 	/**
-	 * Constructor of the TwitterApp. It uses an Access token and an Consumer key to
-	 * build the twitter factory which uses to build the twitter instance.
+	 * Constructor of the TwitterApp. It uses an Access token and an Consumer
+	 * key to build the twitter factory which uses to build the twitter
+	 * instance.
 	 */
 	public TwitterApp() {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -47,57 +74,212 @@ public class TwitterApp {
 				.setOAuthAccessTokenSecret("onDIulYjcQCvb3rVk6N3cYp0DxytW0ew86fM2Kyp8JQOj");
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		twitter = tf.getInstance();
+		timeFilter = TimeFilter.ALL_TIME;
+		try {
+			owner = twitter.getScreenName();
+		} catch (IllegalStateException | TwitterException e) {
+			System.out.println("CHECK CONNECTION - Init");
+		}
+	}
 
+	/**
+	 * 
+	 * @return timeline of the user that is logged-in
+	 */
+	public List<Status> getOwnerTimeline() {
+		return getTimeline(owner);
 	}
 
 	/**
 	 * Gets the most recent 20 posts from a users timeline.
 	 * 
-	 * @param user(String) Owns the timeline which is being displayed.
+	 * @param user(String)
+	 *            Owns the timeline which is being displayed.
 	 * @return List(Status) - Contains the last 20 tweets of the user.
 	 */
 	@SuppressWarnings("finally")
-	public List<Status> getTimeline(String user) { // The argument need to be the @ of the user. DON'T
+	public List<Status> getTimeline(String user) { // The argument need to be
+													// the @ of the user. DON'T
 													// WRITE THE '@'
+		List<Status> list = new LinkedList<>();
 		try {
-			statuses = twitter.getUserTimeline(user);
+			statuses = twitter.getUserTimeline(user, new Paging(pagingNumber, NUMBER_OF_TWEETS));
+			this.user = user;
+		} catch (TwitterException e) {
+			System.out.println("CHECK NETWORK CONNECTION - using an un-updated feed");
+		} finally {
+			if (timeFilter.equals(TimeFilter.ALL_TIME))
+				return statuses; // If its all time then there is no need to
+									// alterations.
+			for (Status s : statuses) {
+				long date = Math.abs((timeFilter.getDate() - s.getCreatedAt().getTime()) / (24 * 60 * 60 * 1000));
+				System.out.println(date);
+				if (date >= 0 && date <= timeFilter.getDif()) {
+					list.add(s);
+				}
+			}
+			return list;
+		}
+	}
+
+	/**
+	 * Gets the timeline of the user filtered with the 2º argument of this
+	 * method (filter)
+	 * 
+	 * @param user(String)
+	 *            Owns the timeline which is being displayed.
+	 * @param filter(String)
+	 *            Chosen by the User. Tweets of the user are filtered using this
+	 *            argument.
+	 * @return List(Status) - Contains the last 20 tweets based on the filter(2º
+	 *         argument) of the user.
+	 */
+	@SuppressWarnings("finally")
+	public List<Status> getTimeline(String user, String wordfilter) {
+		List<Status> listWithTimeFilter = new LinkedList<>();
+		List<Status> listWithFilters = new LinkedList<>();
+		this.wordFilter = wordfilter;
+		try {
+			statuses = twitter.getUserTimeline(user, new Paging(pagingNumber, NUMBER_OF_TWEETS));
 			this.user = user;
 
-		} catch (TwitterException e) { // when Twitter service or network is unavailable this will return the
-										// un-updated LIST
-			System.out.println("CHECK NETWORK CONNECTION");
-		}finally {
+		} catch (TwitterException e) { // when Twitter service or network is
+										// unavailable
+			System.out.println("CHECK NETWORK CONNECTION - using an un-updated feed");
+
+		} finally {
+			if (!timeFilter.equals(TimeFilter.ALL_TIME)) {
+				for (Status s : statuses) {
+					long date = Math.abs((timeFilter.getDate() - s.getCreatedAt().getTime()) / (24 * 60 * 60 * 1000));
+					if (date >= 0 && date <= timeFilter.getDif()) {
+						listWithTimeFilter.add(s);
+					}
+				}
+
+			} else // If ALL_TIME
+				listWithTimeFilter = statuses;
+
+			for (Status status : listWithTimeFilter) {
+				if (status.getText().contains(wordfilter)) {
+					listWithFilters.add(status);
+				}
+			}
+			return listWithFilters;
+
+		}
+	}
+
+	/**
+	 * Publishes a tweet on the logged users timeline and redirects its user to
+	 * his homepage
+	 * 
+	 * @param text
+	 *            - tweets this text
+	 * @return returns the owners timeline
+	 */
+
+	public List<Status> tweet(String text) {
+		try {
+			StatusUpdate newStatus = new StatusUpdate(text + WATERMARK);
+			twitter.updateStatus(newStatus.getStatus());
+			return getOwnerTimeline();
+		} catch (TwitterException e) {
+			System.out.println("CHECK CONNECTION - Tweet was possibly not published.");
 			return statuses;
 		}
 	}
 
 	/**
-	 * Gets the timeline of the user filtered with the 2º argument of this method
-	 * (filter)
+	 * Replies to a status (comment)
 	 * 
-	 * @param user(String) Owns the timeline which is being displayed.
-	 * @param filter(String) Chosen by the User. Tweets of the user are filtered
-	 *        using this argument.
-	 * @return List(Status) - Contains the last 20 tweets based on the filter(2º
-	 *         argument) of the user.
+	 * @param text
+	 *            - the text you want to comment
+	 * @param postID
+	 *            - the id of the status you want to comment
 	 */
-	@SuppressWarnings("finally")
-	public List<Status> getTimeline(String user, String filter) {
-		List<Status> list = new LinkedList<>();
+	public void replyTo(String text, Status status) { // Comment as a reply to
+														// @user.
 		try {
-			statuses = twitter.getUserTimeline(user);
-			this.user = user;
-			
-		} catch (TwitterException e) { // when Twitter service or network is unavailable
-			System.out.println("CHECK NETWORK CONNECTION");
-		}finally{
-			for (Status status : statuses) {
-				if (status.getText().contains(filter)) {
-					list.add(status);
-				}
-			}
-			return list;
+			StatusUpdate newStatus = new StatusUpdate("@" + user + "\n" + text + WATERMARK);
+			newStatus.setInReplyToStatusId(status.getId());
+			twitter.updateStatus(newStatus);
+		} catch (TwitterException e) {
+			System.out.println("CHECK CONNECTION - reply was possibly not sent.");
 		}
+
+	}
+
+	/**
+	 * Retweets a certain status
+	 * 
+	 * @param postID
+	 *            - the id of the status you want to retweet
+	 */
+	public void retweet(Status status) { // Share a post
+		try {
+			if (!status.isRetweetedByMe())
+				twitter.retweetStatus(status.getId());
+			else
+				twitter.unRetweetStatus(status.getId());
+		} catch (TwitterException e) {
+			System.out.println("CHECK CONNECTION - retweet was possibly not done");
+		}
+	}
+
+	/**
+	 * Retweets a certain status with a message (comment and share basically)
+	 * 
+	 * @param postID
+	 *            - the id of the status you want to retweet
+	 * @param text
+	 *            - the text you want to comment
+	 */
+	public void retweet(String text, Status status) { // Basically It's to
+														// comment and share a
+														// post
+		try {
+			StatusUpdate newStatus = new StatusUpdate(text + WATERMARK);
+			newStatus.setAttachmentUrl("https://twitter.com/" + user + "/status/" + status.getId());
+			twitter.updateStatus(newStatus);
+		} catch (TwitterException e) {
+			System.out.println("CHECK CONNECTION - retweet was possibly not done");
+		}
+	}
+
+	/**
+	 * Favorites/un-favorites a certain users status
+	 * 
+	 * @param postID
+	 *            of the status you want to favorite
+	 */
+	public void favorite(Status status) {
+		try {
+			if (!status.isFavorited())
+				twitter.createFavorite(status.getId());
+			else
+				twitter.destroyFavorite(status.getId());
+		} catch (TwitterException e) {
+			System.out.println("CHECK CONNECTION - favorite was possibly not done");
+		}
+	}
+
+	/**
+	 * Increase tweets in timeline
+	 * @return the next x tweets
+	 */
+	public List<Status> loadMoreWithoutFilter() {
+		incrementPaging();
+		return getTimeline(getUser());
+	}
+
+	/**
+	 * Increase tweets in timeline
+	 * @param wordFilter
+	 * @return the next x tweets
+	 */
+	public List<Status> loadMoreWithFilter(String wordFilter) {
+		incrementPaging();
+		return getTimeline(getUser(), wordFilter);
 	}
 
 	/**
@@ -108,8 +290,72 @@ public class TwitterApp {
 	public String getUser() {
 		return user;
 	}
+	
+	/**
+	 * Changes users page
+	 * 
+	 * @param user
+	 */
 	public void setUser(String user) {
 		this.user = user;
-		
 	}
+
+	/**
+	 * User that is logged-in
+	 * 
+	 * @return the "@"name of the user that is logged-in
+	 */
+	public String getOwner() {
+		return owner;
+	}
+
+	/**
+	 * timefilter getter
+	 * 
+	 * @return timefilter
+	 */
+	public TimeFilter getTimeFilter() {
+		return timeFilter;
+	}
+
+	/**
+	 * wordFilter getter
+	 * 
+	 * @return wordFilter
+	 */
+	public String getWordFilter() {
+		return wordFilter;
+	}
+
+	/**
+	 * Change time filter
+	 * 
+	 * @param timeFilter
+	 */
+	public void setTimeFilter(TimeFilter timeFilter) {
+		this.timeFilter = timeFilter;
+	}
+	/**
+	 * getter of the page
+	 * @return page number
+	 */
+	public int getPagingNumber() {
+		return pagingNumber;
+	}
+
+	/**
+	 * Increments the number of the page related with the timeline (more tweets)
+	 */
+	public void incrementPaging() {
+		pagingNumber++;
+	}
+
+	/**
+	 * Resets the number of the page related with the timeline (back to x
+	 * tweets)
+	 */
+	public void resetPaging() {
+		pagingNumber = 1;
+	}
+
 }

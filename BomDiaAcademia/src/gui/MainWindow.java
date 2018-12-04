@@ -9,6 +9,7 @@ import com.restfb.types.Post;
 
 import apps.EmailApp;
 import apps.FacebookApp;
+import apps.TimeFilter;
 import apps.TwitterApp;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -425,19 +426,13 @@ public class MainWindow extends Application {
 		search_twitter_toggle_button.setId("search_twitter_toggle_button");
 		ToggleButton search_email_toggle_button = new ToggleButton();
 		search_email_toggle_button.setId("search_email_toggle_button");
-		
-		//ALTERAR STRING PARA ENUMERADO DO RUBEN
-		ComboBox<String> filter_combo_box = new ComboBox<String>();
+
+		// ALTERAR STRING PARA ENUMERADO DO RUBEN
+		ComboBox<TimeFilter> filter_combo_box = new ComboBox<TimeFilter>();
 		filter_combo_box.setId("filter_combo_box");
-		filter_combo_box.getItems().addAll(
-	            "ALL",
-	            "LAST 24H",
-	            "THIS WEEK",
-	            "THIS YEAR",
-	            "CUSTOMIZE"
-	        );
-		
-		
+		filter_combo_box.getItems().addAll(TimeFilter.LAST_HOUR, TimeFilter.LAST_24H, TimeFilter.LAST_WEEK,
+				TimeFilter.LAST_MONTH, TimeFilter.ALL_TIME, TimeFilter.SPECIFIC_DAY);
+		filter_combo_box.setValue(TimeFilter.ALL_TIME);
 		app_check_pane.getChildren().addAll(search_facebook_toggle_button, search_twitter_toggle_button,
 				search_email_toggle_button, filter_combo_box);
 		HBox search_pane = new HBox();
@@ -458,7 +453,12 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				if (search_twitter_toggle_button.isSelected()) {
-					refreshTwitterApp(search_text_field.getText());
+					twitter_app.setTimeFilter(filter_combo_box.getValue());
+					if(search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
+						refreshTwitterApp();
+					}else {
+						refreshTwitterApp(search_text_field.getText());
+					}
 				}
 				if (search_facebook_toggle_button.isSelected()) {
 					refreshFacebookApp(search_text_field.getText());
