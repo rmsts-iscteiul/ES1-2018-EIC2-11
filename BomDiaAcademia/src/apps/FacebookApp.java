@@ -32,6 +32,7 @@ public class FacebookApp {
 	private Connection<Post> result;
 	private List<Post> offlineList = new LinkedList<>();
 	private TimeFilter timeFilter = TimeFilter.ALL_TIME;
+	private String userAccessToken;
 //	private boolean textFilterChosen = false;
 
 	/**
@@ -45,8 +46,8 @@ public class FacebookApp {
 	 */
 	@SuppressWarnings("deprecation")
 	public FacebookApp() {
-		String accessToken = "EAAD4C79u9UYBAKK5kALF2cxjaebseMLiSzyK6WIE3Y6iPfZBfo7164b0ZBLe9mHC1hKI7ZBjHcbr5Bef8DfzaizSZCpJBNK5SPRkTEHYGoGPSsZCVyhmGjTWELopC2c4LhLcFZAZBWia1rRJie2uR1WGgKKA301SaaZB2d3XpAW5ZAgZDZD\r\n";
-		fbClient = new DefaultFacebookClient(accessToken);
+		userAccessToken = "EAAD4C79u9UYBAKK5kALF2cxjaebseMLiSzyK6WIE3Y6iPfZBfo7164b0ZBLe9mHC1hKI7ZBjHcbr5Bef8DfzaizSZCpJBNK5SPRkTEHYGoGPSsZCVyhmGjTWELopC2c4LhLcFZAZBWia1rRJie2uR1WGgKKA301SaaZB2d3XpAW5ZAgZDZD\r\n";
+		fbClient = new DefaultFacebookClient(userAccessToken);
 
 		me = fbClient.fetchObject("me", User.class, Parameter.with("fields", "picture"));
 	}
@@ -105,7 +106,7 @@ public class FacebookApp {
 	public List<Post> getTimeline() {
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
-					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares,created_time"));
+					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares,created_time,picture"));
 			Thread updater = new Thread(updateOfflineList);
 			updater.start();
 			updater.join();
@@ -138,6 +139,7 @@ public class FacebookApp {
 				if (rPost.getMessage() != null) {
 					posts.add(rPost);
 					System.out.println(rPost.getMessage());
+					
 				}
 			}
 		}
@@ -158,7 +160,7 @@ public class FacebookApp {
 	public List<Post> getTimeline(String filter) {
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
-					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares,created_time"));
+					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares,created_time,picture"));
 			Thread updater = new Thread(updateOfflineList);
 			updater.start();
 			updater.join();
@@ -219,6 +221,4 @@ public class FacebookApp {
 	public void setTimeFilter(TimeFilter timeFilter) {
 		this.timeFilter = timeFilter;
 	}
-
-
 }
