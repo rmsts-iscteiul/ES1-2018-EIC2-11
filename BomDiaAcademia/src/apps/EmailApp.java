@@ -30,7 +30,14 @@ public class EmailApp {
 	protected String user;
 	protected String password;
 	protected Folder emailFolder;
-
+	private TimeFilter timeFilter;
+	private int s;
+	
+	public EmailApp() {
+		timeFilter.ALL_TIME;
+		s=41;
+	}
+	
 	protected List<Message> getTimeline() {
 		List<Message> emails = new LinkedList<Message>();
 		try {
@@ -63,10 +70,21 @@ public class EmailApp {
 			 */
 			Message[] messages = emailFolder.getMessages();
 			System.out.println("messages.length---" + messages.length);
-			for (int i = messages.length-1; i != messages.length-21; i--) {
-				Message message = messages[i];
-				emails.add(message);
+			
+			if(!timeFilter.equals(TimeFilter.ALL_TIME)) {
+				for (int i = 0; i != messages.length-1; i--) {
+					long date = Math.abs((timeFilter.getDate() - message.getSentDate()) / (24 * 60 * 60 * 1000));
+					if (date >= 0 && date <= timeFilter.getDif()) {
+						emails.add(messages[i]);
+					}
+				}
+			}else {
+				for (int i = messages.length-1; i != messages.length-s; i--) {
+					emails.add(messages[i]);
+				}
 			}
+			
+			
 
 			// close the store and folder objects
 			// emailFolder.close(false); //keeping it open
@@ -299,8 +317,11 @@ public class EmailApp {
 		this.password = password;
 	}
 	
+	public void moreMails() {
+		this.s += 40;
+	}
 //	public static void main(String[] args) {
 //		EmailApp email = new EmailApp();
-//		email.sendEmailWithAttachment("matiasfrazaocorreia@gmail.com", "test");
+//		email.getTimeline();
 //	}
 }
