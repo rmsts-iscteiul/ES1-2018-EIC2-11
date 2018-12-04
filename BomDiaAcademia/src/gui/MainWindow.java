@@ -12,7 +12,6 @@ import apps.FacebookApp;
 import apps.TwitterApp;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
@@ -76,10 +75,6 @@ public class MainWindow extends Application {
 
 	private static final int POST_WIDTH = 300;
 
-	private Service<Void> twitterThread;
-	private Service<Void> facebookThread;
-	private Service<Void> emailThread;
-
 	/**
 	 * This is the main method.
 	 * 
@@ -121,9 +116,9 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to create and configure the root pane (root_pane).
-	 * This pane is only used to configure the size of the window and to apply
-	 * to it the shadow effect.
+	 * This method is used to create and configure the root pane (root_pane). This
+	 * pane is only used to configure the size of the window and to apply to it the
+	 * shadow effect.
 	 */
 	private void createRootPane() {
 		BorderPane root_pane = new BorderPane();
@@ -163,8 +158,8 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to start the stage (main_stage). It must be the be
-	 * the last method to be called in start method.
+	 * This method is used to start the stage (main_stage). It must be the be the
+	 * last method to be called in start method.
 	 */
 	private void startStage() {
 		main_stage.setScene(scene);
@@ -459,8 +454,8 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to build the Apps pane (apps_pane). This pane is
-	 * where the Facebook, Twitter and Email Apps is going to be added.
+	 * This method is used to build the Apps pane (apps_pane). This pane is where
+	 * the Facebook, Twitter and Email Apps is going to be added.
 	 */
 	private void buildAppsPane() {
 		apps_pane = new HBox();
@@ -471,9 +466,9 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to build the Twitter App pane (twitter_app_pane),
-	 * using a list of status. Note that this method doesn't set visible the
-	 * App. It only build it back scene.
+	 * This method is used to build the Twitter App pane (twitter_app_pane), using a
+	 * list of status. Note that this method doesn't set visible the App. It only
+	 * build it back scene.
 	 * 
 	 * @param statuses
 	 */
@@ -553,9 +548,9 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to build the Facebook App pane (facebook_app_pane),
-	 * using a list of posts. Note that this method doesn't set visible the App.
-	 * It only build it back scene.
+	 * This method is used to build the Facebook App pane (facebook_app_pane), using
+	 * a list of posts. Note that this method doesn't set visible the App. It only
+	 * build it back scene.
 	 * 
 	 * @param posts
 	 */
@@ -606,8 +601,8 @@ public class MainWindow extends Application {
 
 	/**
 	 * This method is used to build the Email App pane (email_app_pane), using a
-	 * list of emails. Note that this method doesn't set visible the App. It
-	 * only build it back scene.
+	 * list of emails. Note that this method doesn't set visible the App. It only
+	 * build it back scene.
 	 * 
 	 * @param emails
 	 */
@@ -669,8 +664,8 @@ public class MainWindow extends Application {
 	}
 
 	/**
-	 * This method is used to refresh the Twitter App pane (twitter_app_pane),
-	 * using a keyword to filter the posts.
+	 * This method is used to refresh the Twitter App pane (twitter_app_pane), using
+	 * a keyword to filter the posts.
 	 * 
 	 * @param filter
 	 */
@@ -843,37 +838,32 @@ public class MainWindow extends Application {
 	 */
 	private void initApps() {
 		twitter_app = new TwitterApp();
-		// facebook_app = new FacebookApp();
+		facebook_app = new FacebookApp();
 		email_app = new EmailApp();
 	}
 
 	/**
-	 * This method is responsible for getting the the twitters timeline without
-	 * a filter
+	 * This method is responsible for getting the the twitters timeline without a
+	 * filter
 	 */
 	private void getTwitterTimeline() {
 		/*
 		 * The thread has a service for FACEBOOK that has only one task.
 		 */
-		twitterThread = new Service<Void>() {
+		Task<Void> task = new Task<Void>() {
+			/*
+			 * What the thread needs to do
+			 */
 			@Override
-			protected Task<Void> createTask() {
-				return new Task<Void>() {
-					/*
-					 * What the thread needs to do
-					 */
-					@Override
-					protected Void call() throws Exception {
-						buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser()));
-						return null;
-					}
-				};
-			};
+			protected Void call() throws Exception {
+				buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser()));
+				return null;
+			}
 		};
 		/*
 		 * What the thread does after it did what is describred above
 		 */
-		twitterThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
 			@Override
 			public void handle(WorkerStateEvent arg0) {
@@ -882,12 +872,11 @@ public class MainWindow extends Application {
 					twitter_app_pane.setVisible(true);
 			}
 		});
-		twitterThread.restart();
+		new Thread(task).start();
 	}
 
 	/**
-	 * This method is responsible for getting the twitters timeline with a
-	 * filter
+	 * This method is responsible for getting the twitters timeline with a filter
 	 * 
 	 * @param filter
 	 */
@@ -895,62 +884,52 @@ public class MainWindow extends Application {
 		/*
 		 * The thread has a service for FACEBOOK that has only one task.
 		 */
-		twitterThread = new Service<Void>() {
+		Task<Void> task = new Task<Void>() {
+			/*
+			 * What the thread needs to do
+			 */
 			@Override
-			protected Task<Void> createTask() {
-				return new Task<Void>() {
-					/*
-					 * What the thread needs to do
-					 */
-					@Override
-					protected Void call() throws Exception {
-						buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser(), filter));
-						return null;
-					}
-				};
-			};
+			protected Void call() throws Exception {
+				buildTwitterApp(twitter_app.getTimeline(twitter_app.getUser(), filter));
+				return null;
+			}
 		};
 		/*
 		 * What the thread does after it did what is describred above
 		 */
-		twitterThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
 			@Override
 			public void handle(WorkerStateEvent arg0) {
 				apps_pane.getChildren().add(twitter_app_pane);
 			}
 		});
-		twitterThread.restart();
+		new Thread(task).start();
 	}
 
 	/**
-	 * This method is responsible for getting the the facebooks timeline without
-	 * a filter.
+	 * This method is responsible for getting the the facebooks timeline without a
+	 * filter.
 	 */
 	private void getFacebookTimeline() {
 		/*
 		 * The thread has a service for TWITTER that has only one task.
 		 */
-		facebookThread = new Service<Void>() {
+		Task<Void> task = new Task<Void>() {
+			/*
+			 * What the thread needs to do
+			 */
 			@Override
-			protected Task<Void> createTask() {
-				return new Task<Void>() {
-					/*
-					 * What the thread needs to do
-					 */
-					@Override
-					protected Void call() throws Exception {
-						buildFacebookApp(facebook_app.getTimeline());
-						return null;
-					}
-				};
-			};
+			protected Void call() throws Exception {
+				buildFacebookApp(facebook_app.getTimeline());
+				return null;
+			}
 		};
 
 		/*
 		 * What the thread does after it did what is describred above
 		 */
-		facebookThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
 			@Override
 			public void handle(WorkerStateEvent arg0) {
@@ -959,7 +938,7 @@ public class MainWindow extends Application {
 					facebook_app_pane.setVisible(true);
 			}
 		});
-		facebookThread.restart();
+		new Thread(task).start();
 	}
 
 	/**
@@ -970,10 +949,7 @@ public class MainWindow extends Application {
 	 */
 	private void getFacebookTimeline(String filter) {
 
-		facebookThread = new Service<Void>() {
-			@Override
-			protected Task<Void> createTask() {
-				return new Task<Void>() {
+		Task<Void> task = new Task<Void>(){
 					/*
 					 * What the thread needs to do
 					 */
@@ -983,29 +959,24 @@ public class MainWindow extends Application {
 						return null;
 					}
 				};
-			};
-		};
 		/*
 		 * What the thread does after it did what is describred above
 		 */
-		facebookThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
 			@Override
 			public void handle(WorkerStateEvent arg0) {
 				apps_pane.getChildren().add(facebook_app_pane);
 			}
 		});
-		facebookThread.restart();
+		new Thread(task).start();
 	}
 
 	private void getEmailTimeline() {
 		/*
 		 * The thread has a service for FACEBOOK that has only one task.
 		 */
-		emailThread = new Service<Void>() {
-			@Override
-			protected Task<Void> createTask() {
-				return new Task<Void>() {
+		Task<Void> task = new Task<Void>(){
 					/*
 					 * What the thread needs to do
 					 */
@@ -1015,12 +986,10 @@ public class MainWindow extends Application {
 						return null;
 					}
 				};
-			};
-		};
 		/*
 		 * What the thread does after it did what is describred above
 		 */
-		emailThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
 			@Override
 			public void handle(WorkerStateEvent arg0) {
@@ -1029,6 +998,6 @@ public class MainWindow extends Application {
 					email_app_pane.setVisible(true);
 			}
 		});
-		emailThread.restart();
+		new Thread(task).start();
 	}
 }
