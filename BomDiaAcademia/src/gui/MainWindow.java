@@ -415,8 +415,8 @@ public class MainWindow extends Application {
 	 * 
 	 * @return window_top_bar_search_container
 	 */
-	private FlowPane createSearch() {
-		FlowPane window_top_bar_search_container = new FlowPane();
+	private HBox createSearch() {
+		HBox window_top_bar_search_container = new HBox();
 		window_top_bar_search_container.setId("window_top_bar_search_container");
 		HBox app_check_pane = new HBox();
 		app_check_pane.setId("app_check_pane");
@@ -426,8 +426,8 @@ public class MainWindow extends Application {
 		search_twitter_toggle_button.setId("search_twitter_toggle_button");
 		ToggleButton search_email_toggle_button = new ToggleButton();
 		search_email_toggle_button.setId("search_email_toggle_button");
-
-		// ALTERAR STRING PARA ENUMERADO DO RUBEN
+		HBox search_pane = new HBox();
+		search_pane.setId("search_pane");
 		ComboBox<TimeFilter> filter_combo_box = new ComboBox<TimeFilter>();
 		filter_combo_box.setId("filter_combo_box");
 		filter_combo_box.getItems().addAll(TimeFilter.LAST_HOUR, TimeFilter.LAST_24H, TimeFilter.LAST_WEEK,
@@ -435,8 +435,6 @@ public class MainWindow extends Application {
 		filter_combo_box.setValue(TimeFilter.ALL_TIME);
 		app_check_pane.getChildren().addAll(search_facebook_toggle_button, search_twitter_toggle_button,
 				search_email_toggle_button, filter_combo_box);
-		HBox search_pane = new HBox();
-		search_pane.setId("search_pane");
 		TextField search_text_field = new TextField("Filter...");
 		search_text_field.setId("search_text_field");
 		search_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -469,7 +467,7 @@ public class MainWindow extends Application {
 				}
 			}
 		});
-		search_pane.getChildren().addAll(search_text_field, search_button);
+		search_pane.getChildren().addAll(filter_combo_box, new Separator(Orientation.VERTICAL), search_text_field, search_button);
 		window_top_bar_search_container.getChildren().addAll(app_check_pane, search_pane);
 		return window_top_bar_search_container;
 	}

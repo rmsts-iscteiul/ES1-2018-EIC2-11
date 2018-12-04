@@ -159,12 +159,15 @@
 	-fx-background-color: #ffffff;
 	-fx-background-radius: 50.0px;
 	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
+	-fx-alignment: center;
 }
 
 #app_check_pane {
 	-fx-background-color: transparent;
 	-fx-border-style: none;
 	-fx-spacing: 4.0px;
+	-fx-alignment: center-right;
+	-fx-padding: 0.0px 10.0px 0.0px 0.0px;
 }
 
 #search_facebook_toggle_button {
@@ -251,8 +254,6 @@
     -fx-background-insets: 0.0 0.0 -1.0 0.0, 0.0, 1.0, 2.0;
     -fx-padding: 0.0;
     -fx-background-radius: 50.0px;
-    -fx-scale-x: 0.7px;
-    -fx-scale-y: 0.7px;
     
 }
 
@@ -262,8 +263,6 @@
     -fx-background-insets: 0.0 0.0 -1.0 0.0, 0.0, 1.0, 2.0;
     -fx-padding: 0.0;
     -fx-background-radius: 50.0px;
-    -fx-scale-x: 0.9px;
-    -fx-scale-y: 0.9px;
 }
 
 .combo-box-base:showing {
@@ -272,8 +271,6 @@
     -fx-background-insets: 0.0 0.0 -1.0 0.0, 0.0, 1.0, 2.0;
     -fx-padding: 0.0;
     -fx-background-radius: 50.0px;
-    -fx-scale-x: 0.9px;
-    -fx-scale-y: 0.9px;
 }
 
 .combo-box-base:focused {
@@ -282,18 +279,14 @@
     -fx-background-insets: 0.0 0.0 -1.0 0.0, 0.0, 1.0, 2.0;
     -fx-padding: 0.0;
     -fx-background-radius: 50.0px;
-    -fx-scale-x: 0.9px;
-    -fx-scale-y: 0.9px;
 }
 
 .combo-box-base:disabled {
-    -fx-background-color: #00ff00;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 5.0, 5.0, 4.0, 3.0;
     -fx-background-insets: 0.0 0.0 -1.0 0.0, 0.0, 1.0, 2.0;
     -fx-padding: 0.0;
     -fx-background-radius: 50.0px;
-    -fx-scale-x: 0.9px;
-    -fx-scale-y: 0.9px;
 }
 
 #search_text_field {
