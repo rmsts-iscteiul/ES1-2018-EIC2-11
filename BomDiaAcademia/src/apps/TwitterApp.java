@@ -1,5 +1,6 @@
 package apps;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -303,8 +304,9 @@ public class TwitterApp {
 	 * @return returns the owners timeline
 	 */
 
-	public void tweet(String text) throws TwitterException {
+	public void tweet(String text, File file) throws TwitterException {
 		StatusUpdate newStatus = new StatusUpdate(text + WATERMARK);
+		newStatus.setMedia(file);
 		twitter.updateStatus(newStatus.getStatus());
 	}
 
