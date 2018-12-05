@@ -50,6 +50,7 @@ public class FacebookApp {
 		fbClient = new DefaultFacebookClient(userAccessToken);
 
 		me = fbClient.fetchObject("me", User.class, Parameter.with("fields", "picture,name"));
+		timeFilter = TimeFilter.ALL_TIME;
 	}
 
 	/**
