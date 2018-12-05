@@ -26,14 +26,26 @@ public class FacebookApp {
 	 * fbClient is to initiate communication with facebook trough accessToken
 	 */
 	private static FacebookClient fbClient;
+	
 	/**
 	 * result is the list where posts are placed when fetching info from Facebook
 	 */
 	private Connection<Post> result;
+	
+	/**
+	 * offline list updated from result list fetched from facebook
+	 */
 	private List<Post> offlineList = new LinkedList<>();
+	
+	/**
+	 * Current time filter for the posts
+	 */
 	private TimeFilter timeFilter;
+	
+	/**
+	 * User's acess token
+	 */
 	private String userAccessToken;
-//	private boolean textFilterChosen = false;
 
 	/**
 	 * Object fetched from facebook
@@ -43,6 +55,7 @@ public class FacebookApp {
 	/**
 	 * Initilize app(fbClient) with given acessToken, and fetched "me" object from
 	 * facebook.
+	 * Also sets time filter to TimeFilter.ALL_TIME
 	 */
 	@SuppressWarnings("deprecation")
 	public FacebookApp() {
@@ -54,14 +67,11 @@ public class FacebookApp {
 	}
 
 	/**
-	 * Returns all non-null message posts from user feed
-	 * 
-	 * @throws FacebookNetworkException when system is offline, returning posts from
-	 *                                  previous list
-	 * @return List where all non-null message posts from user feed are included.
+	 * Runnable that updates offlineList, with the result list fetched from facebook
 	 */
 	Runnable updateOfflineList = new Runnable() {
 		public void run() {
+			resetOfflineList();
 			for (List<Post> page : result) {
 				for (Post rPost : page) {
 					if (rPost.getMessage() != null) {
@@ -72,8 +82,18 @@ public class FacebookApp {
 		}
 	};
 
+	/**
+	 * Returns all non-null message posts from user feed based on a time filter
+	 * 
+	 * @throws FacebookNetworkException when system is offline, returning posts from previous list
+	 * 
+	 * @throws InterruptedException when updater thread is interrupted
+	 * 
+	 * @return List where all non-null message posts from user feed are included(with time filter).
+	 */
 	@SuppressWarnings("finally")
 	public List<Post> getTimeline() {
+		List<Post> posts = new LinkedList<>();
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class,
 					Parameter.with("fields", "likes.summary(true),comments.summary(true),message,shares,created_time,picture"));
@@ -89,10 +109,13 @@ public class FacebookApp {
 		}
 	}
 
+	/**
+	 * Returns all non-null message posts from user feed based on a time filter
+	 * 
+	 * @return List where all non-null message posts from user feed are included(with time filter).
+	 */
 	public List<Post> getTimelineWithTime() {
 		List<Post> posts = new LinkedList<>();
-		Calendar calendar = Calendar.getInstance();
-		Date date = calendar.getTime();
 		if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
 			for (Post rPost : offlineList) {
 				if (rPost.getMessage() != null) {
@@ -108,7 +131,6 @@ public class FacebookApp {
 			for (Post rPost : offlineList) {
 				if (rPost.getMessage() != null) {
 					posts.add(rPost);
-					System.out.println(rPost.getMessage());
 					
 				}
 			}
@@ -117,12 +139,12 @@ public class FacebookApp {
 	}
 
 	/**
-	 * Returns all non-null message posts from user feed, based on a filter
+	 * Returns all non-null message posts from user feed, based on a text and time filter
 	 * 
-	 * @return List where all non-null message posts based on a filter are included,
-	 *         from user feed.
+	 * @return List where all non-null message posts based on a text and time filter are included,
+	 *         from user feed(also filtered with time filter).
 	 * @throws FacebookNetworkException when system is offline, returning posts from
-	 *                                  previous list(with filter)
+	 *                                  previous list(with text and time filter)
 	 * @param filter chosen by user to get specific posts.
 	 */
 
@@ -139,15 +161,21 @@ public class FacebookApp {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
-			return getTimelineWithTimeFilter(filter);
+			return getTimelineWithTime(filter);
 		}
 
 	}
-
-	public List<Post> getTimelineWithTimeFilter(String filter) {
+	
+	/**
+	 * Returns all non-null message posts from user feed, based on a text and time filter
+	 * 
+	 * @return List where all non-null message posts based on a Text and time filter are included,
+	 *         from user feed.
+	 *         
+	 * @param filter chosen by user to get specific posts.
+	 */
+	public List<Post> getTimelineWithTime(String filter) {
 		List<Post> posts = new LinkedList<>();
-		Calendar calendar = Calendar.getInstance();
-		Date date = calendar.getTime();
 		if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
 			for (Post rPost : offlineList) {
 				if (rPost.getMessage() != null) {
@@ -163,7 +191,6 @@ public class FacebookApp {
 			for (Post rPost : offlineList) {
 				if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
 					posts.add(rPost);
-					System.out.println(rPost.getMessage());
 				}
 			}
 		}
@@ -178,16 +205,27 @@ public class FacebookApp {
 	public User getUser() {
 		return me;
 	}
+	
+	/**
+	 * Resets offlineList
+	 */
+	public void resetOfflineList() {
+		offlineList.clear();
+	}
 
 	/**
 	 * return user's name
 	 * 
 	 * @return String that equals user's name
 	 */
-	public String getUsername() {
+	public String getUserName() {
 		return me.getName();
 	}
-
+	
+	/**
+	 * Sets specific time filter
+	 * @param time filter chosen by user.
+	 */
 	public void setTimeFilter(TimeFilter timeFilter) {
 		this.timeFilter = timeFilter;
 	}
