@@ -1,10 +1,13 @@
 package gui;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
+import com.restfb.Connection;
 import com.restfb.types.Post;
 
 import apps.EmailApp;
@@ -454,9 +457,9 @@ public class MainWindow extends Application {
 			public void handle(MouseEvent mouseEvent) {
 				if (search_twitter_toggle_button.isSelected()) {
 					twitter_app.setTimeFilter(filter_combo_box.getValue());
-					if(search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
+					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
 						refreshTwitterApp();
-					}else {
+					} else {
 						refreshTwitterApp(search_text_field.getText());
 					}
 				}
@@ -1060,4 +1063,49 @@ public class MainWindow extends Application {
 //		});
 //		emailThread.restart();
 //	}
+
+	private List<Object> allTogether(List<Status> statuses, List<Post> posts, List<Message> messages) {
+		List<Object> list = new ArrayList<>();
+		list.addAll(statuses);
+		list.addAll(posts);
+		list.addAll(messages);
+		
+		list.sort(new Comparator<Object>() {
+
+			@Override
+			public int compare(Object o1, Object o2) {
+				long timeO1=-1;
+				long timeO2=-1;
+				if(o1 instanceof Status) {
+					timeO1 = ((Status) o1).getCreatedAt().getTime();
+				}else if(o1 instanceof Post) {
+					timeO1 = ((Post) o1).getCreatedTime().getTime();
+				}else{
+					try {
+						timeO1 = ((Message) o1).getReceivedDate().getTime();
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+				}
+				timeO1 = timeO1/(1000*60*60);
+				if(o2 instanceof Status) {
+					timeO2 = ((Status) o2).getCreatedAt().getTime();
+				}else if(o2 instanceof Post) {
+					timeO2 = ((Post) o2).getCreatedTime().getTime();
+				}else{
+					try {
+						timeO2 = ((Message) o2).getReceivedDate().getTime();
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+				}
+				timeO2 = timeO2/(1000*60*60);
+				return (int) (timeO1 - timeO2);
+				
+			}
+			
+		});
+		return list;
+	}
+	
 }
