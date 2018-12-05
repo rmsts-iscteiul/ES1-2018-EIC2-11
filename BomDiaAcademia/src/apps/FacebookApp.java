@@ -98,7 +98,7 @@ public class FacebookApp {
 				if (rPost.getMessage() != null) {
 					long timeDiff = (Math.abs(timeFilter.getDate() - rPost.getCreatedTime().getTime())
 							/ (24 * 60 * 60 * 1000));
-					if (timeDiff <= timeFilter.daysDif) {
+					if (timeDiff <= timeFilter.getDif()) {
 						posts.add(rPost);
 					}
 				}
@@ -153,7 +153,7 @@ public class FacebookApp {
 				if (rPost.getMessage() != null) {
 					long timeDiff = (Math.abs(timeFilter.getDate() - rPost.getCreatedTime().getTime())
 							/ (24 * 60 * 60 * 1000));
-					if (timeDiff <= timeFilter.daysDif && rPost.getMessage().contains(filter)) {
+					if (timeDiff <= timeFilter.getDif() && rPost.getMessage().contains(filter)) {
 						posts.add(rPost);
 					}
 				}
