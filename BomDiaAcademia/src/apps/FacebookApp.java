@@ -31,7 +31,7 @@ public class FacebookApp {
 	 */
 	private Connection<Post> result;
 	private List<Post> offlineList = new LinkedList<>();
-	private TimeFilter timeFilter = TimeFilter.ALL_TIME;
+	private TimeFilter timeFilter;
 	private String userAccessToken;
 //	private boolean textFilterChosen = false;
 
@@ -49,38 +49,7 @@ public class FacebookApp {
 		userAccessToken = "EAAD4C79u9UYBAKK5kALF2cxjaebseMLiSzyK6WIE3Y6iPfZBfo7164b0ZBLe9mHC1hKI7ZBjHcbr5Bef8DfzaizSZCpJBNK5SPRkTEHYGoGPSsZCVyhmGjTWELopC2c4LhLcFZAZBWia1rRJie2uR1WGgKKA301SaaZB2d3XpAW5ZAgZDZD\r\n";
 		fbClient = new DefaultFacebookClient(userAccessToken);
 
-		me = fbClient.fetchObject("me", User.class, Parameter.with("fields", "picture"));
-	}
-
-	public enum TimeFilter {
-		LAST_HOUR(1 / 24), LAST_24H(1), LAST_WEEK(7), LAST_MONTH(30), LAST_YEAR(365), ALL_TIME, SPECIFIC_DAY(1);
-
-		@SuppressWarnings("unused")
-		private int daysDif;
-		private long date = System.currentTimeMillis();
-		
-		private TimeFilter(int daysDif) {
-			this.daysDif = daysDif;
-		}
-
-		private TimeFilter() {
-		}
-		
-		public long getDate() {
-			return date;
-		}
-		
-		public int getDaysDif() {
-			return daysDif;
-		}
-		
-		public void setDate(int year, int month, int day) {
-			if(this.equals(SPECIFIC_DAY)) {
-				Calendar c = Calendar.getInstance();
-				c.set(year, month - 1, day);
-				date = c.getTime().getTime();
-			}
-		}
+		me = fbClient.fetchObject("me", User.class, Parameter.with("fields", "picture,name"));
 	}
 
 	/**
@@ -181,7 +150,7 @@ public class FacebookApp {
 		if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
 			for (Post rPost : offlineList) {
 				if (rPost.getMessage() != null) {
-					long timeDiff = (Math.abs(date.getTime() - rPost.getCreatedTime().getTime())
+					long timeDiff = (Math.abs(timeFilter.getDate() - rPost.getCreatedTime().getTime())
 							/ (24 * 60 * 60 * 1000));
 					if (timeDiff <= timeFilter.daysDif && rPost.getMessage().contains(filter)) {
 						posts.add(rPost);
