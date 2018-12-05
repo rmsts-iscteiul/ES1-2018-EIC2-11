@@ -112,8 +112,7 @@ public class TwitterApp {
 				return statuses; // If its all time then there is no need to
 									// alterations.
 			for (Status s : statuses) {
-				long date = Math.abs((timeFilter.getDate() - s.getCreatedAt().getTime()) / (24 * 60 * 60 * 1000));
-				System.out.println(date);
+				long date = ( (timeFilter.getDate() / (24*60*60*1000)) - (s.getCreatedAt().getTime() / (24 * 60 * 60 * 1000)) );
 				if (date >= 0 && date <= timeFilter.getDif()) {
 					list.add(s);
 				}
@@ -150,7 +149,7 @@ public class TwitterApp {
 		} finally {
 			if (!timeFilter.equals(TimeFilter.ALL_TIME)) {
 				for (Status s : statuses) {
-					long date = Math.abs((timeFilter.getDate() - s.getCreatedAt().getTime()) / (24 * 60 * 60 * 1000));
+					long date =( (timeFilter.getDate() / (24*60*60*1000)) - (s.getCreatedAt().getTime() / (24 * 60 * 60 * 1000)) );
 					if (date >= 0 && date <= timeFilter.getDif()) {
 						listWithTimeFilter.add(s);
 					}
