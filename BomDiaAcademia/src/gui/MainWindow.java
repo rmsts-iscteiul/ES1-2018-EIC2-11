@@ -461,8 +461,21 @@ public class MainWindow extends Application {
 					}
 				}
 				if (search_facebook_toggle_button.isSelected()) {
-					refreshFacebookApp(search_text_field.getText());
+					facebook_app.setTimeFilter(filter_combo_box.getValue());
+					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
+						refreshFacebookApp();
+					} else {
+						refreshFacebookApp(search_text_field.getText());
+					}
 				}
+//				if (search_email_toggle_button.isSelected()) {
+//					email_app.setTimeFilter(filter_combo_box.getValue());
+//					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
+//						refreshEmailApp();
+//					} else {
+//						refreshEmailApp(search_text_field.getText());
+//					}
+//				}
 				if (!search_facebook_toggle_button.isSelected() && !search_twitter_toggle_button.isSelected()
 						&& !search_email_toggle_button.isSelected()) {
 					new PopUpWindow(main_stage, PopUpType.WARNING, "Please select an App to search.");

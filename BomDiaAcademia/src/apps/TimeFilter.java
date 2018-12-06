@@ -32,16 +32,4 @@ public enum TimeFilter { // Displayed in Days
 			date = c.getTime().getTime();
 		}
 	}
-
-//	public static void main(String[] args) {
-//		System.out.println(Math.abs(System.currentTimeMillis() ));
-//		System.out.println("Nxt");
-//		TimeFilter t;
-//		t = TimeFilter.ALL_TIME;
-//		t.setDate(2018, 12, 1);
-//		System.out.println(t.getDate());
-//		t = TimeFilter.SPECIFIC_DAY;
-//		t.setDate(2018, 12, 3);
-//		System.out.println(t.getDate());
-//	}
-}
+}	

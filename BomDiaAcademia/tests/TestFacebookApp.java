@@ -62,6 +62,7 @@ class TestFacebookApp {
 	
 =======
 import apps.FacebookApp;
+import apps.TimeFilter;
 
 class TestFacebookApp {
 
@@ -87,7 +88,8 @@ class TestFacebookApp {
 	@Test
 	void testGetAllPosts() {
 		int i = 0;
-		List<Post> results = app.getTimeline("a");
+		app.setTimeFilter(TimeFilter.ALL_TIME);
+		List<Post> results = app.getTimeline();
 		System.out.println("All post are going to be printed....\n");
 		for (Post a : results) {
 			System.out.println("\n-----------------------------------------------------------------------");
@@ -101,13 +103,13 @@ class TestFacebookApp {
 	}
 	
 	@Test
-	void testGetPostsbasedOnFilter() {
+	void testGetALLPostsbasedOnFilter() {
 		int i =0;
-		List<Post> results = app.getTimeline();
+		app.setTimeFilter(TimeFilter.ALL_TIME);
+		List<Post> results = app.getTimeline("w");
 		System.out.println("Posts based on filter previous chosen are going to be printed....\n");
 		
 		for (Post a : results) {
-			if(a.getMessage().contains("É")){ //filter
 				System.out.println("\n-----------------------------------------------------------------------");
 				System.out.println("Post number: " + i);
 				System.out.println("Message: " + a.getMessage()); // Returns all the posts that contains the previous filter
@@ -115,7 +117,24 @@ class TestFacebookApp {
 				System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
 				System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
 				i++;
-			}
+		}
+	}
+	
+	@Test
+	void testGetPostsbasedOnFilter() {
+		int i =0;
+		app.setTimeFilter(TimeFilter.LAST_MONTH);
+		List<Post> results = app.getTimeline("w");
+		System.out.println("Posts based on filter previous chosen are going to be printed....\n");
+		
+		for (Post a : results) {
+				System.out.println("\n-----------------------------------------------------------------------");
+				System.out.println("Post number: " + i);
+				System.out.println("Message: " + a.getMessage()); // Returns all the posts that contains the previous filter
+				System.out.println("Likes: " + a.getLikesCount()); // Returns the post's likes count
+				System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
+				System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
+				i++;
 		}
 	}
 >>>>>>> refs/remotes/origin/Facebook_App
