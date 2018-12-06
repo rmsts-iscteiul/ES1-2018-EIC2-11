@@ -22,6 +22,14 @@
 	-fx-tooltip-visible: true;
 }
 
+#twitter_app_top_bar_new_tweet_button{
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/plus_white_14.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
+	-fx-tooltip-visible: true;
+}
+
 #twitter_app_top_bar_change_user_button {
 	-fx-background-color: transparent;
 	-fx-graphic: "/resources/icons/change_user_white_14.png";
@@ -111,6 +119,7 @@
 	-fx-background-color: transparent;
 	-fx-spacing: 10.0px;
 	-fx-alignment: top-center;
+	-fx-padding: 10.0px 0.0px 0.0px 0.0px;
 }
 
 #twitter_post_pane {
@@ -119,16 +128,30 @@
 	-fx-padding: 4.0px;
 }
 
-#twitter_post_top_bar {
-	-fx-alignment: center;
+#twitter_post_left_container {
+	-fx-padding: 4.0px;
 }
 
-#twitter_post_bottom_bar {
-	-fx-spacing: 20.0px;
+#twitter_post_center_container {
+	-fx-padding: 4.0px;
+	-fx-wrap-text: true;
 }
 
-#favourites_label {
+#twitter_post_text {
+	
+}
+
+#twitter_post_right_container {
+	-fx-padding: 4.0px;
+	-fx-spacing: 10.0px;
+}
+
+#favourited_label {
 	-fx-graphic: "/resources/icons/twitter_favourite_tcolor_14.png";
+}
+
+#no_favourited_label {
+	-fx-graphic: "/resources/icons/twitter_no_favourite_tcolor_14.png";
 }
 
 #retweets_label {

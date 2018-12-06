@@ -40,7 +40,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import twitter4j.MediaEntity;
 import twitter4j.Status;
 
 /**
@@ -452,9 +451,9 @@ public class MainWindow extends Application {
 			public void handle(MouseEvent mouseEvent) {
 				if (search_twitter_toggle_button.isSelected()) {
 					twitter_app.setTimeFilter(filter_combo_box.getValue());
-					if(search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
+					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
 						refreshTwitterApp();
-					}else {
+					} else {
 						refreshTwitterApp(search_text_field.getText());
 					}
 				}
@@ -467,7 +466,8 @@ public class MainWindow extends Application {
 				}
 			}
 		});
-		search_pane.getChildren().addAll(filter_combo_box, new Separator(Orientation.VERTICAL), search_text_field, search_button);
+		search_pane.getChildren().addAll(filter_combo_box, new Separator(Orientation.VERTICAL), search_text_field,
+				search_button);
 		window_top_bar_search_container.getChildren().addAll(app_check_pane, search_pane);
 		return window_top_bar_search_container;
 	}
@@ -494,6 +494,10 @@ public class MainWindow extends Application {
 	private void buildTwitterApp(List<Status> statuses) {
 		twitter_app_pane = new VBox();
 		twitter_app_pane.setId("twitter_app_pane");
+		twitter_app_pane.setPrefSize((window_pane.getWidth() * 0.8),
+				(window_pane.getHeight() - window_top_bar.getHeight()));
+		twitter_app_pane.setMaxSize((window_pane.getWidth() * 0.8),
+				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 
 		HBox twitter_app_tool_bar = new HBox();
 		twitter_app_tool_bar.setId("twitter_app_tool_bar");
@@ -509,11 +513,22 @@ public class MainWindow extends Application {
 		});
 		final Pane spacer = new Pane();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
-		Button twitter_app_top_bar_change_user_button = new Button();
+
+		Button twitter_app_top_bar_new_tweet_button = new Button();
+		twitter_app_top_bar_new_tweet_button.setId("twitter_app_top_bar_new_tweet_button");
+		twitter_app_top_bar_new_tweet_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				new TwitterPostWindow(main_stage, twitter_app);
+			}
+		});
+
+		ToggleButton twitter_app_top_bar_change_user_button = new ToggleButton();
 		twitter_app_top_bar_change_user_button.setId("twitter_app_top_bar_change_user_button");
 		twitter_app_top_bar_change_user_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
+				twitter_app_tool_bar.getChildren().remove(twitter_app_top_bar_change_user_button);
 				HBox change_user_container = new HBox();
 				change_user_container.setId("change_user_container");
 				TextField change_user_text_field = new TextField("New user");
@@ -546,15 +561,13 @@ public class MainWindow extends Application {
 				twitter_app_pane.setVisible(false);
 			}
 		});
-		twitter_app_tool_bar.getChildren().addAll(twitter_app_top_bar_icon, spacer, twitter_app_top_bar_refresh_button,
+		twitter_app_tool_bar.getChildren().addAll(twitter_app_top_bar_icon, spacer,
+				twitter_app_top_bar_new_tweet_button, twitter_app_top_bar_refresh_button,
 				twitter_app_top_bar_change_user_button, twitter_app_top_bar_minimize_button);
+
 		ScrollPane twitter_app_scroll_pane = new ScrollPane();
 		twitter_app_scroll_pane.setId("twitter_scroll_feed_pane");
-		twitter_app_scroll_pane.setPrefSize((window_pane.getWidth() * 0.4),
-				(window_pane.getHeight() - window_top_bar.getHeight()));
-		twitter_app_scroll_pane.setMaxSize((window_pane.getWidth() * 0.4),
-				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
-
+		twitter_app_scroll_pane.setFitToWidth(true);
 		VBox twitter_feed = new VBox();
 		twitter_feed.setId("twitter_feed");
 
@@ -564,6 +577,7 @@ public class MainWindow extends Application {
 
 		twitter_app_scroll_pane.setContent(twitter_feed);
 		twitter_app_pane.getChildren().addAll(twitter_app_tool_bar, twitter_app_scroll_pane);
+
 	}
 
 	/**
@@ -754,41 +768,50 @@ public class MainWindow extends Application {
 	private BorderPane newTwitterPost(Status status) {
 		BorderPane twitter_post_pane = new BorderPane();
 		twitter_post_pane.setId("twitter_post_pane");
-		twitter_post_pane.setPrefWidth(POST_WIDTH);
-
-		HBox twitter_post_top_bar = new HBox(new ImageView(new Image(status.getUser().getProfileImageURL())),
-				new Label(status.getUser().getName()));
-		twitter_post_top_bar.setId("twitter_post_top_bar");
-
-		// CENTER
-		VBox twitter_post_center_container = new VBox();
-		twitter_post_center_container.setId("twitter_post_center_container");
-		Text post_text = new Text(status.getText());
-		post_text.setId("post_texto");
-		post_text.setWrappingWidth(POST_WIDTH);
-
-		MediaEntity[] media = status.getMediaEntities(); // get the media entities from the status
-		for (MediaEntity m : media) { // search trough your entities
-			ImageView img = new ImageView(new Image(m.getMediaURL()));
-			img.setFitWidth((window_pane.getWidth() * 0.38));
-			img.setFitHeight((window_pane.getWidth() * 0.38));
-			twitter_post_center_container.getChildren().add(img);
-		}
-
-		twitter_post_center_container.getChildren().addAll(post_text);
-		// BOTTOM BAR
-		HBox twitter_post_bottom_bar = new HBox();
-		twitter_post_bottom_bar.setId("twitter_post_bottom_bar");
-
+		twitter_post_pane.setPrefSize(twitter_app_pane.getPrefWidth() * 0.9, 100);
+		twitter_post_pane.setMaxSize(twitter_app_pane.getPrefWidth() * 0.9, 100);
+		twitter_post_pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				if (mouseEvent.getClickCount() == 2 && !mouseEvent.isConsumed()) {
+					mouseEvent.consume();
+					new TwitterPostWindow(main_stage, twitter_app, status);
+				}
+			}
+		});
+		// Left
+		VBox twitter_post_left_container = new VBox();
+		twitter_post_left_container.setId("twitter_post_left_container");
+		ImageView profile_image = new ImageView(new Image(status.getUser().getProfileImageURL()));
+		profile_image.setId("profile_image");
+		profile_image.setFitWidth(50);
+		profile_image.setFitHeight(50);
+		Label profile_image_label = new Label(status.getUser().getName());
+		profile_image_label.setId("profile_image_label");
+		twitter_post_left_container.getChildren().addAll(profile_image, profile_image_label);
+		twitter_post_pane.setLeft(twitter_post_left_container);
+		// Right
+		VBox twitter_post_right_container = new VBox();
+		twitter_post_right_container.setId("twitter_post_right_container");
 		Label favourites_label = new Label(status.getFavoriteCount() + "");
-		favourites_label.setId("favourites_label");
+		if (status.isFavorited()) {
+			favourites_label.setId("favourited_label");
+		} else {
+			favourites_label.setId("no_favourited_label");
+		}
 		Label retweets_label = new Label(status.getRetweetCount() + "");
 		retweets_label.setId("retweets_label");
-
-		twitter_post_bottom_bar.getChildren().addAll(favourites_label, retweets_label);
-		twitter_post_pane.setTop(twitter_post_top_bar);
+		twitter_post_right_container.getChildren().addAll(favourites_label, retweets_label);
+		twitter_post_pane.setRight(twitter_post_right_container);
+		// Center
+		VBox twitter_post_center_container = new VBox();
+		twitter_post_center_container.setId("twitter_post_center_container");
+		Text twitter_post_text = new Text(status.getText());
+		twitter_post_text.setId("twitter_post_text");
+		twitter_post_text.setWrappingWidth(twitter_post_pane.getPrefWidth() * 0.8);
+		twitter_post_center_container.getChildren().add(twitter_post_text);
 		twitter_post_pane.setCenter(twitter_post_center_container);
-		twitter_post_pane.setBottom(twitter_post_bottom_bar);
+
 		return twitter_post_pane;
 	}
 

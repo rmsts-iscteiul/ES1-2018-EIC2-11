@@ -305,4 +305,5 @@
 	-fx-background-color: transparent;
 	-fx-alignment: center;
 	-fx-spacing: 20.0px;
+	-fx-padding: 0.0px 4.0px 0.0px 4.0px;
 }

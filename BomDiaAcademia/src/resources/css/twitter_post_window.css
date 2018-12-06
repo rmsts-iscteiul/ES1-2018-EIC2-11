@@ -1,0 +1,245 @@
+#twitter_post_root_pane {
+	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
+	-fx-effect: dropshadow(gaussian, #000000, 10.0, 0.2, 0.0, 0.0);
+}
+
+#twitter_post_window_root_pane {
+	-fx-background-color: transparent;
+	-fx-background-radius: 10.0px;
+	-fx-alignment: center-left;
+	-fx-spacing: 20.0px;
+}
+
+#view_twitter_post_window_root_pane {
+	-fx-background-color: #f2f2f2;
+	-fx-background-radius: 10.0px;
+	-fx-alignment: center;
+}
+
+#write_twitter_post_window_root_pane {
+	-fx-background-color: #f2f2f2;
+	-fx-background-radius: 10.0px;
+	-fx-alignment: center;
+}
+
+#twitter_post_shadow_gap {
+	-fx-background-color: rgba(0.0,0.0,0.0,0.0);
+}
+
+#view_twitter_post_window_top_bar {
+	-fx-background-color: #33ccff;
+	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
+	-fx-alignment: center;
+}
+
+#write_twitter_post_window_top_bar {
+	-fx-background-color: #f2f2f2;
+	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
+	-fx-alignment: center;
+}
+
+#twitter_post_window_top_bar_buttons_container {
+	-fx-alignment: center;
+	-fx-padding: 0.0px 0.0px 0.0px 4.0px;
+}
+
+#view_twitter_post_top_container {
+	-fx-alignment: center-right ;
+}
+
+#twitter_post_window_top_bar_close_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/exit_window_white_14.png";
+}
+
+#twitter_post_window_top_bar_close_button:hover {
+	-fx-background-color: #f2f2f2;
+	-fx-graphic: "/resources/icons/exit_window_gray_14.png";
+	-fx-background-radius: 0.0px 10.0px 0.0px 0.0px;
+}
+
+#write_twitter_post_container {
+	-fx-padding: 10.0px;
+	-fx-alignment: top-center;
+	-fx-spacing: 10.0px;
+	-fx-vgap: 10.0px;
+}
+
+#view_fill_bottom {
+	-fx-background-color: #f2f2f2;
+	-fx-background-radius: 0.0px 0.0px 10.0px 10.0px;
+}
+
+#return_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/return_gray_24.png";
+    -fx-cursor: hand;
+}
+
+#reply_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/reply_gray_24.png";
+    -fx-cursor: hand;
+}
+
+#forward_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/reply_gray_24.png";
+    -fx-cursor: hand;
+}
+
+#retweet_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/retweet_gray_24.png";
+    -fx-cursor: hand;
+}
+#retweet_button:hover {
+    -fx-graphic: "/resources/icons/retweet_tcolor_24.png";
+}
+
+#reply_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/reply_gray_24.png";
+    -fx-cursor: hand;
+}
+#reply_button:hover {
+    -fx-graphic: "/resources/icons/reply_tcolor_24.png";
+}
+
+#tweet_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/send_gray_24.png";
+    -fx-cursor: hand;
+}
+#tweet_button:hover {
+    -fx-graphic: "/resources/icons/send_tcolor_24.png";
+}
+
+#remove_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/remove_gray_24.png";
+    -fx-cursor: hand;
+}
+
+#remove_button:hover {
+    -fx-graphic: "/resources/icons/remove_black_24.png";
+}
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color :transparent;
+    -fx-border-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-border-radius :2.0em;
+}
+.scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 0.0 10.0 0.0;
+
+}
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+    -fx-shape : " ";    
+    -fx-padding :0.15em 0.0;
+}
+ .scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";    
+    -fx-padding :0.0 0.15em;
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color :derive(black,90.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color :derive(#4D4C4F,10.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+
+#write_twitter_post_text_area_container {
+	-fx-alignment: center;
+	-fx-background-radius: 10.0px;
+	-fx-background-color: #ffffff;
+}
+
+#write_twitter_post_text_area {
+    -fx-background-insets: 0.0;
+    -fx-background-color: #ffffff;
+    -fx-pref-height: 380.0px;
+    -fx-pref-width: 280.0px;
+}
+
+#write_twitter_post_text_area .content {
+    -fx-background-insets: 0.0;
+    -fx-background-color: #ffffff;
+}
+
+#write_twitter_post_text_area:focused {
+    -fx-highlight-fill: #202020;
+}
+
+#twitter_post_container {
+	
+}
+
+#twitter_post_top_container {
+	-fx-padding: 10.0px;
+	-fx-alignment: center;
+}
+
+#twitter_post_center_container {
+	-fx-padding: 0.0px 10.0px 0.0px 10.0px;
+	-fx-alignment: center;
+}
+
+#twitter_post_text {
+	
+}
+
+#twitter_post_right_container {
+	-fx-padding: 10.0px;
+	-fx-alignment: center-right;
+}
+
+#favourited_label {
+	-fx-graphic: "/resources/icons/twitter_favourite_tcolor_24.png";
+	-fx-cursor: hand;
+}
+
+#no_favourited_label {
+	-fx-graphic: "/resources/icons/twitter_no_favourite_tcolor_24.png";
+	-fx-cursor: hand;
+}
+
+#retweets_label {
+	-fx-graphic: "/resources/icons/twitter_retweet_tcolor_24.png";
+}
+
+#twitter_post_bottom_container {
+	
+}
+
+#cover_image {
+	-fx-background-radius: 50.0px;
+}
