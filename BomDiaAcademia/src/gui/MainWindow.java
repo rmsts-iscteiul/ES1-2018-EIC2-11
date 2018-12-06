@@ -754,7 +754,7 @@ public class MainWindow extends Application {
 
 		VBox all_feed = new VBox();
 		all_feed.setId("all_feed");
-
+		System.out.println("OOOOH");
 		for (Status status : statuses) {
 			all_feed.getChildren().add(newTwitterPost(status));
 		}
@@ -1131,7 +1131,6 @@ public class MainWindow extends Application {
 	}
 
 	private void getAllTimeline() {
-		System.out.println("Here I go!");
 		/*
 		 * The thread has a service for FACEBOOK that has only one task.
 		 */
@@ -1141,11 +1140,7 @@ public class MainWindow extends Application {
 			 */
 			@Override
 			protected Void call() throws Exception {
-
-				System.out.println("Here I am!");
 				buildAllApp(twitter_app.getTimeline(twitter_app.getUser()), facebook_app.getTimeline());
-
-				System.out.println("Here am I!");
 				return null;
 			}
 		};
