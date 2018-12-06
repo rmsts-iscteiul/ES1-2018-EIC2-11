@@ -87,8 +87,6 @@ public class FacebookApp {
 	 * @throws FacebookNetworkException when system is offline, returning posts from
 	 *                                  previous list
 	 * 
-	 * @throws InterruptedException     when updater thread is interrupted
-	 * 
 	 * @return List where all non-null message posts from user feed are
 	 *         included(with time filter).
 	 */
@@ -205,7 +203,7 @@ public class FacebookApp {
 	/**
 	 * Sets specific time filter
 	 * 
-	 * @param time filter chosen by user.
+	 * @param timeFilter chosen by user.
 	 */
 	public void setTimeFilter(TimeFilter timeFilter) {
 		this.timeFilter = timeFilter;
