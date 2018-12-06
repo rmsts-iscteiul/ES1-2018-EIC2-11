@@ -32,14 +32,16 @@ public class EmailApp {
 	protected Folder emailFolder;
 	private TimeFilter timeFilter;
 	private int s;
+	private List<Message> emails = new LinkedList<Message>();
 	
-	public EmailApp() {
+	public EmailApp(String word) {
 		timeFilter.ALL_TIME;
 		s=41;
+		this.word = word;
 	}
 	
-	protected List<Message> getTimeline() {
-		List<Message> emails = new LinkedList<Message>();
+	protected List<Message> getTimeline(String filter) {
+		
 		try {
 
 
@@ -72,15 +74,14 @@ public class EmailApp {
 			System.out.println("messages.length---" + messages.length);
 			
 			if(!timeFilter.equals(TimeFilter.ALL_TIME)) {
-				for (int i = 0; i != messages.length-1; i--) {
-					long date = Math.abs((timeFilter.getDate() - message.getSentDate()) / (24 * 60 * 60 * 1000));
-					if (date >= 0 && date <= timeFilter.getDif()) {
-						emails.add(messages[i]);
-					}
-				}
+				notAllTime(messages,filter);
+						
 			}else {
-				for (int i = messages.length-1; i != messages.length-s; i--) {
-					emails.add(messages[i]);
+				for (int i = messages.length-1; i != messages.length-s; i--) { //s is 40 by Default user should be able to aks for more. Then i += 40 
+					if(!filter.equals(null) && (messages[i].getSubject().contains(filter) || writePart(messages[i]).contains(filter))) 
+						emails.add(messages[i]);
+					else
+						emails.add(messages[i]);
 				}
 			}
 			
@@ -100,6 +101,19 @@ public class EmailApp {
 		return emails;
 	}
 
+	private List<Message> notAllTime(Message[] messages,String filter){
+		for (int i = 0; i != messages.length-1; i--) {
+			long date = Math.abs((timeFilter.getDate() - messages[i].getSentDate()) / (24 * 60 * 60 * 1000));
+			if (date >= 0 && date <= timeFilter.getDif()) {
+				if(!filter.equals(null) && (messages[i].getSubject().contains(filter) || writePart(messages[i]).contains(filter))) {
+					emails.add(messages[i]);
+				}else {
+					emails.add(messages[i]);
+				}
+			}
+		}
+	}
+	
 	protected void sendEmail(String to, String text) {
 		String host = "smtp-mail.outlook.com";
 
