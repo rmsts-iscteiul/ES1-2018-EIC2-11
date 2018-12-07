@@ -18,7 +18,6 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -76,8 +75,6 @@ public class MainWindow extends Application {
 	private static final int WINDOW_ROOT_PANE_HEIGHT = 600;
 	private static final int WINDOW_LEFT_MENU_WIDTH = 50;
 	private static final int WINDOW_TOP_BAR_HEIGHT = 20;
-
-	private static final int POST_WIDTH = 300;
 
 	/**
 	 * This is the main method.
@@ -197,14 +194,14 @@ public class MainWindow extends Application {
 		left_menu_facebook_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				if (facebook_app_pane == null) { // If it's == null, we need to
-													// start the thread.
-					getFacebookTimeline(); // thread.start()
+				if (facebook_app_pane == null) {
+					getFacebookTimeline();
 				} else {
-					if (left_menu_facebook_toggle_button.isSelected())
+					if (left_menu_facebook_toggle_button.isSelected()) {
 						facebook_app_pane.setVisible(true);
-					else
+					} else {
 						facebook_app_pane.setVisible(false);
+					}
 				}
 			}
 		});
@@ -214,15 +211,14 @@ public class MainWindow extends Application {
 
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				if (twitter_app_pane == null) { // If it's == null, we need to
-												// start the thread.
-					getTwitterTimeline(); // thread.start()
+				if (twitter_app_pane == null) {
+					getTwitterTimeline();
 				} else {
-					if (left_menu_twitter_toggle_button.isSelected())
+					if (left_menu_twitter_toggle_button.isSelected()) {
 						twitter_app_pane.setVisible(true);
-					else
+					} else {
 						twitter_app_pane.setVisible(false);
-
+					}
 				}
 			}
 		});
@@ -258,11 +254,11 @@ public class MainWindow extends Application {
 				if (all_app_pane == null) {
 					getAllTimeline();
 				} else {
-					if (left_menu_twitter_toggle_button.isSelected())
+					if (left_menu_combine_apps_toggle_button.isSelected()) {
 						all_app_pane.setVisible(true);
-					else
+					} else {
 						all_app_pane.setVisible(false);
-
+					}
 				}
 			}
 		});
@@ -606,7 +602,7 @@ public class MainWindow extends Application {
 				twitter_feed.getChildren().add(cover_image_view);
 				is_there_status = false;
 			}
-			twitter_feed.getChildren().add(newTwitterPost(status));
+			twitter_feed.getChildren().add(newTwitterPost(status, twitter_app_pane));
 		}
 
 		twitter_app_scroll_pane.setContent(twitter_feed);
@@ -659,7 +655,7 @@ public class MainWindow extends Application {
 		facebook_feed.setId("facebook_feed");
 
 		for (Post post : posts) {
-			facebook_feed.getChildren().add(newFacebookPost(post));
+			facebook_feed.getChildren().add(newFacebookPost(post, facebook_app_pane));
 		}
 
 		facebook_app_scroll_pane.setContent(facebook_feed);
@@ -724,7 +720,7 @@ public class MainWindow extends Application {
 
 		for (Message message : emails) {
 			try {
-				email_feed.getChildren().add(newEmailPost(message));
+				email_feed.getChildren().add(newEmailPost(message, email_app_pane));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -744,24 +740,21 @@ public class MainWindow extends Application {
 	private void buildAllApp(List<Status> statuses, List<Post> posts) {
 		all_app_pane = new VBox();
 		all_app_pane.setId("all_app_pane");
+		all_app_pane.setId("twitter_app_pane");
+		all_app_pane.setPrefSize((window_pane.getWidth() * 0.8),
+				(window_pane.getHeight() - window_top_bar.getHeight()));
+		all_app_pane.setMaxSize((window_pane.getWidth() * 0.8),
+				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 		HBox all_app_tool_bar = new HBox();
 		all_app_tool_bar.setId("all_app_tool_bar");
 		Label all_app_top_bar_icon = new Label(email_app.getUser());
 		all_app_top_bar_icon.setId("all_app_top_bar_icon");
-		Button all_app_top_bar_new_message_button = new Button();
-		all_app_top_bar_new_message_button.setId("all_app_top_bar_new_message_button");
-		all_app_top_bar_new_message_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				// To-Do
-			}
-		});
 		Button all_app_top_bar_refresh_button = new Button();
 		all_app_top_bar_refresh_button.setId("all_app_top_bar_refresh_button");
 		all_app_top_bar_refresh_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				// To-Do
+				refreshAllApp();
 			}
 		});
 		Button all_app_top_bar_minimize_button = new Button();
@@ -774,27 +767,27 @@ public class MainWindow extends Application {
 		});
 		final Pane spacer = new Pane();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
-		all_app_tool_bar.getChildren().addAll(all_app_top_bar_icon, spacer, all_app_top_bar_new_message_button,
-				all_app_top_bar_refresh_button, all_app_top_bar_minimize_button);
+		all_app_tool_bar.getChildren().addAll(all_app_top_bar_icon, spacer, all_app_top_bar_refresh_button,
+				all_app_top_bar_minimize_button);
 		ScrollPane all_app_scroll_pane = new ScrollPane();
 		all_app_scroll_pane.setId("all_app_scroll_pane");
-		all_app_scroll_pane.setPrefSize((window_pane.getWidth() * 0.4),
+		all_app_scroll_pane.setPrefSize((window_pane.getWidth() * 0.8),
 				(window_pane.getHeight() - window_top_bar.getHeight()));
-		all_app_scroll_pane.setMaxSize((window_pane.getWidth() * 0.4),
+		all_app_scroll_pane.setMaxSize((window_pane.getWidth() * 0.8),
 				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 
 		VBox all_feed = new VBox();
 		all_feed.setId("all_feed");
 		System.out.println("OOOOH");
 		for (Status status : statuses) {
-			all_feed.getChildren().add(newTwitterPost(status));
+			all_feed.getChildren().add(newTwitterPost(status, all_app_pane));
 		}
 		for (Post post : posts) {
-			all_feed.getChildren().add(newFacebookPost(post));
+			all_feed.getChildren().add(newFacebookPost(post, all_app_pane));
 		}
 //		for (Message message : emails) {
 //			try {
-//				all_feed.getChildren().add(newEmailPost(message));
+//				all_feed.getChildren().add(newEmailPost(message, all_app_pane));
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
@@ -860,7 +853,14 @@ public class MainWindow extends Application {
 	private void refreshEmailApp() {
 		apps_pane.getChildren().remove(email_app_pane);
 		getEmailTimeline();
-		apps_pane.getChildren().add(email_app_pane);
+	}
+
+	/**
+	 * This method is used to refresh the All App pane (all_app_pane).
+	 */
+	private void refreshAllApp() {
+		apps_pane.getChildren().remove(all_app_pane);
+		getAllTimeline();
 	}
 
 	/**
@@ -869,7 +869,7 @@ public class MainWindow extends Application {
 	 * @param status
 	 * @return twitter_post_pane
 	 */
-	private BorderPane newTwitterPost(Status status) {
+	private BorderPane newTwitterPost(Status status, VBox called_app_pane) {
 		BorderPane twitter_post_pane = new BorderPane();
 		twitter_post_pane.setId("twitter_post_pane");
 		twitter_post_pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -881,8 +881,8 @@ public class MainWindow extends Application {
 				}
 			}
 		});
-		twitter_post_pane.setPrefSize(twitter_app_pane.getPrefWidth() * 0.9, 100);
-		twitter_post_pane.setMaxSize(twitter_app_pane.getPrefWidth() * 0.9, 100);
+		twitter_post_pane.setPrefSize(called_app_pane.getPrefWidth() * 0.9, 100);
+		twitter_post_pane.setMaxSize(called_app_pane.getPrefWidth() * 0.9, 100);
 		// Left
 		VBox twitter_post_left_container = new VBox();
 		twitter_post_left_container.setId("twitter_post_left_container");
@@ -928,10 +928,11 @@ public class MainWindow extends Application {
 	 * @param post
 	 * @return facebook_post_pane
 	 */
-	private BorderPane newFacebookPost(Post post) {
+	private BorderPane newFacebookPost(Post post, VBox called_app_pane) {
 		BorderPane facebook_post_pane = new BorderPane();
 		facebook_post_pane.setId("facebook_post_pane");
-		facebook_post_pane.setPrefWidth(POST_WIDTH);
+		facebook_post_pane.setPrefSize(called_app_pane.getPrefWidth() * 0.9, 100);
+		facebook_post_pane.setMaxSize(called_app_pane.getPrefWidth() * 0.9, 100);
 		// TOP BAR
 		ImageView imgv = new ImageView(new Image(facebook_app.getUser().getPicture().getUrl()));
 		imgv.resize(50, 20);
@@ -940,7 +941,7 @@ public class MainWindow extends Application {
 		// CENTER PANE
 		Text post_text = new Text(post.getMessage());
 		post_text.setId("post_texto");
-		post_text.setWrappingWidth(POST_WIDTH);
+		post_text.setWrappingWidth(facebook_post_pane.getPrefWidth() * 0.8);
 		// BOTTOM BAR
 		HBox facebook_post_bottom_bar = new HBox();
 		facebook_post_bottom_bar.setId("facebook_post_bottom_bar");
@@ -966,9 +967,11 @@ public class MainWindow extends Application {
 	 * @return email_post_pane
 	 * @throws Exception
 	 */
-	private BorderPane newEmailPost(Message message) throws Exception {
+	private BorderPane newEmailPost(Message message, VBox called_app_pane) throws Exception {
 		BorderPane email_post_pane = new BorderPane();
 		email_post_pane.setId("email_post_pane");
+		email_post_pane.setPrefSize(called_app_pane.getPrefWidth() * 0.9, 100);
+		email_post_pane.setMaxSize(called_app_pane.getPrefWidth() * 0.9, 100);
 		email_post_pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
@@ -982,7 +985,6 @@ public class MainWindow extends Application {
 				}
 			}
 		});
-		email_post_pane.setPrefWidth(POST_WIDTH);
 
 		// TOP
 		String[] email_envelope = email_app.writeEnvelope(message);
@@ -1001,7 +1003,7 @@ public class MainWindow extends Application {
 	 */
 	private void initApps() {
 		twitter_app = new TwitterApp();
-//		facebook_app = new FacebookApp();
+		facebook_app = new FacebookApp();
 		email_app = new EmailApp();
 	}
 
@@ -1166,7 +1168,7 @@ public class MainWindow extends Application {
 
 	private void getAllTimeline() {
 		/*
-		 * The thread has a service for FACEBOOK that has only one task.
+		 * The thread has a service for ALL APPS that has only one task.
 		 */
 		Task<Void> task = new Task<Void>() {
 			/*

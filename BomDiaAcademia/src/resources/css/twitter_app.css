@@ -123,16 +123,16 @@
 }
 
 .scroll-pane {
-    -fx-background-insets: 0;
-    -fx-padding: 0;
+    -fx-background-insets: 0.0;
+    -fx-padding: 0.0;
 }
 
 .scroll-pane:focused {
-    -fx-background-insets: 0;
+    -fx-background-insets: 0.0;
 }
 
 .scroll-pane .corner {
-    -fx-background-insets: 0;
+    -fx-background-insets: 0.0;
 }
 
 #twitter_feed {

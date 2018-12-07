@@ -88,20 +88,20 @@
 }
 
 .scroll-pane {
-    -fx-background-insets: 0;
-    -fx-padding: 0;
+    -fx-background-insets: 0.0;
+    -fx-padding: 0.0;
 }
 
 .scroll-pane:focused {
-    -fx-background-insets: 0;
+    -fx-background-insets: 0.0;
 }
 
 .scroll-pane .corner {
-    -fx-background-insets: 0;
+    -fx-background-insets: 0.0;
 }
 
 #all_feed {
 	-fx-background-color: transparent;
-	-fx-spacing: 10px;
+	-fx-spacing: 10.0px;
 	-fx-alignment: top-center;
 }
