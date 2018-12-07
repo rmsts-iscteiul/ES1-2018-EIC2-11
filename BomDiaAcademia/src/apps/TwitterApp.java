@@ -12,6 +12,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
+
 /**
  * 
  * This is the Twitter Aplication. It uses twitter4j library.
