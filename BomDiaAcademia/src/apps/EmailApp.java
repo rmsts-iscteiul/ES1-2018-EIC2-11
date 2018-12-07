@@ -27,17 +27,57 @@ import javax.mail.internet.MimeMultipart;
 
 public class EmailApp {
 
+	/**
+	 * user credential for the outlook login
+	 */
 	private String user;
-	public String password;
 
+	/**
+	 * password credential for the outlook login
+	 */
+	private String password;
+
+	/**
+	 * emailFolder folder were the email are stored remotly on the web cloud
+	 */
 	private Folder emailFolder;
 
+	/**
+	 * timeFilter uses our enum to filter the email time
+	 */
+	private TimeFilter timeFilter;
+
+	/**
+	 * mLenght defines the number of emails that we will be retrieving
+	 */
+	private int mLenght = 20;
+
+	/**
+	 * emails List of email messages
+	 */
+	private List<Message> emails = new LinkedList<Message>();
+
+	/**
+	 * Temporary directory where the attaches in a message are downloaded to
+	 */
 	private final static String TEMP_DIRECTORY = "C:/temp";
 
-	public List<Message> getTimeline() {
-		List<Message> emails = new LinkedList<Message>();
-		try {
+	/**
+	 * Constructor
+	 */
+	public EmailApp() {
+		timeFilter = TimeFilter.ALL_TIME;
+		mLenght = 21;
+	}
 
+	/**
+	 * 
+	 * @param filter gives a String that define the search of a word inside the
+	 *               email messages
+	 * @return returns a List of email Messages
+	 */
+	public List<Message> getTimeline(String filter) {
+		try {
 			/**
 			 * 
 			 * Creating properties field to connect to outlook pop server
@@ -48,13 +88,16 @@ public class EmailApp {
 			properties.put("mail.pop3.host", "pop-mail.outlook.com");
 			properties.put("mail.pop3.port", "995");
 			properties.put("mail.pop3.starttls.enable", "true");
-			Session emailSession = Session.getDefaultInstance(properties);
+			Session emailSession = Session.getInstance(properties);
 			// create the POP3 store object and connect with the pop server
+
 			Store store = emailSession.getStore("pop3s");
 
 			store.connect("pop-mail.outlook.com", user, password);
 
-			// create the folder object and open it
+			/**
+			 * create the folder object and open it
+			 */
 			emailFolder = store.getFolder("INBOX");
 			emailFolder.open(Folder.READ_ONLY);
 
@@ -63,16 +106,22 @@ public class EmailApp {
 			 * them on the messages` array
 			 */
 			Message[] messages = emailFolder.getMessages();
-			System.out.println("messages.length---" + messages.length);
-			for (int i = messages.length - 1; i != messages.length - 21; i--) {
-				Message message = messages[i];
-				emails.add(message);
+//			System.out.println("messages.length---" + messages.length);
+
+			if (!timeFilter.equals(TimeFilter.ALL_TIME)) {
+				notAllTime(messages, filter);
+			} else {
+				for (int i = messages.length - 1; i != messages.length - mLenght; i--) { // s is 40 by Default user
+																							// should be
+					// able to aks for more. Then i +=
+					// 40
+					if (!filter.equals("")
+							&& (messages[i].getSubject().contains(filter) || writePart(messages[i]).contains(filter)))
+						emails.add(messages[i]);
+					else
+						emails.add(messages[i]);
+				}
 			}
-
-			// close the store and folder objects
-			// emailFolder.close(false); //keeping it open
-			// store.close();
-
 		} catch (NoSuchProviderException e) {
 			e.printStackTrace();
 		} catch (MessagingException e) {
@@ -83,6 +132,36 @@ public class EmailApp {
 		return emails;
 	}
 
+	/**
+	 * 
+	 * used as an auxiliar funcion to the main function getTimeLine()
+	 * 
+	 * @param messages Email message array
+	 * @param filter   word filter in the messages
+	 * @return a list of emails filtered by a timeFilter
+	 * @throws Exception
+	 */
+	private void notAllTime(Message[] messages, String filter) throws Exception {
+		for (int i = 0; i != messages.length - 1; i--) {
+			long date = ((timeFilter.getDate() / (24 * 60 * 60 * 1000))
+					- (messages[i].getSentDate().getTime() / (24 * 60 * 60 * 1000)));
+			if (date >= 0 && date <= timeFilter.getDif()) {
+				if (!filter.equals(null)
+						&& (messages[i].getSubject().contains(filter) || writePart(messages[i]).contains(filter))) {
+					emails.add(messages[i]);
+				} else {
+					emails.add(messages[i]);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sends and email to a specific destination with a specific text
+	 * 
+	 * @param to   Address which the email will be sent to
+	 * @param text Content of the email
+	 */
 	public boolean sendEmail(String to, String text) {
 		String host = "smtp-mail.outlook.com";
 
@@ -129,6 +208,13 @@ public class EmailApp {
 
 	}
 
+	/**
+	 * Sends and email like sendEmail function but this time allows to send
+	 * attachments
+	 * 
+	 * @param to   Address which the email will be sent to
+	 * @param text Content of the email
+	 */
 	public void sendEmailWithAttachment(String to, String text) {
 		String host = "smtp-mail.outlook.com";
 
@@ -190,7 +276,7 @@ public class EmailApp {
 		}
 	}
 
-	/*
+	/**
 	 * This method checks for content-type based on which, it processes and fetches
 	 * the content of the message
 	 */
@@ -236,8 +322,11 @@ public class EmailApp {
 		return messageContent;
 	}
 
-	/*
-	 * This method would print FROM,TO and SUBJECT of the message
+	/**
+	 * 
+	 * @param m email Message
+	 * @return
+	 * @throws Exception
 	 */
 	public String[] writeEnvelope(Message m) throws Exception {
 		String[] email_envelope = new String[4];
@@ -267,26 +356,6 @@ public class EmailApp {
 
 	}
 
-	private String getOnlyEmail(String string) {
-		if (string.contains("<") && string.contains(">")) {
-			String[] splitted1 = string.split("<");
-			String[] splitted2 = splitted1[1].split(">");
-			return splitted2[0];
-		} else {
-			return string;
-		}
-
-	}
-
-	private String getOnlyName(String string) {
-		if (string.contains("<") && string.contains(">")) {
-			String[] splitted1 = string.split("<");
-			return splitted1[0];
-		} else {
-			return "";
-		}
-	}
-
 	/**
 	 * Returns the user that is being displayed.
 	 * 
@@ -294,6 +363,15 @@ public class EmailApp {
 	 */
 	public String getUser() {
 		return user;
+	}
+
+	/**
+	 * Returns the password of the user that is being displayed.
+	 * 
+	 * @return password (String) - (Getter) gets the user attribute.
+	 */
+	public String getPassword() {
+		return password;
 	}
 
 	/**
@@ -305,12 +383,77 @@ public class EmailApp {
 		return emailFolder;
 	}
 
+	/**
+	 * 
+	 * @param user
+	 */
 	public void setUser(String user) {
 		this.user = user;
 	}
 
+	/**
+	 * 
+	 * @param password
+	 */
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	/**
+	 * Change time filter
+	 * 
+	 * @param timeFilter time filter
+	 */
+	public void setTimeFilter(TimeFilter timeFilter) {
+		this.timeFilter = timeFilter;
+	}
+
+	/**
+	 * timefilter getter
+	 * 
+	 * @return timefilter
+	 */
+	public TimeFilter getTimeFilter() {
+		return timeFilter;
+	}
+
+	/**
+	 * 
+	 * Return only the email in the form email@example.com
+	 * 
+	 * @param string
+	 * @return
+	 */
+	private String getOnlyEmail(String string) {
+		if (string.contains("<") && string.contains(">")) {
+			String[] splitted1 = string.split("<");
+			String[] splitted2 = splitted1[1].split(">");
+			return splitted2[0];
+		} else {
+			return string;
+		}
+	}
+
+	/**
+	 * Return only the name of a email owner
+	 * 
+	 * @param string
+	 * @return
+	 */
+	private String getOnlyName(String string) {
+		if (string.contains("<") && string.contains(">")) {
+			String[] splitted1 = string.split("<");
+			return splitted1[0];
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Increment mLenght
+	 */
+	public void moreMails() {
+		this.mLenght += 20;
 	}
 
 }

@@ -1,9 +1,12 @@
 package gui;
 
+import java.time.LocalDate;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -38,6 +41,7 @@ public class PopUpWindow {
 	private TextField consumerSecret;
 	private TextField userAccessToken;
 	private TextField accessTokenSecret;
+	private DatePicker date_picker;
 
 	public PopUpWindow(Stage main_stage, PopUpType type, String text) {
 		this.type = type;
@@ -168,6 +172,8 @@ public class PopUpWindow {
 			input_label.setId("successfully_label");
 			pop_up_container.getChildren().add(input_label);
 			pop_up_buttons_container.getChildren().addAll(buildTwitterInputPane(), buildOkButton());
+		} else if (type.equals(PopUpType.DATEPICKER)) {
+			pop_up_buttons_container.getChildren().addAll(buildDatePicker(), buildOkButton());
 		}
 		pop_up_container.getChildren().addAll(new Text(text), pop_up_buttons_container);
 		pop_up_window_root_pane.setCenter(pop_up_container);
@@ -197,6 +203,14 @@ public class PopUpWindow {
 			}
 		});
 		return cancel_button;
+	}
+
+	private HBox buildDatePicker() {
+		HBox date_picker_container = new HBox();
+		date_picker_container.setId("date_picker_container");
+		date_picker = new DatePicker(LocalDate.now());
+		date_picker_container.getChildren().add(date_picker);
+		return date_picker_container;
 	}
 
 	private VBox buildFacebookInputPane() {
@@ -292,6 +306,10 @@ public class PopUpWindow {
 		String twitter_tokens = consumerKey.getText() + "," + consumerSecret.getText() + "," + userAccessToken.getText()
 				+ "," + accessTokenSecret.getText();
 		return twitter_tokens;
+	}
+
+	public LocalDate getDate() {
+		return date_picker.getValue();
 	}
 
 	private void startPopUpStage() {

@@ -38,13 +38,13 @@ class TestEmailApp {
 	@Test
 	void testGetTimeLine() {
 		System.out.println("-----------------------------------------------------------------------");
-		System.out.println("Size of the email list:" + email.getTimeline().size()); /** Returns a list of email */
+		System.out.println("Size of the email list:" + email.getTimeline(" ").size()); /** Returns a list of email */
 
 	}
 
 	@Test
 	void testWritePart() throws MessagingException, Exception {
-		List<Message> messages = email.getTimeline();
+		List<Message> messages = email.getTimeline(" ");
 		Message aux = messages.get(0); /** Get a message of an email in the position 1 on the emails folder */
 		System.out.println("-----------------------------------------------------------------------");
 		System.out.println("Get one specific email text:" + email.writePart(aux)); /** Returns the text of a message */

@@ -1,6 +1,7 @@
 package gui;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.mail.Message;
@@ -62,6 +63,7 @@ public class MainWindow extends Application {
 	private BorderPane options_pane = null;
 	private TextField search_text_field;
 	private ComboBox<TimeFilter> filter_combo_box;
+	private LocalDate specific_date;
 
 	private VBox twitter_app_pane = null;
 	private VBox facebook_app_pane = null;
@@ -71,6 +73,8 @@ public class MainWindow extends Application {
 	private TwitterApp twitter_app;
 	private FacebookApp facebook_app;
 	private EmailApp email_app;
+
+	private List<Object> all_posts;
 
 	private utils.User user = null;
 
@@ -255,9 +259,6 @@ public class MainWindow extends Application {
 						}
 					}
 				}
-				if (user == null) {
-					new PopUpWindow(main_stage, PopUpType.WARNING, "Please log in first");
-				}
 				if (twitter_app_pane == null) {
 					getTwitterTimeline();
 				} else {
@@ -276,18 +277,31 @@ public class MainWindow extends Application {
 
 			@Override
 			public void handle(ActionEvent actionEvent) {
+				email_app = new EmailApp();
 				if (user == null) {
 					new PopUpWindow(main_stage, PopUpType.WARNING, "Please log in first");
 					left_menu_email_toggle_button.setSelected(false);
-				}
-				email_app = new EmailApp();
-				if (email_app_pane == null) {
-					new LoginWindow(main_stage, email_app);
-					if (!(email_app.getUser() == null)) {
-						getEmailTimeline();
+				} else {
+					if (user.getEmUsr() == null || user.getEmUsr().equals("") || user.getEmPwd() == null
+							|| user.getEmPwd().equals("")) {
+						new LoginWindow(main_stage, email_app);
+						if (email_app.getUser().equals("") || email_app.getUser() == null
+								|| email_app.getPassword().equals("") || email_app.getPassword() == null) {
+							new PopUpWindow(main_stage, PopUpType.WARNING,
+									"Sorry but something went wrong :( \n pls try again");
+							user.setEmUsr("");
+							user.updateUsrInfo();
+							user.setEmUsr(email_app.getUser());
+							user.setEmPwd(email_app.getPassword());
+							user.updateUsrInfo();
+						}
 					} else {
-						left_menu_email_toggle_button.setSelected(false);
+						email_app.setUser(user.getEmUsr());
+						email_app.setPassword(user.getEmPwd());
 					}
+				}
+				if (email_app_pane == null) {
+					getEmailTimeline();
 				} else {
 					if (left_menu_email_toggle_button.isSelected()) {
 						email_app_pane.setVisible(true);
@@ -303,19 +317,47 @@ public class MainWindow extends Application {
 		left_menu_combine_apps_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
+				if (user == null) {
+					new PopUpWindow(main_stage, PopUpType.WARNING, "Please log in first");
+					left_menu_combine_apps_toggle_button.setSelected(false);
+				} else {
+					if (user.getFbToken() == null || user.getFbToken().equals("")) {
+						new PopUpWindow(main_stage, PopUpType.WARNING,
+								"Please add a Facebook account. \n Try to open Facebook App first");
+						return;
+					} else if (user.getTwToken() == null || user.getTwToken().equals("")) {
+						new PopUpWindow(main_stage, PopUpType.WARNING,
+								"Please add a Twitter account. \n Try to open Twitter App first");
+						return;
+					} else if (user.getEmUsr() == null || user.getEmUsr().equals("") || user.getEmPwd() == null
+							|| user.getEmPwd().equals("")) {
+						new PopUpWindow(main_stage, PopUpType.WARNING,
+								"Please add a Email account. \n Try to open Email App first");
+						return;
+					}
+				}
+				if (facebook_app == null) {
+					facebook_app = new FacebookApp(user.getFbToken());
+				} else if (twitter_app == null) {
+					try {
+						twitter_app = new TwitterApp(user.getTwToken());
+					} catch (TwitterException e) {
+						new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no Internet connection :(");
+					}
+				} else if (email_app == null) {
+					email_app = new EmailApp();
+					email_app.setUser(user.getEmUsr());
+					email_app.setPassword(user.getEmPwd());
+
+				}
+
 				if (all_app_pane == null) {
-					if (user == null) {
-						new PopUpWindow(main_stage, PopUpType.WARNING, "Please log in first");
-					}
-					if (email_app_pane == null) {
-						new LoginWindow(main_stage, email_app);
-					}
 					getAllTimeline();
 				} else {
 					if (left_menu_combine_apps_toggle_button.isSelected()) {
-						all_app_pane.setVisible(true);
+						email_app_pane.setVisible(true);
 					} else {
-						all_app_pane.setVisible(false);
+						email_app_pane.setVisible(false);
 					}
 				}
 			}
@@ -323,6 +365,7 @@ public class MainWindow extends Application {
 		window_left_menu.getChildren().addAll(left_menu_facebook_toggle_button, left_menu_twitter_toggle_button,
 				left_menu_email_toggle_button, left_menu_combine_apps_toggle_button);
 		window_root_pane.getChildren().add(window_left_menu);
+
 	}
 
 	/**
@@ -420,7 +463,7 @@ public class MainWindow extends Application {
 		options_pane.setPrefSize(300, 200);
 		options_pane.setMinSize(300, 200);
 		options_pane.setLayoutX(window_pane.getWidth() - 360);
-		options_pane.setLayoutY(window_top_bar.getHeight());
+		options_pane.setLayoutY(window_top_bar.getHeight() + 30);
 
 		BorderPane options_content_pane = new BorderPane();
 		options_content_pane.setId("options_content_pane");
@@ -472,31 +515,13 @@ public class MainWindow extends Application {
 				user = new LoginWindow(main_stage).getUser();
 				user.checkInfo();
 				if (user.getDarkTheme().equals("1")) {
-					System.out.println("SIM");
 					window_pane.setId("window_pane_dt");
 					window_left_menu.setId("window_left_menu_dt");
 					dark_theme_toggle_button.setSelected(true);
 				} else {
-					System.out.println("NAO");
 					window_pane.setId("window_pane");
 					window_left_menu.setId("window_left_menu");
 					dark_theme_toggle_button.setSelected(false);
-				}
-				if (!(user.getWordFilter().equals("") || user.getWordFilter() == null)) {
-					search_text_field.setText(user.getWordFilter());
-					if (!(user.getTwToken().equals("") || user.getTwToken() == null)) {
-						try {
-							twitter_app = new TwitterApp(user.getTwToken());
-						} catch (TwitterException e) {
-
-						}
-						getTwitterTimeline(user.getWordFilter());
-					}
-					if (!(user.getFbToken().equals("") || user.getFbToken() == null)) {
-						facebook_app = new FacebookApp(user.getFbToken());
-						getTwitterTimeline(user.getWordFilter());
-					}
-
 				}
 				log_in_button.setVisible(false);
 				log_out_button.setVisible(true);
@@ -550,6 +575,11 @@ public class MainWindow extends Application {
 		filter_combo_box.getItems().addAll(TimeFilter.LAST_HOUR, TimeFilter.LAST_24H, TimeFilter.LAST_WEEK,
 				TimeFilter.LAST_MONTH, TimeFilter.ALL_TIME, TimeFilter.SPECIFIC_DAY);
 		filter_combo_box.setValue(TimeFilter.ALL_TIME);
+		filter_combo_box.getSelectionModel().selectedItemProperty().addListener((options, old_value, new_value) -> {
+			if (new_value.equals(TimeFilter.SPECIFIC_DAY)) {
+				specific_date = new PopUpWindow(main_stage, PopUpType.DATEPICKER, "Select a day").getDate();
+			}
+		});
 		app_check_pane.getChildren().addAll(search_facebook_toggle_button, search_twitter_toggle_button,
 				search_email_toggle_button, filter_combo_box);
 		search_text_field = new TextField("Filter...");
@@ -569,6 +599,11 @@ public class MainWindow extends Application {
 			public void handle(MouseEvent mouseEvent) {
 				if (search_twitter_toggle_button.isSelected()) {
 					twitter_app.setTimeFilter(filter_combo_box.getValue());
+					if (filter_combo_box.getValue().equals(TimeFilter.SPECIFIC_DAY)) {
+						twitter_app.setTimeFilter(TimeFilter.SPECIFIC_DAY);
+						twitter_app.getTimeFilter().setDate(specific_date.getYear(), specific_date.getMonthValue(),
+								specific_date.getDayOfMonth());
+					}
 					apps_pane.getChildren().remove(twitter_app_pane);
 					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
 						getTwitterTimeline();
@@ -580,6 +615,11 @@ public class MainWindow extends Application {
 				}
 				if (search_facebook_toggle_button.isSelected()) {
 					facebook_app.setTimeFilter(filter_combo_box.getValue());
+					if (filter_combo_box.getValue().equals(TimeFilter.SPECIFIC_DAY)) {
+						facebook_app.setTimeFilter(TimeFilter.SPECIFIC_DAY);
+						facebook_app.getTimeFilter().setDate(specific_date.getYear(), specific_date.getMonthValue(),
+								specific_date.getDayOfMonth());
+					}
 					apps_pane.getChildren().remove(facebook_app_pane);
 					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
 						getFacebookTimeline();
@@ -589,14 +629,22 @@ public class MainWindow extends Application {
 						user.updateUsrInfo();
 					}
 				}
-//				if (search_email_toggle_button.isSelected()) {
-//					email_app.setTimeFilter(filter_combo_box.getValue());
-//					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
-//						refreshEmailApp();
-//					} else {
-//						refreshEmailApp(search_text_field.getText());
-//					}
-//				}
+				if (search_email_toggle_button.isSelected()) {
+					email_app.setTimeFilter(filter_combo_box.getValue());
+					if (filter_combo_box.getValue().equals(TimeFilter.SPECIFIC_DAY)) {
+						email_app.setTimeFilter(TimeFilter.SPECIFIC_DAY);
+						email_app.getTimeFilter().setDate(specific_date.getYear(), specific_date.getMonthValue(),
+								specific_date.getDayOfMonth());
+					}
+					apps_pane.getChildren().remove(email_app_pane);
+					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
+						getEmailTimeline();
+					} else {
+						getEmailTimeline();
+						user.setWordFilter(search_text_field.getText());
+						user.updateUsrInfo();
+					}
+				}
 				if (!search_facebook_toggle_button.isSelected() && !search_twitter_toggle_button.isSelected()
 						&& !search_email_toggle_button.isSelected()) {
 					new PopUpWindow(main_stage, PopUpType.WARNING, "Please select an App to search.");
@@ -631,9 +679,8 @@ public class MainWindow extends Application {
 	private void buildTwitterApp(List<Status> statuses) {
 		twitter_app_pane = new VBox();
 		twitter_app_pane.setId("twitter_app_pane");
-		twitter_app_pane.setPrefSize((window_pane.getWidth() * 0.8),
-				(window_pane.getHeight() - window_top_bar.getHeight()));
-		twitter_app_pane.setMaxSize((window_pane.getWidth() * 0.8),
+		twitter_app_pane.setPrefSize((getUsableSpace() * 0.9), (window_pane.getHeight() - window_top_bar.getHeight()));
+		twitter_app_pane.setMaxSize((getUsableSpace() * 0.9),
 				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 
 		HBox twitter_app_tool_bar = new HBox();
@@ -733,33 +780,42 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				try {
-					if (!search_text_field.getText().equals("Filter...") && !search_text_field.getText().equals("")) {
-						List<Status> statuses = twitter_app.getMoreTweetsWithFilter();
-						System.out.println(statuses.size());
-						if (statuses.isEmpty()) {
-							new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
-						} else {
-							twitter_feed.getChildren().remove(more_button);
-							for (Status status : statuses) {
-								twitter_feed.getChildren().add(newTwitterPost(status, twitter_app_pane));
-							}
-							twitter_app.bufferingWithFilter();
-							twitter_feed.getChildren().add(more_button);
-						}
+					if (statuses.size() == 0) {
+						twitter_feed.getChildren().remove(more_button);
+						Label no_tweets_label = new Label("Sorry but there is no tweets");
+						no_tweets_label.setId("no_tweets_label");
+						twitter_feed.getChildren().add(no_tweets_label);
+						twitter_feed.getChildren().add(more_button);
+
 					} else {
-						List<Status> statuses = twitter_app.getMoreTweetsWithoutFilter();
-						System.out.println(statuses.size());
-						if (statuses.isEmpty()) {
-							new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
-						} else {
-							twitter_feed.getChildren().remove(more_button);
-							for (Status status : statuses) {
-								twitter_feed.getChildren().add(newTwitterPost(status, twitter_app_pane));
+						if (!search_text_field.getText().equals("Filter...")
+								&& !search_text_field.getText().equals("")) {
+							List<Status> statuses = twitter_app.getMoreTweetsWithFilter();
+							if (statuses.isEmpty()) {
+								new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
+							} else {
+								twitter_feed.getChildren().remove(more_button);
+								for (Status status : statuses) {
+									twitter_feed.getChildren().add(newTwitterPost(status, twitter_app_pane));
+								}
+								twitter_app.bufferingWithFilter();
+								twitter_feed.getChildren().add(more_button);
 							}
-							twitter_app.bufferingWithoutFilter();
-							twitter_feed.getChildren().add(more_button);
+						} else {
+							List<Status> statuses = twitter_app.getMoreTweetsWithoutFilter();
+							if (statuses.isEmpty()) {
+								new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
+							} else {
+								twitter_feed.getChildren().remove(more_button);
+								for (Status status : statuses) {
+									twitter_feed.getChildren().add(newTwitterPost(status, twitter_app_pane));
+								}
+								twitter_app.bufferingWithoutFilter();
+								twitter_feed.getChildren().add(more_button);
+							}
 						}
 					}
+
 				} catch (TwitterException e) {
 					new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no Internet connection :(");
 				}
@@ -782,9 +838,8 @@ public class MainWindow extends Application {
 	private void buildFacebookApp(List<Post> posts) {
 		facebook_app_pane = new VBox();
 		facebook_app_pane.setId("facebook_app_pane");
-		facebook_app_pane.setPrefSize((window_pane.getWidth() * 0.8),
-				(window_pane.getHeight() - window_top_bar.getHeight()));
-		facebook_app_pane.setMaxSize((window_pane.getWidth() * 0.8),
+		facebook_app_pane.setPrefSize((getUsableSpace() * 0.9), (window_pane.getHeight() - window_top_bar.getHeight()));
+		facebook_app_pane.setMaxSize((getUsableSpace() * 0.9),
 				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 		HBox facebook_app_tool_bar = new HBox();
 		facebook_app_tool_bar.setId("facebook_app_tool_bar");
@@ -825,32 +880,39 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				facebook_app.incrementDesiredPage();
-				if (!search_text_field.getText().equals("Filter...") && !search_text_field.getText().equals("")) {
-					List<Post> posts = facebook_app.getPostsByPage(search_text_field.getText());
-					if (posts.isEmpty()) {
-						facebook_feed.getChildren().remove(more_button);
-						new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
-					} else {
-						facebook_feed.getChildren().remove(more_button);
-						for (Post post : posts) {
-							facebook_feed.getChildren().add(newFacebookPost(post, facebook_app_pane));
-						}
-						facebook_feed.getChildren().add(more_button);
-					}
+				if (posts.size() == 0) {
+					facebook_feed.getChildren().remove(more_button);
+					Label no_posts_label = new Label("Sorry but there is no tweets");
+					no_posts_label.setId("no_posts_label");
+					facebook_feed.getChildren().add(no_posts_label);
+					facebook_feed.getChildren().add(more_button);
 				} else {
-					List<Post> posts = facebook_app.getPostsByPage();
-					if (posts.isEmpty()) {
-						facebook_feed.getChildren().remove(more_button);
-						new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
-					} else {
-						facebook_feed.getChildren().remove(more_button);
-						for (Post post : posts) {
-							facebook_feed.getChildren().add(newFacebookPost(post, facebook_app_pane));
+					if (!search_text_field.getText().equals("Filter...") && !search_text_field.getText().equals("")) {
+						List<Post> posts = facebook_app.getPostsByPage(search_text_field.getText());
+						if (posts.isEmpty()) {
+							facebook_feed.getChildren().remove(more_button);
+							new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
+						} else {
+							facebook_feed.getChildren().remove(more_button);
+							for (Post post : posts) {
+								facebook_feed.getChildren().add(newFacebookPost(post, facebook_app_pane));
+							}
+							facebook_feed.getChildren().add(more_button);
 						}
-						facebook_feed.getChildren().add(more_button);
+					} else {
+						List<Post> posts = facebook_app.getPostsByPage();
+						if (posts.isEmpty()) {
+							facebook_feed.getChildren().remove(more_button);
+							new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
+						} else {
+							facebook_feed.getChildren().remove(more_button);
+							for (Post post : posts) {
+								facebook_feed.getChildren().add(newFacebookPost(post, facebook_app_pane));
+							}
+							facebook_feed.getChildren().add(more_button);
+						}
 					}
 				}
-
 			}
 		});
 		facebook_feed.getChildren().add(more_button);
@@ -870,6 +932,9 @@ public class MainWindow extends Application {
 	private void buildEmailApp(List<Message> emails) {
 		email_app_pane = new VBox();
 		email_app_pane.setId("email_app_pane");
+		email_app_pane.setPrefSize((getUsableSpace() * 0.9), (window_pane.getHeight() - window_top_bar.getHeight()));
+		email_app_pane.setMaxSize((getUsableSpace() * 0.9),
+				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 		HBox email_app_tool_bar = new HBox();
 		email_app_tool_bar.setId("email_app_tool_bar");
 		Label email_app_top_bar_icon = new Label(email_app.getUser());
@@ -908,21 +973,9 @@ public class MainWindow extends Application {
 				email_app_top_bar_refresh_button, email_app_top_bar_minimize_button);
 		ScrollPane email_app_scroll_pane = new ScrollPane();
 		email_app_scroll_pane.setId("email_app_scroll_pane");
-		email_app_scroll_pane.setPrefSize((window_pane.getWidth() * 0.4),
-				(window_pane.getHeight() - window_top_bar.getHeight()));
-		email_app_scroll_pane.setMaxSize((window_pane.getWidth() * 0.4),
-				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
-
 		VBox email_feed = new VBox();
 		email_feed.setId("email_feed");
 
-		for (Message message : emails) {
-			try {
-				email_feed.getChildren().add(newEmailPost(message, email_app_pane));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 		// More button
 		Button more_button = new Button();
 		more_button.setId("email_more_button");
@@ -932,6 +985,21 @@ public class MainWindow extends Application {
 				// To-Do
 			}
 		});
+		if (emails.size() == 0) {
+			email_feed.getChildren().remove(more_button);
+			Label no_posts_label = new Label("Sorry but there is no tweets");
+			no_posts_label.setId("no_posts_label");
+			email_feed.getChildren().add(no_posts_label);
+			email_feed.getChildren().add(more_button);
+		} else {
+			for (Message message : emails) {
+				try {
+					email_feed.getChildren().add(newEmailPost(message, email_app_pane));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		email_feed.getChildren().add(more_button);
 
 		email_app_scroll_pane.setContent(email_feed);
@@ -948,11 +1016,8 @@ public class MainWindow extends Application {
 	private void buildAllApp(List<Status> statuses, List<Post> posts, List<Message> emails) {
 		all_app_pane = new VBox();
 		all_app_pane.setId("all_app_pane");
-		all_app_pane.setId("twitter_app_pane");
-		all_app_pane.setPrefSize((window_pane.getWidth() * 0.8),
-				(window_pane.getHeight() - window_top_bar.getHeight()));
-		all_app_pane.setMaxSize((window_pane.getWidth() * 0.8),
-				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
+		all_app_pane.setPrefSize((getUsableSpace() * 0.9), (window_pane.getHeight() - window_top_bar.getHeight()));
+		all_app_pane.setMaxSize((getUsableSpace() * 0.9), (window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 		HBox all_app_tool_bar = new HBox();
 		all_app_tool_bar.setId("all_app_tool_bar");
 		Label all_app_top_bar_icon = new Label(email_app.getUser());
@@ -988,8 +1053,8 @@ public class MainWindow extends Application {
 		all_feed.setId("all_feed");
 		System.out.println("OOOOH");
 
-		List<Object> all_posts = getAllPosts(statuses, posts, emails);
-		System.out.println(all_posts.size());
+		all_posts.clear();
+		getAllPosts(statuses, posts, emails);
 		for (Object o : all_posts) {
 			if (o instanceof Status) {
 				all_feed.getChildren().add(newTwitterPost((Status) o, all_app_pane));
@@ -1009,7 +1074,7 @@ public class MainWindow extends Application {
 		more_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				// To-Do
+
 			}
 		});
 		all_feed.getChildren().add(more_button);
@@ -1351,7 +1416,7 @@ public class MainWindow extends Application {
 			 */
 			@Override
 			protected Void call() throws Exception {
-				buildEmailApp(email_app.getTimeline());
+				buildEmailApp(email_app.getTimeline(""));
 				return null;
 			}
 		};
@@ -1381,7 +1446,7 @@ public class MainWindow extends Application {
 			@Override
 			protected Void call() throws Exception {
 				buildAllApp(twitter_app.getTimeline(twitter_app.getUser()), facebook_app.getTimeline(),
-						email_app.getTimeline());
+						email_app.getTimeline(""));
 				return null;
 			}
 		};
@@ -1400,48 +1465,96 @@ public class MainWindow extends Application {
 		new Thread(task).start();
 	}
 
-	private List<Object> getAllPosts(List<Status> statuses, List<Post> posts, List<Message> messages) {
-		List<Object> list = new ArrayList<>();
-		list.addAll(statuses);
-		list.addAll(posts);
-		list.addAll(messages);
+	private void getAllPosts(List<Status> statuses, List<Post> posts, List<Message> messages) {
+		all_posts.addAll(posts);
+		all_posts.addAll(messages);
+		all_posts.addAll(statuses);
+		sortIt();
+	}
 
-//		list.sort(new Comparator<Object>() {
-//
-//			@Override
-//			public int compare(Object o1, Object o2) {
-//				long timeO1 = -1;
-//				long timeO2 = -1;
-//				if (o1 instanceof Status) {
-//					timeO1 = ((Status) o1).getCreatedAt().getTime();
-//				} else if (o1 instanceof Post) {
-//					timeO1 = ((Post) o1).getCreatedTime().getTime();
-//				} else {
-//					try {
-//						timeO1 = ((Message) o1).getReceivedDate().getTime();
-//					} catch (MessagingException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//				timeO1 = timeO1 / (1000 * 60 * 60);
-//				if (o2 instanceof Status) {
-//					timeO2 = ((Status) o2).getCreatedAt().getTime();
-//				} else if (o2 instanceof Post) {
-//					timeO2 = ((Post) o2).getCreatedTime().getTime();
-//				} else {
-//					try {
-//						timeO2 = ((Message) o2).getReceivedDate().getTime();
-//					} catch (MessagingException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//				timeO2 = timeO2 / (1000 * 60 * 60);
-//				return (int) (timeO1 - timeO2);
-//
-//			}
-//
-//		});
-		return list;
+	public void sortIt() {
+		List<Object> objectList = new LinkedList<>();
+		objectList.addAll(all_posts);
+		List<Object> sortedList = new LinkedList<>();
+		long mainTime = 0;
+		long objTime = 0;
+		int index = 0;
+		while (objectList.size() != 1) {
+			List<Object> objList = new LinkedList<>();
+			objList.add(objectList.get(0));
+			index = 0;
+			for (int i = 0; i < objectList.size(); i++) {
+				Object obj = objectList.get(i);
+				if (obj instanceof Status) {
+					objTime = (long) ((Status) obj).getCreatedAt().getTime();
+				} else if (obj instanceof Post) {
+					objTime = (long) ((Post) obj).getCreatedTime().getTime();
+				} else if (obj instanceof Message) {
+					try {
+						objTime = (long) ((Message) obj).getSentDate().getTime();
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+				}
+				if (objList.get(0) instanceof Status) {
+					mainTime = (long) ((Status) objList.get(0)).getCreatedAt().getTime();
+				} else if (objList.get(0) instanceof Post) {
+					mainTime = (long) ((Post) objList.get(0)).getCreatedTime().getTime();
+				} else if (objList.get(0) instanceof Message) {
+					try {
+						mainTime = (long) ((Message) objList.get(0)).getSentDate().getTime();
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+				}
+				if (mainTime <= objTime) {
+					objList.clear();
+					objList.add(obj);
+					index = i;
+				}
+			}
+			sortedList.add(objList.get(0));
+			objectList.remove(index);
+		}
+		sortedList.addAll(objectList);
+		all_posts.clear();
+		all_posts.addAll(sortedList);
+	}
+
+	private double getUsableSpace() {
+		double occupied_space = 0;
+		int nr_apps_opened = 0;
+		if (twitter_app_pane != null) {
+			occupied_space += twitter_app_pane.getWidth();
+			nr_apps_opened++;
+		}
+		if (facebook_app_pane != null) {
+			occupied_space += facebook_app_pane.getWidth();
+			nr_apps_opened++;
+		}
+		if (email_app_pane != null) {
+			occupied_space += email_app_pane.getWidth();
+			nr_apps_opened++;
+		}
+		if (all_app_pane != null) {
+			occupied_space += all_app_pane.getWidth();
+			nr_apps_opened++;
+		}
+		// To-Do
+		switch (nr_apps_opened) {
+		case 0:
+			return apps_pane.getWidth() - occupied_space;
+		case 1:
+			return apps_pane.getWidth() - (occupied_space * 0.5);
+		case 2:
+			return apps_pane.getWidth() - (occupied_space * 0.5);
+		case 3:
+			return apps_pane.getWidth() - (occupied_space / 0.33);
+		case 4:
+			return apps_pane.getWidth() - (occupied_space / 0.25);
+		}
+		return 0;
+
 	}
 
 }
