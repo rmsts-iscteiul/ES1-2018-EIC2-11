@@ -289,10 +289,11 @@ public class MainWindow extends Application {
 								|| email_app.getPassword().equals("") || email_app.getPassword() == null) {
 							new PopUpWindow(main_stage, PopUpType.WARNING,
 									"Sorry but something went wrong :( \n pls try again");
-							user.setEmUsr("");
-							user.updateUsrInfo();
+							return;
+						} else {
 							user.setEmUsr(email_app.getUser());
 							user.setEmPwd(email_app.getPassword());
+							System.out.println("2: " + email_app.getPassword());
 							user.updateUsrInfo();
 						}
 					} else {
@@ -300,6 +301,7 @@ public class MainWindow extends Application {
 						email_app.setPassword(user.getEmPwd());
 					}
 				}
+				System.out.println("3: " + email_app.getPassword());
 				if (email_app_pane == null) {
 					getEmailTimeline();
 				} else {

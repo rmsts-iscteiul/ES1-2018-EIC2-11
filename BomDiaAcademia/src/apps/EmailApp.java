@@ -25,6 +25,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import utils.Encryptation;
+
 public class EmailApp {
 
 	/**
@@ -77,6 +79,8 @@ public class EmailApp {
 	 * @return returns a List of email Messages
 	 */
 	public List<Message> getTimeline(String filter) {
+		System.out.println(Encryptation.decode(password));
+		String decoded_password = Encryptation.decode(password);
 		try {
 			/**
 			 * 
@@ -93,7 +97,7 @@ public class EmailApp {
 
 			Store store = emailSession.getStore("pop3s");
 
-			store.connect("pop-mail.outlook.com", user, password);
+			store.connect("pop-mail.outlook.com", user, decoded_password);
 
 			/**
 			 * create the folder object and open it

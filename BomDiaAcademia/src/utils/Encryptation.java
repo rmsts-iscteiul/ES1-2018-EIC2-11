@@ -29,6 +29,22 @@ public class Encryptation {
 	 */
 	private static final int KEY_LENGTH = 256;
 
+	private static Base64.Encoder encoder = Base64.getEncoder();
+	private static Base64.Decoder decoder = Base64.getDecoder();
+
+	public static String decode(String toDecode) {
+		byte[] bytesDecoded = decoder.decode(toDecode.getBytes());
+		String decoded = new String(bytesDecoded);
+		return decoded;
+	}
+
+	public static String encode(String toEncode) {
+		System.out.println(toEncode);
+		byte[] bytesEncoded = encoder.encode(toEncode.getBytes());
+		String encoded = new String(bytesEncoded);
+		return encoded;
+	}
+
 	/**
 	 * Salt is a random encryptation value
 	 * 

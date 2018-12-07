@@ -27,7 +27,7 @@ public class LoginWindow {
 	private BorderPane login_window_root_pane;
 
 	private EmailApp email_app = null;
-	
+
 	private utils.User user;
 
 	private static final int LOGIN_SHADOW_GAP = 10;
@@ -216,6 +216,7 @@ public class LoginWindow {
 				if (email_app != null) {
 					email_app.setUser(email_text_field.getText());
 					email_app.setPassword(password_field.getText());
+					System.out.println("LOGIN:" + password_field.getText());
 					new PopUpWindow(login_stage, PopUpType.SUCCESSFULLY, "Logged in successfully!");
 					login_stage.close();
 				} else {
@@ -238,7 +239,7 @@ public class LoginWindow {
 
 		login_window_root_pane.setCenter(login_container);
 	}
-	
+
 	public User getUser() {
 		return user;
 	}

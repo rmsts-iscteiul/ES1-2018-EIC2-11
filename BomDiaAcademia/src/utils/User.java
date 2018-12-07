@@ -2,26 +2,20 @@ package utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 public class User {
 
@@ -157,12 +151,12 @@ public class User {
 				Element newElement1 = doc.createElement("User");
 				newElement1.setAttribute("fn", this.getFn());
 				newElement1.setAttribute("ln", this.getLn());
-				newElement1.setAttribute("pw", encrypt.generateSecurePassword(this.getPw(), salt));
+				newElement1.setAttribute("pw", Encryptation.encode(this.getPw()));
 				newElement1.setAttribute("darkTheme", "" + this.getDarkTheme());
 				newElement1.setAttribute("fbToken", this.getFbToken());
 				newElement1.setAttribute("twToken", this.getTwToken());
 				newElement1.setAttribute("emUsr", this.getEmUsr());
-				newElement1.setAttribute("emPwd", encrypt.generateSecurePassword(this.getEmPwd(), salt));
+				newElement1.setAttribute("emPwd", Encryptation.encode(this.getEmPwd()));
 				newElement1.setAttribute("id", "" + nl.getLength());
 				newElement1.setAttribute("wordF", this.getWordFilter());
 				newElement1.setAttribute("timeF", this.getTimeFilter());
@@ -276,47 +270,6 @@ public class User {
 		}
 	}
 
-	/**
-	 * type values are: Facebook Twitter Email
-	 * 
-	 * @param type, data
-	 * 
-	 * @throws ParserConfigurationException
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws XPathExpressionException
-	 * @throws TransformerFactoryConfigurationError
-	 * @throws TransformerException
-	 */
-
-//	private void storeBrowsedData(String type, List<Object> data) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException, TransformerFactoryConfigurationError, TransformerException {
-//		File inputFile = new File("src\\resources\\files\\appdata.xml");
-//		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-//		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-//		Document doc = dBuilder.parse(inputFile);
-//		doc.getDocumentElement().normalize();
-//		XPathFactory xpathFactory = XPathFactory.newInstance();
-//		XPath xpath = xpathFactory.newXPath();
-//		XPathExpression expr = xpath.compile("/XML/@*");
-//		
-//		NodeList nl = doc.getElementsByTagName(type);
-//		for (int i = 0; i < nl.getLength(); i++) {
-//			NamedNodeMap children = nl.item(i).getAttributes();
-//			Element newElement1 = doc.createElement(type);
-//			newElement1.setAttribute("id", this.getID());
-//			for(int j = 0; j != data.size(); j++) {
-//				newElement1.setAttribute("id", this.getID());
-//			}
-//			Node n = doc.getDocumentElement();
-//			n.appendChild(newElement1);
-//			
-//		}
-//		Transformer transformer = TransformerFactory.newInstance().newTransformer();
-//		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-//		StreamResult result = new StreamResult(new FileOutputStream("src\\resources\\files\\credentials.xml"));
-//		DOMSource source = new DOMSource(doc);
-//		transformer.transform(source, result);
-//	}
 	public void setWordFilter(String word) {
 		this.wordFilter = word;
 	}
