@@ -27,18 +27,50 @@ import javax.mail.internet.MimeMultipart;
 
 public class EmailApp {
 	
+	/**
+	 * user credential for the gmail login
+	 */
 	protected String user;
+	
+	/**
+	 * password credential for the gmail login
+	 */
 	protected String password;
+	
+	/**
+	 * emailFolder folder were the email are stored remotly on the web cloud
+	 */
 	protected Folder emailFolder;
+	
+	/**
+	 * timeFilter uses our enum to filter the email time 
+	 */
 	private TimeFilter timeFilter;
-	private int s;
+	
+	/**
+	 * mLenght defines the number of emails that we will be retrieving 
+	 */
+	private int mLenght;
+	
+	/**
+	 * emails List of email messages
+	 */
 	private List<Message> emails = new LinkedList<Message>();
 	
-	public EmailApp(String word) {
+	/**
+	 * Constructor
+	 */
+	
+	public EmailApp() {
 		timeFilter.ALL_TIME;
-		s=41;
-		this.word = word;
+		mLenght=41;
 	}
+	
+	/**
+	 * 
+	 * @param filter gives a String that define the search of a word inside the email messages
+	 * @return returns a List of email Messages
+	 */
 	
 	protected List<Message> getTimeline(String filter) {
 		
@@ -100,6 +132,15 @@ public class EmailApp {
 		}
 		return emails;
 	}
+	
+	/**
+	 * 
+	 * used as an auxiliar funcion to the main function getTimeLine()
+	 * 
+	 * @param messages Email message array
+	 * @param filter word filter in the messages
+	 * @return a list of emails filtered by a timeFilter
+	 */
 
 	private List<Message> notAllTime(Message[] messages,String filter){
 		for (int i = 0; i != messages.length-1; i--) {
@@ -113,6 +154,13 @@ public class EmailApp {
 			}
 		}
 	}
+	
+	/**
+	 * Sends and email to a specific destination with a specific text
+	 * 
+	 * @param to Address which the email will be sent to
+	 * @param text Content of the email
+	 */
 	
 	protected void sendEmail(String to, String text) {
 		String host = "smtp-mail.outlook.com";
@@ -157,6 +205,13 @@ public class EmailApp {
 		}
 
 	}
+	
+	/**
+	 * Sends and email like sendEmail function but this time allows to send attachments
+	 * 
+	 * @param to Address which the email will be sent to
+	 * @param text Content of the email
+	 */
 
 	protected void sendEmailWithAttachment(String to, String text) {
 		String host = "smtp-mail.outlook.com";
@@ -280,7 +335,10 @@ public class EmailApp {
 	}
 
 	/**
-	 * This method would print FROM,TO and SUBJECT of the message
+	 * 
+	 * @param m email Message
+	 * @return
+	 * @throws Exception
 	 */
 	protected String writeEnvelope(Message m) throws Exception {
 		String email_envelope = "";
@@ -322,17 +380,25 @@ public class EmailApp {
 	public Folder getEmailFolder() {
 		return emailFolder;
 	}
-	
+	/**
+	 * 
+	 * @param user
+	 */
 	public void setUser(String user) {
 		this.user = user;
 	}
-	
+	/**
+	 * 
+	 * @param password
+	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+	/**
+	 * 
+	 */
 	public void moreMails() {
-		this.s += 40;
+		this.mLenght += 40;
 	}
 //	public static void main(String[] args) {
 //		EmailApp email = new EmailApp();
