@@ -1,5 +1,6 @@
 package gui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.Message;
@@ -252,6 +253,9 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(ActionEvent actionEvent) {
 				if (all_app_pane == null) {
+					if (email_app_pane == null) {
+						new LoginWindow(main_stage, email_app);
+					}
 					getAllTimeline();
 				} else {
 					if (left_menu_combine_apps_toggle_button.isSelected()) {
@@ -737,7 +741,7 @@ public class MainWindow extends Application {
 	 * 
 	 * @param emails
 	 */
-	private void buildAllApp(List<Status> statuses, List<Post> posts) {
+	private void buildAllApp(List<Status> statuses, List<Post> posts, List<Message> emails) {
 		all_app_pane = new VBox();
 		all_app_pane.setId("all_app_pane");
 		all_app_pane.setId("twitter_app_pane");
@@ -779,19 +783,22 @@ public class MainWindow extends Application {
 		VBox all_feed = new VBox();
 		all_feed.setId("all_feed");
 		System.out.println("OOOOH");
-		for (Status status : statuses) {
-			all_feed.getChildren().add(newTwitterPost(status, all_app_pane));
+
+		List<Object> all_posts = getAllPosts(statuses, posts, emails);
+		System.out.println(all_posts.size());
+		for (Object o : all_posts) {
+			if (o instanceof Status) {
+				all_feed.getChildren().add(newTwitterPost((Status) o, all_app_pane));
+			} else if (o instanceof Post) {
+				all_feed.getChildren().add(newFacebookPost((Post) o, all_app_pane));
+			} else if (o instanceof Message) {
+				try {
+					all_feed.getChildren().add(newEmailPost((Message) o, all_app_pane));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
-		for (Post post : posts) {
-			all_feed.getChildren().add(newFacebookPost(post, all_app_pane));
-		}
-//		for (Message message : emails) {
-//			try {
-//				all_feed.getChildren().add(newEmailPost(message, all_app_pane));
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
 
 		all_app_scroll_pane.setContent(all_feed);
 		all_app_pane.getChildren().addAll(all_app_tool_bar, all_app_scroll_pane);
@@ -1176,7 +1183,8 @@ public class MainWindow extends Application {
 			 */
 			@Override
 			protected Void call() throws Exception {
-				buildAllApp(twitter_app.getTimeline(twitter_app.getUser()), facebook_app.getTimeline());
+				buildAllApp(twitter_app.getTimeline(twitter_app.getUser()), facebook_app.getTimeline(),
+						email_app.getTimeline());
 				return null;
 			}
 		};
@@ -1194,4 +1202,49 @@ public class MainWindow extends Application {
 		});
 		new Thread(task).start();
 	}
+
+	private List<Object> getAllPosts(List<Status> statuses, List<Post> posts, List<Message> messages) {
+		List<Object> list = new ArrayList<>();
+		list.addAll(statuses);
+		list.addAll(posts);
+		list.addAll(messages);
+
+//		list.sort(new Comparator<Object>() {
+//
+//			@Override
+//			public int compare(Object o1, Object o2) {
+//				long timeO1 = -1;
+//				long timeO2 = -1;
+//				if (o1 instanceof Status) {
+//					timeO1 = ((Status) o1).getCreatedAt().getTime();
+//				} else if (o1 instanceof Post) {
+//					timeO1 = ((Post) o1).getCreatedTime().getTime();
+//				} else {
+//					try {
+//						timeO1 = ((Message) o1).getReceivedDate().getTime();
+//					} catch (MessagingException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//				timeO1 = timeO1 / (1000 * 60 * 60);
+//				if (o2 instanceof Status) {
+//					timeO2 = ((Status) o2).getCreatedAt().getTime();
+//				} else if (o2 instanceof Post) {
+//					timeO2 = ((Post) o2).getCreatedTime().getTime();
+//				} else {
+//					try {
+//						timeO2 = ((Message) o2).getReceivedDate().getTime();
+//					} catch (MessagingException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//				timeO2 = timeO2 / (1000 * 60 * 60);
+//				return (int) (timeO1 - timeO2);
+//
+//			}
+//
+//		});
+		return list;
+	}
+
 }

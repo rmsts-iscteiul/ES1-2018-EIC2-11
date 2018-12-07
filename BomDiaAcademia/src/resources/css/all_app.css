@@ -40,7 +40,7 @@
 #all_app_scroll_pane {
 	-fx-background-color: transparent;
 	-fx-alignment: top-center;
-	-fx-border-color: #ff3b30;
+	-fx-border-color: #202020;
 }
 
 .scroll-bar:horizontal .track,
