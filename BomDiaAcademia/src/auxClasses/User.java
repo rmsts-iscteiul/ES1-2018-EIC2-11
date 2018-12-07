@@ -287,12 +287,5 @@ public class User {
 	}
 
 
-	public static void main(String[] args) {
-		User gay = new User("Ru", "Ben", "as", null, null, null, "0", "0");
-		gay.saveNewUser(gay);
-		gay.checkInfo(gay);
-		//gay.setDarkTheme("1");
-		//gay.updateUsrInfo(gay);
-		//System.out.println(gay.isUsrRegistered(gay));
-	}
+
 }
