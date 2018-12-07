@@ -28,7 +28,7 @@ import javax.mail.internet.MimeMultipart;
 public class EmailApp {
 	
 	private String user;
-	public String password;
+	private String password;
 
 	private Folder emailFolder;
 
