@@ -54,14 +54,14 @@ public class TwitterApp {
 	private String owner = "";
 
 	/**
-	 * Deprecated list of a users tweets
+	 * "Deprecated" (not updated) list of a users tweets
 	 */
 	private List<Status> statuses;
 
 	/**
 	 * List containing the next 40 tweets (buffering)
 	 */
-	private List<Status> nextPageList;
+	private List<Status> nextPageList = new LinkedList<>();
 
 	/**
 	 * Thread is responsible to buffer the next 20 tweets with filter;
@@ -76,7 +76,7 @@ public class TwitterApp {
 	/**
 	 * Number of tweets sent at a time
 	 */
-	private static final int NUMBER_OF_TWEETS = 40;
+	private static final int NUMBER_OF_TWEETS = 20;
 
 	/**
 	 * Page number of the tweets database. E.G.: |page 1 = 1st 40 tweets |page 2 =
@@ -87,8 +87,10 @@ public class TwitterApp {
 	/**
 	 * Constructor of the TwitterApp. It uses an Access token and an Consumer key to
 	 * build the twitter factory which uses to build the twitter instance.
+	 * 
+	 * @throws TwitterException - no connection
 	 */
-	public TwitterApp() {
+	public TwitterApp() throws TwitterException {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true).setOAuthConsumerKey("GahzkZi50ZuasuqqkRqckC2ln")
 				.setOAuthConsumerSecret("Rr3Q7ivhL3HiEKVoP3d2aLwNbh6ez5rTdEy3MtNRd6yeC5vNVV")
@@ -99,8 +101,11 @@ public class TwitterApp {
 		timeFilter = TimeFilter.ALL_TIME;
 		try {
 			owner = twitter.getScreenName();
-		} catch (IllegalStateException | TwitterException e) {
-			System.out.println("CHECK CONNECTION - Init");
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (TwitterException e) {
+			System.out.println("NETWORK CONNECTION - At starting twitterApp");
+			throw e; // Warning the GUI that there is no connection
 		}
 	}
 
@@ -109,12 +114,14 @@ public class TwitterApp {
 	 * 
 	 * @param user(String) Owns the timeline which is being displayed.
 	 * @return List(Status) - Contains the last 20 tweets of the user.
+	 * @throws TwitterException - no connection
 	 */
 	@SuppressWarnings("finally")
 	public List<Status> getTimeline(String user) throws TwitterException { // The argument need to be
 		// the @ of the user. DON'T
 		// WRITE THE '@'
 		List<Status> list = new LinkedList<>();
+		resetPaging();
 		try {
 			statuses = twitter.getUserTimeline(user, new Paging(1, NUMBER_OF_TWEETS));
 			setUser(user);
@@ -142,17 +149,19 @@ public class TwitterApp {
 	 * Gets the timeline of the user filtered with the 2º argument of this method
 	 * (filter)
 	 * 
-	 * @param user(String) Owns the timeline which is being displayed.
-	 * @param filter(String) Chosen by the User. Tweets of the user are filtered
-	 *        using this argument.
-	 * @return List(Status) - Contains the last 20 tweets based on the filter(2º
+	 * @param user       (String) Owns the timeline which is being displayed.
+	 * @param wordfilter - (String) Chosen by the User. Tweets of the user are
+	 *                   filtered using this argument.
+	 * @return List (Status) - Contains the last 20 tweets based on the filter(2º
 	 *         argument) of the user.
+	 * @throws TwitterException - no connection
 	 */
 	@SuppressWarnings("finally")
 	public List<Status> getTimeline(String user, String wordfilter) throws TwitterException {
 		List<Status> listWithTimeFilter = new LinkedList<>();
 		List<Status> listWithFilters = new LinkedList<>();
 		setWordFilter(wordfilter);
+		resetPaging();
 		try {
 			statuses = twitter.getUserTimeline(user, new Paging(1, NUMBER_OF_TWEETS));
 			setUser(user);
@@ -160,7 +169,7 @@ public class TwitterApp {
 		} catch (TwitterException e) { // when Twitter service or network is
 										// unavailable
 			System.out.println("CHECK NETWORK CONNECTION - using an un-updated feed");
-			throw e;
+			throw e; // Warning the GUI that there is no connection
 
 		} finally {
 			if (!timeFilter.equals(TimeFilter.ALL_TIME)) {
@@ -171,7 +180,6 @@ public class TwitterApp {
 						listWithTimeFilter.add(s);
 					}
 				}
-
 			} else // If ALL_TIME
 				listWithTimeFilter = statuses;
 
@@ -188,12 +196,16 @@ public class TwitterApp {
 
 	/**
 	 * What the thread needs to do + start();
+	 * 
+	 * @throws TwitterException - no connection
 	 */
-	private void bufferingWithoutFilter() {
+	private void bufferingWithoutFilter() throws TwitterException {
 		bufferingThreadWithoutFilter = new Thread() {
+			@SuppressWarnings("finally")
 			@Override
 			public void run() {
 				List<Status> list = new LinkedList<>();
+				nextPageList.clear();
 				try {
 					incrementPaging();
 					list = twitter.getUserTimeline(user, new Paging(pagingNumber, NUMBER_OF_TWEETS));
@@ -212,6 +224,10 @@ public class TwitterApp {
 				} catch (TwitterException e) {
 					System.out.println("CHECK CONNECTION - Buffering Thread Stopped.");
 					nextPageList = new LinkedList<Status>(); // so it does not send the page2 of another user
+					throw e; // Warning the GUI that there is no connection
+				} finally {
+					System.out.println("");
+					return;
 				}
 			}
 		};
@@ -220,17 +236,22 @@ public class TwitterApp {
 
 	/**
 	 * What the thread needs to do + start();
+	 * 
+	 * @throws TwitterException - no connection
 	 */
-	private void bufferingWithFilter() {
+	private void bufferingWithFilter() throws TwitterException {
 		bufferingThreadWithFilter = new Thread() {
+			@SuppressWarnings("finally")
 			@Override
 			public void run() {
 				List<Status> list = new LinkedList<>();
 				List<Status> listWithTimeFilter = new LinkedList<>();
+				nextPageList.clear();
 				try {
 					incrementPaging();
 					list = twitter.getUserTimeline(user, new Paging(pagingNumber, NUMBER_OF_TWEETS));
-					if (!timeFilter.equals(TimeFilter.ALL_TIME)) { // Time Filter
+					if (!timeFilter.equals(TimeFilter.ALL_TIME) && !timeFilter.equals(TimeFilter.SPECIFIC_DAY)) { // Time
+																													// Filter
 						for (Status s : list) {
 							long date = ((timeFilter.getDate() / (24 * 60 * 60 * 1000))
 									- (s.getCreatedAt().getTime() / (24 * 60 * 60 * 1000)));
@@ -249,10 +270,14 @@ public class TwitterApp {
 				} catch (TwitterException e) {
 					System.out.println("CHECK CONNECTION - Buffering Thread Stopped");
 					nextPageList = new LinkedList<Status>();
+					throw e;
+				} finally {
+					return;
 				}
 			}
 		};
 		bufferingThreadWithFilter.start();
+
 	}
 
 	/**
@@ -260,8 +285,9 @@ public class TwitterApp {
 	 * the posterior info. to finish and it will begin its search again.
 	 * 
 	 * @return the list of the next 40 tweets (without word filter)
+	 * @throws TwitterException - no connection
 	 */
-	public List<Status> getMoreTweetsWithoutFilter() {
+	public List<Status> getMoreTweetsWithoutFilter() throws TwitterException {
 		try {
 			bufferingThreadWithoutFilter.join();
 			bufferingWithoutFilter();
@@ -276,8 +302,9 @@ public class TwitterApp {
 	 * the posterior info. to finish and it will begin its search again.
 	 * 
 	 * @return the list of the next 40 tweets
+	 * @throws TwitterException - no connection
 	 */
-	public List<Status> getMoreTweetsWithFilter() {
+	public List<Status> getMoreTweetsWithFilter() throws TwitterException {
 		try {
 			bufferingThreadWithFilter.join();
 			bufferingWithFilter();
@@ -292,12 +319,14 @@ public class TwitterApp {
 	 * homepage
 	 * 
 	 * @param text - tweets this text
-	 * @return returns the owners timeline
+	 * @param file - file(image)
+	 * @throws TwitterException - no connection
 	 */
 
 	public void tweet(String text, File file) throws TwitterException {
 		StatusUpdate newStatus = new StatusUpdate(text + WATERMARK);
-		newStatus.media(file);
+		if (file != null)
+			newStatus.setMedia(file);
 		twitter.updateStatus(newStatus.getStatus());
 	}
 
@@ -305,8 +334,8 @@ public class TwitterApp {
 	 * Replies to a status (comment)
 	 * 
 	 * @param text   - the text you want to comment
-	 * @param postID - the id of the status you want to comment
-	 * @throws TwitterException
+	 * @param status - the status you want to comment
+	 * @throws TwitterException - no connection
 	 */
 	public void replyTo(String text, Status status) throws TwitterException { // Comment as a reply to
 		// @user.
@@ -319,22 +348,31 @@ public class TwitterApp {
 	/**
 	 * Retweets a certain status
 	 * 
-	 * @param postID - the id of the status you want to retweet
-	 * @throws TwitterException
+	 * @param status - the status you want to retweet
+	 * @throws TwitterException - no connection
 	 */
 	public void retweet(Status status) throws TwitterException { // Share a post
 		if (!status.isRetweetedByMe())
 			twitter.retweetStatus(status.getId());
-		else
+	}
+
+	/**
+	 * Unretweets a certain status
+	 * 
+	 * @param status - the status you want to unretweet
+	 * @throws TwitterException - no connection
+	 */
+	public void unRetweet(Status status) throws TwitterException {
+		if (status.isRetweetedByMe())
 			twitter.unRetweetStatus(status.getId());
 	}
 
 	/**
 	 * Retweets a certain status with a message (comment and share basically)
 	 * 
-	 * @param postID - the id of the status you want to retweet
+	 * @param status - the status you want to retweet
 	 * @param text   - the text you want to comment
-	 * @throws TwitterException
+	 * @throws TwitterException - no connection
 	 */
 	public void retweet(String text, Status status) throws TwitterException { // Basically It's to
 		// comment and share a
@@ -345,15 +383,25 @@ public class TwitterApp {
 	}
 
 	/**
-	 * Favorites/un-favorites a certain users status
+	 * Favorites a certain users status
 	 * 
-	 * @param postID of the status you want to favorite
-	 * @throws TwitterException
+	 * @param status the status you want to favorite
+	 * @throws TwitterException - no connection
 	 */
 	public void favorite(Status status) throws TwitterException {
 		if (!status.isFavorited())
 			twitter.createFavorite(status.getId());
-		else
+	}
+
+	/**
+	 * un-favorites a certain users status (needs to be favorited by you)
+	 * 
+	 * @param status the status you want to unfavorite
+	 * @throws TwitterException - no connection
+	 */
+	public void unFavorite(Status status) throws TwitterException {
+		System.out.println(status.isFavorited());
+		if (status.isFavorited())
 			twitter.destroyFavorite(status.getId());
 	}
 
@@ -369,11 +417,10 @@ public class TwitterApp {
 	/**
 	 * Changes users page
 	 * 
-	 * @param user
+	 * @param user - user searched
 	 */
 	public void setUser(String user) {
 		this.user = user;
-		resetPaging(); // Reset page when user changes
 	}
 
 	/**
@@ -410,17 +457,15 @@ public class TwitterApp {
 	 */
 	private void setWordFilter(String wordFilter) {
 		this.wordFilter = wordFilter;
-		resetPaging(); // resets page when word filter changes
 	}
 
 	/**
 	 * Change time filter
 	 * 
-	 * @param timeFilter
+	 * @param timeFilter time filter
 	 */
 	public void setTimeFilter(TimeFilter timeFilter) {
 		this.timeFilter = timeFilter;
-		resetPaging(); // Resets page when time filter changes
 	}
 
 	/**
@@ -435,6 +480,15 @@ public class TwitterApp {
 	 */
 	private void resetPaging() {
 		pagingNumber = 1;
+	}
+
+	/**
+	 * Gets number of tweets per page.
+	 * 
+	 * @return Number of tweets
+	 */
+	public int getNumberOfTweetsPerPage() {
+		return NUMBER_OF_TWEETS;
 	}
 
 }

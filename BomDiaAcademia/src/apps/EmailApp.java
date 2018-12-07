@@ -129,7 +129,7 @@ public class EmailApp {
 
 	}
 
-	protected void sendEmailWithAttachment(String to, String text) {
+	public void sendEmailWithAttachment(String to, String text) {
 		String host = "smtp-mail.outlook.com";
 
 		Properties props = new Properties();

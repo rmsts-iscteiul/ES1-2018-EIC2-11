@@ -1,16 +1,17 @@
-package apps;
-
-import static org.junit.jupiter.api.Assertions.*;
+package tests;
 
 import java.util.List;
 import java.util.Scanner;
-import javax.mail.Folder;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import apps.EmailApp;
 
 class TestEmailApp {
 
