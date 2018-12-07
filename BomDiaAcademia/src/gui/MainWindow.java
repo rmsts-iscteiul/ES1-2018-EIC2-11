@@ -293,7 +293,6 @@ public class MainWindow extends Application {
 						} else {
 							user.setEmUsr(email_app.getUser());
 							user.setEmPwd(email_app.getPassword());
-							System.out.println("2: " + email_app.getPassword());
 							user.updateUsrInfo();
 						}
 					} else {
@@ -301,7 +300,6 @@ public class MainWindow extends Application {
 						email_app.setPassword(user.getEmPwd());
 					}
 				}
-				System.out.println("3: " + email_app.getPassword());
 				if (email_app_pane == null) {
 					getEmailTimeline();
 				} else {
@@ -1053,7 +1051,6 @@ public class MainWindow extends Application {
 
 		VBox all_feed = new VBox();
 		all_feed.setId("all_feed");
-		System.out.println("OOOOH");
 
 		all_posts.clear();
 		getAllPosts(statuses, posts, emails);
@@ -1471,7 +1468,7 @@ public class MainWindow extends Application {
 		all_posts.addAll(posts);
 		all_posts.addAll(messages);
 		all_posts.addAll(statuses);
-		sortIt();
+//		sortIt();
 	}
 
 	public void sortIt() {

@@ -216,7 +216,6 @@ public class LoginWindow {
 				if (email_app != null) {
 					email_app.setUser(email_text_field.getText());
 					email_app.setPassword(password_field.getText());
-					System.out.println("LOGIN:" + password_field.getText());
 					new PopUpWindow(login_stage, PopUpType.SUCCESSFULLY, "Logged in successfully!");
 					login_stage.close();
 				} else {

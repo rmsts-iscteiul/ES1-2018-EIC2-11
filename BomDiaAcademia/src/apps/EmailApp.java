@@ -25,8 +25,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import utils.Encryptation;
-
 public class EmailApp {
 
 	/**
@@ -79,8 +77,6 @@ public class EmailApp {
 	 * @return returns a List of email Messages
 	 */
 	public List<Message> getTimeline(String filter) {
-		System.out.println(Encryptation.decode(password));
-		String decoded_password = Encryptation.decode(password);
 		try {
 			/**
 			 * 
@@ -97,7 +93,7 @@ public class EmailApp {
 
 			Store store = emailSession.getStore("pop3s");
 
-			store.connect("pop-mail.outlook.com", user, decoded_password);
+			store.connect("pop-mail.outlook.com", user, password);
 
 			/**
 			 * create the folder object and open it
@@ -110,7 +106,6 @@ public class EmailApp {
 			 * them on the messages` array
 			 */
 			Message[] messages = emailFolder.getMessages();
-//			System.out.println("messages.length---" + messages.length);
 
 			if (!timeFilter.equals(TimeFilter.ALL_TIME)) {
 				notAllTime(messages, filter);
@@ -202,8 +197,6 @@ public class EmailApp {
 
 			// Send message
 			Transport.send(message);
-
-			System.out.println("Sent message successfully....");
 			return true;
 
 		} catch (MessagingException e) {
@@ -273,8 +266,6 @@ public class EmailApp {
 			// Send message
 			Transport.send(message);
 
-			System.out.println("Sent message successfully....");
-
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}
@@ -285,8 +276,6 @@ public class EmailApp {
 	 * the content of the message
 	 */
 	public String writePart(Part message) throws Exception {
-		System.out.println(message.getDescription());
-		System.out.println(message.toString());
 		String messageContent = "";
 		String contentType = message.getContentType();
 

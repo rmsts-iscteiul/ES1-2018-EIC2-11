@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -9,6 +10,8 @@ import java.util.Random;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+
+import sun.misc.BASE64Decoder;
 
 public class Encryptation {
 
@@ -29,20 +32,28 @@ public class Encryptation {
 	 */
 	private static final int KEY_LENGTH = 256;
 
-	private static Base64.Encoder encoder = Base64.getEncoder();
-	private static Base64.Decoder decoder = Base64.getDecoder();
+	private static final String DEFAULT_ENCODING = "UTF-8";
+	private static final BASE64Decoder dec = new BASE64Decoder();
 
-	public static String decode(String toDecode) {
-		byte[] bytesDecoded = decoder.decode(toDecode.getBytes());
-		String decoded = new String(bytesDecoded);
-		return decoded;
+	public static String encode(String password) {
+		String returnValue = null;
+		try {
+			returnValue = new String(Base64.getEncoder().encode(password.getBytes()), DEFAULT_ENCODING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return returnValue;
 	}
 
-	public static String encode(String toEncode) {
-		System.out.println(toEncode);
-		byte[] bytesEncoded = encoder.encode(toEncode.getBytes());
-		String encoded = new String(bytesEncoded);
-		return encoded;
+	public static String decode(String encodedPwd) {
+		String returnValue = null;
+		try {
+			returnValue = new String(dec.decodeBuffer(encodedPwd), DEFAULT_ENCODING);
+		} catch (IOException e) {
+			e.printStackTrace();
+			;
+		}
+		return returnValue;
 	}
 
 	/**
