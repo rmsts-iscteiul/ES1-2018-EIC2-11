@@ -40,12 +40,6 @@ public class FacebookApp {
 	 */
 	private TimeFilter timeFilter;
 
-
-	/**
-	 * User's acess token
-	 */
-	private String userAccessToken;
-
 	/**
 	 * Object fetched from facebook
 	 */
@@ -61,8 +55,7 @@ public class FacebookApp {
 	 * facebook. Also sets time filter to TimeFilter.ALL_TIME
 	 */
 	@SuppressWarnings("deprecation")
-	public FacebookApp() {
-		userAccessToken = "EAAD4C79u9UYBAKK5kALF2cxjaebseMLiSzyK6WIE3Y6iPfZBfo7164b0ZBLe9mHC1hKI7ZBjHcbr5Bef8DfzaizSZCpJBNK5SPRkTEHYGoGPSsZCVyhmGjTWELopC2c4LhLcFZAZBWia1rRJie2uR1WGgKKA301SaaZB2d3XpAW5ZAgZDZD";
+	public FacebookApp(String userAccessToken) {
 		fbClient = new DefaultFacebookClient(userAccessToken);
 
 		me = fbClient.fetchObject("me", User.class, Parameter.with("fields", "picture,name"));
@@ -239,7 +232,6 @@ public class FacebookApp {
 	public void setTimeFilter(TimeFilter timeFilter) {
 		this.timeFilter = timeFilter;
 	}
-	
 	/**
 	 * returns current time filter
 	 * 

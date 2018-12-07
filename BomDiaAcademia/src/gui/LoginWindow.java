@@ -1,6 +1,7 @@
 package gui;
 
 import apps.EmailApp;
+import auxClasses.User;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
@@ -25,7 +26,9 @@ public class LoginWindow {
 	private BorderPane login_root_pane;
 	private BorderPane login_window_root_pane;
 
-	private EmailApp email_app;
+	private EmailApp email_app = null;
+	
+	private auxClasses.User user;
 
 	private static final int LOGIN_SHADOW_GAP = 10;
 	private static final int LOGIN_ROOT_PANE_WIDTH = 400;
@@ -33,6 +36,15 @@ public class LoginWindow {
 	private static final int LOGIN_WINDOW_TOP_BAR_HEIGHT = 20;
 
 	private double xOffset, yOffset;
+
+	public LoginWindow(Stage main_stage) {
+		configureLoginStage(main_stage);
+		createLoginRootPane();
+		buildLoginWindowRootPane();
+		buildLoginContent();
+		buildLoginScene();
+		startLoginStage();
+	}
 
 	public LoginWindow(Stage main_stage, EmailApp email_app) {
 		this.email_app = email_app;
@@ -130,22 +142,52 @@ public class LoginWindow {
 		FlowPane login_container = new FlowPane(Orientation.VERTICAL);
 		login_container.setId("login_container");
 
-		// Email
 		HBox email_text_field_container = new HBox();
-		email_text_field_container.setId("email_text_field_container");
-		Label email_icon = new Label();
-		email_icon.setId("email_icon");
+		HBox first_name_text_field_container = new HBox();
+		HBox last_name_text_field_container = new HBox();
 		TextField email_text_field = new TextField("email");
-		email_text_field.setId("email_text_field");
-		email_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				if (email_text_field.getText().equals("email")) {
-					email_text_field.clear();
+		TextField first_name_text_field = new TextField("First name");
+		TextField last_name_text_field = new TextField("Last name");
+		if (email_app != null) {
+			// Email
+			email_text_field_container.setId("email_text_field_container");
+			Label email_icon = new Label();
+			email_icon.setId("email_icon");
+			email_text_field.setId("email_text_field");
+			email_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent mouseEvent) {
+					if (email_text_field.getText().equals("email")) {
+						email_text_field.clear();
+					}
 				}
-			}
-		});
-		email_text_field_container.getChildren().addAll(email_icon, email_text_field);
+			});
+			email_text_field_container.getChildren().addAll(email_icon, email_text_field);
+		} else {
+			// FirstName and LastName
+			first_name_text_field_container.setId("email_text_field_container");
+			first_name_text_field.setId("email_text_field");
+			first_name_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent mouseEvent) {
+					if (first_name_text_field.getText().equals("First name")) {
+						first_name_text_field.clear();
+					}
+				}
+			});
+			last_name_text_field_container.setId("email_text_field_container");
+			last_name_text_field.setId("email_text_field");
+			last_name_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent mouseEvent) {
+					if (last_name_text_field.getText().equals("Last name")) {
+						last_name_text_field.clear();
+					}
+				}
+			});
+			last_name_text_field_container.getChildren().addAll(first_name_text_field, last_name_text_field);
+		}
+
 		// Password
 		HBox password_field_container = new HBox();
 		password_field_container.setId("password_field_container");
@@ -171,16 +213,34 @@ public class LoginWindow {
 		login_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				email_app.setUser(email_text_field.getText());
-				email_app.setPassword(password_field.getText());
-				login_stage.close();
+				if (email_app != null) {
+					email_app.setUser(email_text_field.getText());
+					email_app.setPassword(password_field.getText());
+					new PopUpWindow(login_stage, PopUpType.SUCCESSFULLY, "Logged in successfully!");
+					login_stage.close();
+				} else {
+					user = new User(first_name_text_field.getText(), last_name_text_field.getText(),
+							password_field.getText(), null, null, null, password_field.getText(), "0");
+					new PopUpWindow(login_stage, PopUpType.SUCCESSFULLY, "Logged in successfully!");
+					login_stage.close();
+				}
 			}
 		});
 		login_button_container.getChildren().addAll(login_button);
 		// Add all to login container
-		login_container.getChildren().addAll(email_text_field_container, password_field_container,
-				login_button_container);
+		if (email_app != null) {
+			login_container.getChildren().addAll(email_text_field_container, password_field_container,
+					login_button_container);
+		} else {
+			login_container.getChildren().addAll(first_name_text_field_container, last_name_text_field_container,
+					password_field_container, login_button_container);
+		}
+
 		login_window_root_pane.setCenter(login_container);
+	}
+	
+	public User getUser() {
+		return user;
 	}
 
 	private void startLoginStage() {

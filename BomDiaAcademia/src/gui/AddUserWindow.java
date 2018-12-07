@@ -125,11 +125,11 @@ public class AddUserWindow {
 	private void buildAddUserContent() {
 		FlowPane add_user_container = new FlowPane(Orientation.VERTICAL);
 		add_user_container.setId("add_user_container");
-		
+
 		VBox add_user_welcome_container = new VBox();
 		add_user_welcome_container.setId("add_user_welcome_container");
 		Label welcome_label = new Label("Welcome to \nBom dia Academia");
-		
+
 		add_user_welcome_container.getChildren().addAll(welcome_label);
 		// First name
 		HBox first_name_text_field_container = new HBox();
@@ -192,7 +192,7 @@ public class AddUserWindow {
 				}
 			}
 		});
-		repeat_password_field_container.getChildren().addAll(repeat_password_icon,repeat_password_field);
+		repeat_password_field_container.getChildren().addAll(repeat_password_icon, repeat_password_field);
 		// Create account button
 		HBox add_user_create_account_button_container = new HBox();
 		add_user_create_account_button_container.setId("add_user_create_account_button_container");
@@ -202,7 +202,11 @@ public class AddUserWindow {
 			@Override
 			public void handle(ActionEvent actionEvent) {
 				if (password_field.getText().equals(repeat_password_field.getText())) {
-					//createNewUser()
+					auxClasses.User user = new auxClasses.User(first_name_text_field.getText(), last_name_text_field.getText(),
+							password_field.getText(), null, null, null, last_name_text_field.getText(), "0");
+					user.saveNewUser();
+					new PopUpWindow(add_user_stage, PopUpType.SUCCESSFULLY, "Your account was added successfully!");
+					add_user_stage.close();
 				} else {
 					password_field_container.setId("add_user_wrong_password_field_container");
 					repeat_password_field_container.setId("add_user_wrong_password_field_container");
@@ -211,9 +215,10 @@ public class AddUserWindow {
 			}
 		});
 		add_user_create_account_button_container.getChildren().addAll(add_user_create_account_button);
-		//Add all to user container
-		add_user_container.getChildren().addAll(add_user_welcome_container, first_name_text_field_container, last_name_text_field_container,
-				password_field_container, repeat_password_field_container, add_user_create_account_button_container);
+		// Add all to user container
+		add_user_container.getChildren().addAll(add_user_welcome_container, first_name_text_field_container,
+				last_name_text_field_container, password_field_container, repeat_password_field_container,
+				add_user_create_account_button_container);
 		add_user_window_root_pane.setCenter(add_user_container);
 	}
 

@@ -54,6 +54,26 @@ public class TwitterApp {
 	private String owner = "";
 
 	/**
+	 * Consumer key
+	 */
+	private String consumerKey;
+
+	/**
+	 * Consumer secret
+	 */
+	private String consumerSecret;
+
+	/**
+	 * User access token
+	 */
+	private String userAccessToken;
+
+	/**
+	 * Access token secret
+	 */
+	private String accessTokenSecret;
+
+	/**
 	 * "Deprecated" (not updated) list of a users tweets
 	 */
 	private List<Status> statuses;
@@ -90,12 +110,11 @@ public class TwitterApp {
 	 * 
 	 * @throws TwitterException - no connection
 	 */
-	public TwitterApp() throws TwitterException {
+	public TwitterApp(String twitter_tokens) throws TwitterException {
+		String[] twitter_tokens_array = twitter_tokens.split(",");
 		ConfigurationBuilder cb = new ConfigurationBuilder();
-		cb.setDebugEnabled(true).setOAuthConsumerKey("GahzkZi50ZuasuqqkRqckC2ln")
-				.setOAuthConsumerSecret("Rr3Q7ivhL3HiEKVoP3d2aLwNbh6ez5rTdEy3MtNRd6yeC5vNVV")
-				.setOAuthAccessToken("3362933517-swAMAbDiMufcuyxHUEpkSYUJ3JY9ANIrqT5yirP")
-				.setOAuthAccessTokenSecret("onDIulYjcQCvb3rVk6N3cYp0DxytW0ew86fM2Kyp8JQOj");
+		cb.setDebugEnabled(true).setOAuthConsumerKey(twitter_tokens_array[0]).setOAuthConsumerSecret(twitter_tokens_array[1])
+				.setOAuthAccessToken(twitter_tokens_array[2]).setOAuthAccessTokenSecret(twitter_tokens_array[3]);
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		twitter = tf.getInstance();
 		timeFilter = TimeFilter.ALL_TIME;
@@ -250,7 +269,7 @@ public class TwitterApp {
 					incrementPaging();
 					list = twitter.getUserTimeline(user, new Paging(pagingNumber, NUMBER_OF_TWEETS));
 					if (!timeFilter.equals(TimeFilter.ALL_TIME)) { // Time
-																													// Filter
+																	// Filter
 						for (Status s : list) {
 							long date = ((timeFilter.getDate() / (24 * 60 * 60 * 1000))
 									- (s.getCreatedAt().getTime() / (24 * 60 * 60 * 1000)));
@@ -455,6 +474,46 @@ public class TwitterApp {
 	 */
 	private void setWordFilter(String wordFilter) {
 		this.wordFilter = wordFilter;
+	}
+
+	/**
+	 * Sets specific consumerKey
+	 * 
+	 * 
+	 * @param consumerKey
+	 */
+	public void setConsumerKey(String consumerKey) {
+		this.consumerKey = consumerKey;
+	}
+
+	/**
+	 * Sets specific consumerSecret
+	 * 
+	 * 
+	 * @param consumerSecret
+	 */
+	public void setConsumerSecret(String consumerSecret) {
+		this.consumerSecret = consumerSecret;
+	}
+
+	/**
+	 * Sets specific userAccessToken
+	 * 
+	 * 
+	 * @param userAccessToken
+	 */
+	public void setUserAccessToken(String userAccessToken) {
+		this.userAccessToken = userAccessToken;
+	}
+
+	/**
+	 * Sets specific accessTokenSecret
+	 * 
+	 * 
+	 * @param accessTokenSecret
+	 */
+	public void setAccessTokenSecret(String accessTokenSecret) {
+		this.accessTokenSecret = accessTokenSecret;
 	}
 
 	/**

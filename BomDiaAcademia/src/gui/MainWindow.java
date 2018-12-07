@@ -71,6 +71,8 @@ public class MainWindow extends Application {
 	private FacebookApp facebook_app;
 	private EmailApp email_app;
 
+	private auxClasses.User user = null;
+
 	private double xOffset, yOffset;
 
 	private static final int SHADOW_GAP = 10;
@@ -197,6 +199,20 @@ public class MainWindow extends Application {
 		left_menu_facebook_toggle_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
+				if (user == null) {
+					new PopUpWindow(main_stage, PopUpType.WARNING, "Please log in first");
+					left_menu_facebook_toggle_button.setSelected(false);
+				} else {
+					if (user.getFbToken() == null || user.getFbToken().equals("")) {
+						String facebook_token = new PopUpWindow(main_stage, PopUpType.FACEBOOKTOKEN,
+								"Please insert here your Facebook token").getFacebookToken();
+						user.setFbToken(facebook_token);
+						user.updateUsrInfo();
+						facebook_app = new FacebookApp(facebook_token);
+					} else {
+						facebook_app = new FacebookApp(user.getFbToken());
+					}
+				}
 				if (facebook_app_pane == null) {
 					getFacebookTimeline();
 				} else {
@@ -214,6 +230,33 @@ public class MainWindow extends Application {
 
 			@Override
 			public void handle(ActionEvent actionEvent) {
+				if (user == null) {
+					new PopUpWindow(main_stage, PopUpType.WARNING, "Please log in first");
+					left_menu_twitter_toggle_button.setSelected(false);
+				} else {
+					if (user.getTwToken() == null || user.getTwToken().equals("")) {
+						String twitter_tokens = new PopUpWindow(main_stage, PopUpType.TWITTERTOKEN,
+								"Please insert here your Twitter token").getTwitterToken();
+						user.setTwToken(twitter_tokens);
+						user.updateUsrInfo();
+						try {
+							twitter_app = new TwitterApp(twitter_tokens);
+						} catch (TwitterException e) {
+							new PopUpWindow(main_stage, PopUpType.WARNING,
+									"Sorry but there is no Internet connection :(");
+						}
+					} else {
+						try {
+							twitter_app = new TwitterApp(user.getTwToken());
+						} catch (TwitterException e) {
+							new PopUpWindow(main_stage, PopUpType.WARNING,
+									"Sorry but there is no Internet connection :(");
+						}
+					}
+				}
+				if (user == null) {
+					new PopUpWindow(main_stage, PopUpType.WARNING, "Please log in first");
+				}
 				if (twitter_app_pane == null) {
 					getTwitterTimeline();
 				} else {
@@ -232,6 +275,11 @@ public class MainWindow extends Application {
 
 			@Override
 			public void handle(ActionEvent actionEvent) {
+				if (user == null) {
+					new PopUpWindow(main_stage, PopUpType.WARNING, "Please log in first");
+					left_menu_email_toggle_button.setSelected(false);
+				}
+				email_app = new EmailApp();
 				if (email_app_pane == null) {
 					new LoginWindow(main_stage, email_app);
 					if (!(email_app.getUser() == null)) {
@@ -255,6 +303,9 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(ActionEvent actionEvent) {
 				if (all_app_pane == null) {
+					if (user == null) {
+						new PopUpWindow(main_stage, PopUpType.WARNING, "Please log in first");
+					}
 					if (email_app_pane == null) {
 						new LoginWindow(main_stage, email_app);
 					}
@@ -383,6 +434,7 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(ActionEvent actionEvent) {
 				new AddUserWindow(main_stage);
+				user = auxClasses.User.getLast();
 			}
 		});
 		users_pane.getChildren().add(add_user_button);
@@ -398,18 +450,43 @@ public class MainWindow extends Application {
 				if (dark_theme_toggle_button.isSelected()) {
 					window_pane.setId("window_pane_dt");
 					window_left_menu.setId("window_left_menu_dt");
+					user.setDarkTheme("1");
+					user.updateUsrInfo();
 				} else {
 					window_pane.setId("window_pane");
 					window_left_menu.setId("window_left_menu");
+					user.setDarkTheme("0");
+					user.updateUsrInfo();
 				}
+			}
+		});
+		Button log_in_button = new Button("Log in");
+		log_in_button.setId("log_in_button");
+		log_in_button.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				user = new LoginWindow(main_stage).getUser();
+				user.checkInfo();
+				if (user.getDarkTheme().equals("1")) {
+					System.out.println("SIM");
+					window_pane.setId("window_pane_dt");
+					window_left_menu.setId("window_left_menu_dt");
+					dark_theme_toggle_button.setSelected(true);
+				} else {
+					System.out.println("NAO");
+					window_pane.setId("window_pane");
+					window_left_menu.setId("window_left_menu");
+					dark_theme_toggle_button.setSelected(false);
+				}
+
 			}
 		});
 		Button settings_button = new Button("Settings");
 		settings_button.setId("settings_button");
 		Button about_button = new Button("About");
 		about_button.setId("about_button");
-		bottom_options_container.getChildren().addAll(new Separator(), dark_theme_toggle_button, settings_button,
-				about_button);
+		bottom_options_container.getChildren().addAll(new Separator(), log_in_button, dark_theme_toggle_button,
+				settings_button, about_button);
 		options_content_pane.setBottom(bottom_options_container);
 
 		options_pane.setCenter(options_content_pane);
@@ -1094,13 +1171,7 @@ public class MainWindow extends Application {
 	 * This method is used to initialize the Facebook, Twitter and Email Apps.
 	 */
 	private void initApps() {
-		try {
-			twitter_app = new TwitterApp();
-		} catch (TwitterException e) {
-			new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no Internet connection :(");
-		}
-		facebook_app = new FacebookApp();
-		email_app = new EmailApp();
+
 	}
 
 	/**

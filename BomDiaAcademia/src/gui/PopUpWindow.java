@@ -1,10 +1,14 @@
 package gui;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -20,7 +24,7 @@ public class PopUpWindow {
 	private Scene pop_up_scene;
 	private BorderPane pop_up_root_pane;
 	private BorderPane pop_up_window_root_pane;
-	
+
 	private PopUpType type;
 
 	private static final int POP_UP_SHADOW_GAP = 10;
@@ -31,6 +35,12 @@ public class PopUpWindow {
 	private double xOffset, yOffset;
 
 	private boolean confirmation;
+
+	private TextField facebook_access_token;
+	private TextField consumerKey;
+	private TextField consumerSecret;
+	private TextField userAccessToken;
+	private TextField accessTokenSecret;
 
 	public PopUpWindow(Stage main_stage, PopUpType type, String text) {
 		this.type = type;
@@ -106,9 +116,10 @@ public class PopUpWindow {
 
 	private void buildPopUpWindowTopBar() {
 		VBox pop_up_window_top_bar = new VBox();
-		if(type.equals(PopUpType.SUCCESSFULLY)) {
+		if (type.equals(PopUpType.SUCCESSFULLY) || type.equals(PopUpType.TWITTERTOKEN)
+				|| type.equals(PopUpType.FACEBOOKTOKEN)) {
 			pop_up_window_top_bar.setId("pop_up_window_top_bar_successfully");
-		}else {
+		} else {
 			pop_up_window_top_bar.setId("pop_up_window_top_bar");
 		}
 		pop_up_window_top_bar.setPrefSize(POP_UP_ROOT_PANE_WIDTH, POP_UP_WINDOW_TOP_BAR_HEIGHT);
@@ -150,6 +161,16 @@ public class PopUpWindow {
 			successfully_label.setId("successfully_label");
 			pop_up_container.getChildren().add(successfully_label);
 			pop_up_buttons_container.getChildren().addAll(buildOkButton());
+		} else if (type.equals(PopUpType.FACEBOOKTOKEN)) {
+			Label input_label = new Label();
+			input_label.setId("successfully_label");
+			pop_up_container.getChildren().add(input_label);
+			pop_up_buttons_container.getChildren().addAll(buildFacebookInputPane(), buildOkButton());
+		} else if (type.equals(PopUpType.TWITTERTOKEN)) {
+			Label input_label = new Label();
+			input_label.setId("successfully_label");
+			pop_up_container.getChildren().add(input_label);
+			pop_up_buttons_container.getChildren().addAll(buildTwitterInputPane(), buildOkButton());
 		}
 		pop_up_container.getChildren().addAll(new Text(text), pop_up_buttons_container);
 		pop_up_window_root_pane.setCenter(pop_up_container);
@@ -181,8 +202,99 @@ public class PopUpWindow {
 		return cancel_button;
 	}
 
+	private VBox buildFacebookInputPane() {
+		VBox facebook_access_token_pane = new VBox();
+		facebook_access_token_pane.setId("input_pane");
+		facebook_access_token = new TextField("Insert Facebook token");
+		facebook_access_token.setId("input_text_field");
+		facebook_access_token.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				if (facebook_access_token.getText().equals("Insert Facebook token")) {
+					facebook_access_token.setText("");
+				}
+			}
+		});
+		facebook_access_token_pane.getChildren().add(facebook_access_token);
+		return facebook_access_token_pane;
+	}
+
+	private VBox buildTwitterInputPane() {
+		VBox input_pane_container = new VBox();
+
+		HBox consumer_key_pane = new HBox();
+		consumer_key_pane.setId("input_pane");
+		consumerKey = new TextField("Insert consumer key");
+		consumerKey.setId("input_text_field");
+		consumerKey.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				if (consumerKey.getText().equals("Insert consumer key")) {
+					consumerKey.clear();
+				}
+			}
+		});
+		consumer_key_pane.getChildren().add(consumerKey);
+
+		HBox consumer_secret_pane = new HBox();
+		consumer_key_pane.setId("input_pane");
+		consumerSecret = new TextField("Insert consumer secret");
+		consumerSecret.setId("input_text_field");
+		consumerSecret.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				if (consumerSecret.getText().equals("Insert consumer secret")) {
+					consumerSecret.clear();
+				}
+			}
+		});
+		consumer_key_pane.getChildren().add(consumerSecret);
+
+		HBox user_access_token_pane = new HBox();
+		user_access_token_pane.setId("input_pane");
+		userAccessToken = new TextField("Insert access token");
+		userAccessToken.setId("input_text_field");
+		userAccessToken.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				if (userAccessToken.getText().equals("Insert access token")) {
+					userAccessToken.clear();
+				}
+			}
+		});
+		user_access_token_pane.getChildren().add(userAccessToken);
+
+		HBox access_token_secret_pane = new HBox();
+		access_token_secret_pane.setId("input_pane");
+		accessTokenSecret = new TextField("Insert access secret");
+		accessTokenSecret.setId("input_text_field");
+		accessTokenSecret.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				if (accessTokenSecret.getText().equals("Insert access secret")) {
+					accessTokenSecret.clear();
+				}
+			}
+		});
+		access_token_secret_pane.getChildren().add(accessTokenSecret);
+		input_pane_container.getChildren().addAll(consumer_key_pane, consumer_secret_pane, user_access_token_pane,
+				access_token_secret_pane);
+		return input_pane_container;
+	}
+
 	public boolean getConfirmation() {
 		return confirmation;
+	}
+
+	public String getFacebookToken() {
+		String facebook_input = facebook_access_token.getText();
+		return facebook_input;
+	}
+
+	public String getTwitterToken() {
+		String twitter_tokens = consumerKey.getText() + "," + consumerSecret.getText() + "," + userAccessToken.getText()
+				+ "," + accessTokenSecret.getText();
+		return twitter_tokens;
 	}
 
 	private void startPopUpStage() {

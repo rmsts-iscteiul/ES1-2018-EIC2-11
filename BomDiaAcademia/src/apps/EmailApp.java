@@ -266,23 +266,23 @@ public class EmailApp {
 		return email_envelope;
 
 	}
-	
+
 	private String getOnlyEmail(String string) {
-		if(string.contains("<") && string.contains(">")) {
+		if (string.contains("<") && string.contains(">")) {
 			String[] splitted1 = string.split("<");
 			String[] splitted2 = splitted1[1].split(">");
 			return splitted2[0];
-		}else {
+		} else {
 			return string;
 		}
-		
+
 	}
-	
+
 	private String getOnlyName(String string) {
-		if(string.contains("<") && string.contains(">")) {
+		if (string.contains("<") && string.contains(">")) {
 			String[] splitted1 = string.split("<");
 			return splitted1[0];
-		}else {
+		} else {
 			return "";
 		}
 	}
