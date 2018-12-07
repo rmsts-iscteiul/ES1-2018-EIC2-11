@@ -1,6 +1,7 @@
 package auxClasses;
 
 import java.awt.print.Printable;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -9,6 +10,9 @@ import java.util.Base64;
 import java.util.Random;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
  
 public class Encryptation {
     
@@ -29,6 +33,9 @@ public class Encryptation {
      */
     private static final int KEY_LENGTH = 256;
     
+    private static final String DEFAULT_ENCODING = "UTF-8"; 
+    private static final BASE64Encoder enc = new BASE64Encoder();
+    private static final BASE64Decoder dec = new BASE64Decoder();
     /**
      * Salt is a random encryptation value
      * @param length Salt length
@@ -77,6 +84,25 @@ public class Encryptation {
         returnValue = Base64.getEncoder().encodeToString(securePassword);
  
         return returnValue;
+    }
+    
+    protected String emailEncode(String password) {
+    	String returnValue = null;
+    	try {
+ 			returnValue = new String(dec.decodeBuffer(password),DEFAULT_ENCODING);
+ 		} catch (IOException e) {
+ 			e.printStackTrace();
+ 		}
+         return returnValue;
+    }
+    protected String emailDecode(String encodedPwd) {
+    	String returnValue = null;
+    	try {
+            returnValue =  new String(dec.decodeBuffer(encodedPwd), DEFAULT_ENCODING);
+        } catch (IOException e) {
+            e.printStackTrace();;
+        }
+    	return returnValue;
     }
     
     /**
