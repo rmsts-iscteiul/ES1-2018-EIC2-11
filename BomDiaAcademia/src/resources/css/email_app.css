@@ -116,28 +116,28 @@
 }
 
 .scroll-pane {
-    -fx-background-insets: 0;
-    -fx-padding: 0;
+    -fx-background-insets: 0.0;
+    -fx-padding: 0.0;
 }
 
 .scroll-pane:focused {
-    -fx-background-insets: 0;
+    -fx-background-insets: 0.0;
 }
 
 .scroll-pane .corner {
-    -fx-background-insets: 0;
+    -fx-background-insets: 0.0;
 }
 
 #email_feed {
 	-fx-background-color: transparent;
-	-fx-spacing: 10px;
+	-fx-spacing: 10.0px;
 	-fx-alignment: top-center;
 }
 
 #email_post_pane{
 	-fx-background-color: #ffffff;
-	-fx-background-radius: 10px;
-	-fx-padding: 4px;
+	-fx-background-radius: 10.0px;
+	-fx-padding: 4.0px;
 }
 
 #email_post_top_bar {
@@ -145,11 +145,18 @@
 }
 
 #email_label {
-	-fx-font-size: 12px;
+	-fx-font-size: 12.0px;
 }
 
 #name_label {
-	-fx-font-size: 14px;
+	-fx-font-size: 14.0px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
+    -fx-effect: dropshadow( gaussian , rgba(255.0,255.0,255.0,0.5) , 0.0,0.0,0.0,1.0 );
+}
+
+#email_more_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/more_ecolor_64.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
 }

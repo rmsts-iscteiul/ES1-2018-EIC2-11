@@ -183,3 +183,10 @@
 #retweets_label {
 	-fx-graphic: "/resources/icons/twitter_retweet_tcolor_14.png";
 }
+
+#twitter_more_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/more_tcolor_64.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
+}

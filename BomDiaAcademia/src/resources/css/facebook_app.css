@@ -79,29 +79,29 @@
 }
 
 .scroll-pane {
-    -fx-background-insets: 0;
-    -fx-padding: 0;
+    -fx-background-insets: 0.0;
+    -fx-padding: 0.0;
 }
 
 .scroll-pane:focused {
-    -fx-background-insets: 0;
+    -fx-background-insets: 0.0;
 }
 
 .scroll-pane .corner {
-    -fx-background-insets: 0;
+    -fx-background-insets: 0.0;
 }
 
 #facebook_feed {
 	-fx-background-color: transparent;
-	-fx-spacing: 10px;
+	-fx-spacing: 10.0px;
 	-fx-alignment: top-center;
 }
 
 #facebook_post_pane{
 	-fx-background-color: #ffffff;
-	-fx-background-radius: 10px;
+	-fx-background-radius: 10.0px;
 	-fx-alignment: top-center;
-	-fx-hgap: 10px;
+	-fx-hgap: 10.0px;
 }
 
 #facebook_post_top_bar {
@@ -109,7 +109,7 @@
 }
 
 #facebook_post_bottom_bar {
-	-fx-spacing: 20px;
+	-fx-spacing: 20.0px;
 }
 
 #likes_label {
@@ -122,4 +122,11 @@
 
 #shares_label {
 	-fx-graphic: "/resources/icons/facebook_share_fcolor_14.png";
+}
+
+#facebook_more_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/more_fcolor_64.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
 }

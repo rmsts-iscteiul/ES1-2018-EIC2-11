@@ -11,15 +11,7 @@
 
 #all_app_top_bar_icon {
 	-fx-text-fill: #ffffff;
-	-fx-graphic: "/resources/icons/email_white_14.png";
-}
-
-#all_app_top_bar_new_message_button {
-	-fx-background-color: transparent;
-	-fx-graphic: "/resources/icons/new_message_white_14.png";
-	-fx-border-style: none;
-	-fx-cursor: hand;
-	-fx-tooltip-visible: true;
+	-fx-graphic: "/resources/icons/combine_apps_white_14.png";
 }
 
 #all_app_top_bar_refresh_button {
@@ -104,4 +96,11 @@
 	-fx-background-color: transparent;
 	-fx-spacing: 10.0px;
 	-fx-alignment: top-center;
+}
+
+#all_more_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/more_acolor_64.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
 }

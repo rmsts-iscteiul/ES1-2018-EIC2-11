@@ -609,6 +609,17 @@ public class MainWindow extends Application {
 			twitter_feed.getChildren().add(newTwitterPost(status, twitter_app_pane));
 		}
 
+		// More button
+		Button more_button = new Button();
+		more_button.setId("twitter_more_button");
+		more_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				// To-Do
+			}
+		});
+		twitter_feed.getChildren().add(more_button);
+
 		twitter_app_scroll_pane.setContent(twitter_feed);
 		twitter_app_pane.getChildren().addAll(twitter_app_tool_bar, twitter_app_scroll_pane);
 
@@ -661,6 +672,16 @@ public class MainWindow extends Application {
 		for (Post post : posts) {
 			facebook_feed.getChildren().add(newFacebookPost(post, facebook_app_pane));
 		}
+		// More button
+		Button more_button = new Button();
+		more_button.setId("facebook_more_button");
+		more_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				// To-Do
+			}
+		});
+		facebook_feed.getChildren().add(more_button);
 
 		facebook_app_scroll_pane.setContent(facebook_feed);
 		facebook_app_pane.getChildren().addAll(facebook_app_tool_bar, facebook_app_scroll_pane);
@@ -729,6 +750,16 @@ public class MainWindow extends Application {
 				e.printStackTrace();
 			}
 		}
+		// More button
+		Button more_button = new Button();
+		more_button.setId("email_more_button");
+		more_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				// To-Do
+			}
+		});
+		email_feed.getChildren().add(more_button);
 
 		email_app_scroll_pane.setContent(email_feed);
 		email_app_pane.getChildren().addAll(email_app_tool_bar, email_app_scroll_pane);
@@ -799,6 +830,16 @@ public class MainWindow extends Application {
 				}
 			}
 		}
+		// More button
+		Button more_button = new Button();
+		more_button.setId("all_more_button");
+		more_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				// To-Do
+			}
+		});
+		all_feed.getChildren().add(more_button);
 
 		all_app_scroll_pane.setContent(all_feed);
 		all_app_pane.getChildren().addAll(all_app_tool_bar, all_app_scroll_pane);
