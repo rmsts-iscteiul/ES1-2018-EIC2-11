@@ -89,7 +89,7 @@ public class Encryptation {
     protected String emailEncode(String password) {
     	String returnValue = null;
     	try {
- 			returnValue = new String(dec.decodeBuffer(password),DEFAULT_ENCODING);
+ 			returnValue = new String(Base64.getEncoder().encode(password.getBytes()),DEFAULT_ENCODING);
  		} catch (IOException e) {
  			e.printStackTrace();
  		}
@@ -124,15 +124,14 @@ public class Encryptation {
         return returnValue;
     }
     
-//    public static void main(String[] args) {
-//		Encryptation encrypt = new Encryptation();
-//		String pwd = "jorge";
-//		String salt = encrypt.getSalt(30);
-//		String providedPassword = encrypt.generateSecurePassword(pwd, salt);
-//		System.out.println(providedPassword);
-//		boolean passwordMatch = encrypt.verifyUserPassword("Maria", providedPassword, salt);
-//		System.out.println(passwordMatch);
-//	}
+    public static void main(String[] args) {
+		Encryptation encrypt = new Encryptation();
+		String pwd = "jorge";
+		String encoded =encrypt.emailEncode(pwd);
+		System.out.println(encoded);
+		String decoded = encrypt.emailDecode(encoded);
+		System.out.println(decoded);
+	}
     
 }
 
