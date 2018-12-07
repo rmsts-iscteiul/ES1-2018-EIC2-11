@@ -37,15 +37,50 @@ import org.xml.sax.SAXException;
 
 public class User {
 
+	/**
+	 * fn,ln,pw are the main credentials for our app (First Name, Last Name, Password)
+	 */
 	private String fn, ln, pw;
+	/**
+	 * Is our encrypt method made to encrypt passwords
+	 */
 	private Encryptation encrypt = new Encryptation();
+	/**
+	 * salt Encryptation key
+	 */
 	private String salt = "GPIHqhlAdTKLG2EDX8mq3S3EZFuoEM";
+	/**
+	 * fbToken Token to access facebook
+	 */
 	private String fbToken;
+	/**
+	 * twToken Token to access Twitter
+	 */
 	private String twToken;
+	/**
+	 * emUsr User Email
+	 */
 	private String emUsr;
+	/**
+	 * emPwd User Email password
+	 */
 	private String emPwd;
+	/**
+	 * darkThem Setting defined by the player in our account
+	 */
 	private String darkTheme;
+	/**
+	 * id Identifies the User in our app
+	 */
 	private String id;
+	/**
+	 * timeFilter used to save last TimeFilter user by the user
+	 */
+	private String timeFilter;
+	/**
+	 * wordFilter used to save last wordFilter used by the user
+	 */
+	private String wordFilter;
 	
 	/**
 	 * @param fn
@@ -65,16 +100,24 @@ public class User {
 	 *            (This one is due to encryptation requirements)
 	 */
 
-	public User(String fn, String ln, String pw, String fbToken, String twToken, String emUsr, String emPwd,
-			String darkTheme) {
+	public User(String fn, String ln, String pw) {
 		this.fn = fn;
 		this.ln = ln;
 		this.pw = pw;
-		this.fbToken = fbToken;
-		this.twToken = twToken;
-		this.emUsr = emUsr;
-		this.emPwd = emPwd;
-		this.darkTheme = darkTheme;
+		this.fbToken = null;
+		this.twToken = null;
+		this.emUsr = null;
+		this.emPwd = pw;
+		this.darkTheme = "0";
+		this.timeFilter = null;
+		this.wordFilter = null;
+	}
+	public String getWordFilter() {
+		return wordFilter;
+	}
+	
+	public String getTimeFilter() {
+		return timeFilter;
 	}
 	
 	public String getID() {
@@ -135,6 +178,8 @@ public class User {
 				newElement1.setAttribute("emUsr", this.getEmUsr());
 				newElement1.setAttribute("emPwd", encrypt.generateSecurePassword(this.getEmPwd(), salt));
 				newElement1.setAttribute("id", ""+nl.getLength());
+				newElement1.setAttribute("wordF", this.getWordFilter());
+				newElement1.setAttribute("timeF", this.getTimeFilter());
 				Node n = doc.getDocumentElement();
 				n.appendChild(newElement1);
 			}
@@ -158,7 +203,7 @@ public class User {
 		return false;
 	}
 
-	public void checkInfo(User usr) {
+	public void checkInfo() {
 		try {
 			File inputFile = new File("src\\resources\\files\\credentials.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -171,18 +216,19 @@ public class User {
 			NodeList nl = doc.getElementsByTagName("User");
 			for (int i = 0; i < nl.getLength(); i++) {
 				NamedNodeMap children = nl.item(i).getAttributes();
-				if(children.getNamedItem("fn").getNodeValue().equals(usr.getFn()) && children.getNamedItem("ln").getNodeValue().equals(usr.getLn())) {
-					usr.setDarkTheme(children.getNamedItem("darkTheme").getNodeValue());
-					usr.setEmPwd(children.getNamedItem("emPwd").getNodeValue());
-					usr.setEmUsr(children.getNamedItem("emUsr").getNodeValue());
-					usr.setFbToken(children.getNamedItem("fbToken").getNodeValue());
-					usr.setTwToken(children.getNamedItem("twToken").getNodeValue());
+				if(children.getNamedItem("fn").getNodeValue().equals(this.getFn()) && children.getNamedItem("ln").getNodeValue().equals(this.getLn())) {
+					this.setDarkTheme(children.getNamedItem("darkTheme").getNodeValue());
+					this.setEmPwd(children.getNamedItem("emPwd").getNodeValue());
+					this.setEmUsr(children.getNamedItem("emUsr").getNodeValue());
+					this.setFbToken(children.getNamedItem("fbToken").getNodeValue());
+					this.setTwToken(children.getNamedItem("twToken").getNodeValue());
+					
 				}
 			}
 		}catch(Exception e) {e.printStackTrace();}
 	}
 
-	private void updateUsrInfo(User usr) {
+	public void updateUsrInfo() {
 		try {
 			File inputFile = new File("src\\resources\\files\\credentials.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -195,17 +241,19 @@ public class User {
 			NodeList nl = doc.getElementsByTagName("User");
 			for (int i = 0; i < nl.getLength(); i++) {
 				NamedNodeMap children = nl.item(i).getAttributes();
-				if(children.getNamedItem("fn").getNodeValue().equals(usr.getFn()) && children.getNamedItem("ln").getNodeValue().equals(usr.getLn())) {
+				if(children.getNamedItem("fn").getNodeValue().equals(this.getFn()) && children.getNamedItem("ln").getNodeValue().equals(this.getLn())) {
 					Element newElement1 = doc.createElement("User");
-					newElement1.setAttribute("fn", usr.getFn());
-					newElement1.setAttribute("ln", usr.getLn());
-					newElement1.setAttribute("pw", encrypt.generateSecurePassword(usr.getPw(), salt));
-					newElement1.setAttribute("darkTheme", "" + usr.getDarkTheme());
-					newElement1.setAttribute("fbToken", usr.getFbToken());
-					newElement1.setAttribute("twToken", usr.getTwToken());
-					newElement1.setAttribute("emUsr", usr.getEmUsr());
-					newElement1.setAttribute("emPwd", encrypt.generateSecurePassword(usr.getEmPwd(), salt));
-					newElement1.setAttribute("id", usr.getID());
+					newElement1.setAttribute("fn", this.getFn());
+					newElement1.setAttribute("ln", this.getLn());
+					newElement1.setAttribute("pw", encrypt.generateSecurePassword(this.getPw(), salt));
+					newElement1.setAttribute("darkTheme", "" + this.getDarkTheme());
+					newElement1.setAttribute("fbToken", this.getFbToken());
+					newElement1.setAttribute("twToken", this.getTwToken());
+					newElement1.setAttribute("emUsr", this.getEmUsr());
+					newElement1.setAttribute("emPwd", encrypt.generateSecurePassword(this.getEmPwd(),salt));
+					newElement1.setAttribute("id", this.getID());
+					newElement1.setAttribute("wordF", this.getWordFilter());
+					newElement1.setAttribute("timeF", this.getTimeFilter());
 					Node n = doc.getDocumentElement();
 					n.replaceChild(newElement1, nl.item(i));
 				}
@@ -265,7 +313,14 @@ public class User {
 //		DOMSource source = new DOMSource(doc);
 //		transformer.transform(source, result);
 //	}
-
+	public void setWordFilter(String word) {
+		this.wordFilter = word;
+	}
+	
+	public void setTimeFilter(String time) {
+		this.timeFilter = time;
+	}
+	
 	public void setFbToken(String fbToken) {
 		this.fbToken = fbToken;
 	}
