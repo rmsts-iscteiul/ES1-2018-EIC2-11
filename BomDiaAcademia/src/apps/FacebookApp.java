@@ -103,7 +103,7 @@ public class FacebookApp {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
-			return getPosts();
+			return getPostsByPage();
 		}
 	}
 
@@ -113,7 +113,7 @@ public class FacebookApp {
 	 * @return List where all non-null message posts from user feed are
 	 *         included(with time filter).
 	 */
-	public List<Post> getPosts() {
+	public List<Post> getPostsByPage() {
 		List<Post> posts = new LinkedList<>();
 		if (desiredPage <= pagesList.size()-1) {
 			if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
@@ -128,7 +128,7 @@ public class FacebookApp {
 				}
 				if (posts.isEmpty()) {
 					incrementDesiredPage();
-					getPosts();
+					getPostsByPage();
 				}
 
 			} else {
@@ -169,7 +169,7 @@ public class FacebookApp {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
-			return getPostsFilter(filter);
+			return getPostsByPage(filter);
 		}
 
 	}
@@ -182,7 +182,7 @@ public class FacebookApp {
 	 *         included(with time and text filter).
 	 * @param filter chosen by user        
 	 */
-	public List<Post> getPostsFilter(String filter) {
+	public List<Post> getPostsByPage(String filter) {
 		List<Post> posts = new LinkedList<>();
 		if (desiredPage <= pagesList.size()-1) {
 			if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
@@ -205,7 +205,7 @@ public class FacebookApp {
 			}
 			if (posts.isEmpty()) {
 				incrementDesiredPage();
-				getPostsFilter(filter);
+				getPostsByPage(filter);
 			}
 		}
 		return posts;
