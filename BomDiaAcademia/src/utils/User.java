@@ -28,15 +28,50 @@ import org.xml.sax.SAXException;
 
 public class User {
 
+	/**
+	 * fn,ln,pw are the main credentials for our app (First Name, Last Name, Password)
+	 */
 	private String fn, ln, pw;
+	/**
+	 * Is our encrypt method made to encrypt passwords
+	 */
 	private Encryptation encrypt = new Encryptation();
+	/**
+	 * salt Encryptation key
+	 */
 	private String salt = "GPIHqhlAdTKLG2EDX8mq3S3EZFuoEM";
+	/**
+	 * fbToken Token to access facebook
+	 */
 	private String fbToken;
+	/**
+	 * twToken Token to access Twitter
+	 */
 	private String twToken;
+	/**
+	 * emUsr User Email
+	 */
 	private String emUsr;
+	/**
+	 * emPwd User Email password
+	 */
 	private String emPwd;
+	/**
+	 * darkThem Setting defined by the player in our account
+	 */
 	private String darkTheme;
+	/**
+	 * id Identifies the User in our app
+	 */
 	private String id;
+	/**
+	 * timeFilter used to save last TimeFilter user by the user
+	 */
+	private String timeFilter;
+	/**
+	 * wordFilter used to save last wordFilter used by the user
+	 */
+	private String wordFilter;
 
 	/**
 	 * @param fn
@@ -55,16 +90,24 @@ public class User {
 	 * @param emPwd     (This one is due to encryptation requirements)
 	 */
 
-	public User(String fn, String ln, String pw, String fbToken, String twToken, String emUsr, String emPwd,
-			String darkTheme) {
+	public User(String fn, String ln, String pw) {
 		this.fn = fn;
 		this.ln = ln;
 		this.pw = pw;
-		this.fbToken = fbToken;
-		this.twToken = twToken;
-		this.emUsr = emUsr;
-		this.emPwd = emPwd;
-		this.darkTheme = darkTheme;
+		this.fbToken = null;
+		this.twToken = null;
+		this.emUsr = null;
+		this.emPwd = pw;
+		this.darkTheme = "0";
+		this.timeFilter = null;
+		this.wordFilter = null;
+	}
+	public String getWordFilter() {
+		return wordFilter;
+	}
+	
+	public String getTimeFilter() {
+		return timeFilter;
 	}
 
 	public String getID() {
@@ -125,6 +168,8 @@ public class User {
 				newElement1.setAttribute("emUsr", this.getEmUsr());
 				newElement1.setAttribute("emPwd", encrypt.generateSecurePassword(this.getEmPwd(), salt));
 				newElement1.setAttribute("id", "" + nl.getLength());
+				newElement1.setAttribute("wordF", this.getWordFilter());
+				newElement1.setAttribute("timeF", this.getTimeFilter());
 				Node n = doc.getDocumentElement();
 				n.appendChild(newElement1);
 			}
@@ -170,6 +215,7 @@ public class User {
 						this.setEmUsr(children.getNamedItem("emUsr").getNodeValue());
 						this.setFbToken(children.getNamedItem("fbToken").getNodeValue());
 						this.setTwToken(children.getNamedItem("twToken").getNodeValue());
+	
 					}
 				}
 			}
@@ -228,6 +274,8 @@ public class User {
 					newElement1.setAttribute("emUsr", this.getEmUsr());
 					newElement1.setAttribute("emPwd", encrypt.generateSecurePassword(this.getEmPwd(), salt));
 					newElement1.setAttribute("id", this.getID());
+					newElement1.setAttribute("wordF", this.getWordFilter());
+					newElement1.setAttribute("timeF", this.getTimeFilter());
 					Node n = doc.getDocumentElement();
 					n.replaceChild(newElement1, nl.item(i));
 				}
@@ -283,7 +331,14 @@ public class User {
 //		DOMSource source = new DOMSource(doc);
 //		transformer.transform(source, result);
 //	}
-
+	public void setWordFilter(String word) {
+		this.wordFilter = word;
+	}
+	
+	public void setTimeFilter(String time) {
+		this.timeFilter = time;
+	}
+	
 	public void setFbToken(String fbToken) {
 		this.fbToken = fbToken;
 	}
