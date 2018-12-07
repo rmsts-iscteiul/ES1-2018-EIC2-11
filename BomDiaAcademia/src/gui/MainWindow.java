@@ -619,7 +619,7 @@ public class MainWindow extends Application {
 			}
 		});
 		twitter_feed.getChildren().add(more_button);
-
+		
 		twitter_app_scroll_pane.setContent(twitter_feed);
 		twitter_app_pane.getChildren().addAll(twitter_app_tool_bar, twitter_app_scroll_pane);
 
