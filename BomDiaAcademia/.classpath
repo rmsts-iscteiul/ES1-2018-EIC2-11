@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+<<<<<<< HEAD
 	<classpathentry including="**/*.java" kind="src" output="target/classes" path="src">
 		<attributes>
 			<attribute name="optional" value="true"/>
@@ -17,4 +18,15 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
+=======
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="src/resources/lib/restfb/2.10.0/restfb-2.10.0.jar"/>
+	<classpathentry kind="lib" path="src/resources/lib/twitter4j/twitter4j-core/4.0.7/twitter4j-core-4.0.7.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="src/resources/lib/javaxmail/javax.mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matia/Downloads/commons-lang3-3.5.jar"/>
+	<classpathentry kind="output" path="bin"/>
+>>>>>>> refs/remotes/origin/Encryptation_of_credentials
 </classpath>
