@@ -95,21 +95,27 @@
 	-fx-background-color: transparent;
 	-fx-spacing: 10.0px;
 	-fx-alignment: top-center;
+	-fx-padding: 10.0px 0.0px 0.0px 0.0px;
 }
 
 #facebook_post_pane{
 	-fx-background-color: #ffffff;
 	-fx-background-radius: 10.0px;
-	-fx-alignment: top-center;
-	-fx-hgap: 10.0px;
+	-fx-padding: 4.0px;
 }
 
-#facebook_post_top_bar {
-	-fx-alignment: center;
+#facebook_post_left_bar {
+	-fx-padding: 4.0px;
 }
 
-#facebook_post_bottom_bar {
-	-fx-spacing: 20.0px;
+#facebook_post_right_bar {
+	-fx-padding: 4.0px;
+	-fx-spacing: 10.0px;
+}
+
+#facebook_post_center_container {
+	-fx-padding: 4.0px;
+	-fx-wrap-text: true;
 }
 
 #likes_label {

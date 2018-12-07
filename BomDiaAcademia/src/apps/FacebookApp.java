@@ -16,7 +16,9 @@ import com.restfb.types.User;
  * This is the FacebookApp that uses restfb library.
  * 
  * @author ES1-2018-EIC2-11
+ * 
  */
+
 public class FacebookApp {
 
 	/**
@@ -24,108 +26,118 @@ public class FacebookApp {
 	 */
 	private static FacebookClient fbClient;
 	/**
+	 * Desired page to appear in GUI(Paging mechanism)
+	 */
+	private int desiredPage = 0;
+
+	/**
 	 * result is the list where posts are placed when fetching info from Facebook
 	 */
 	private Connection<Post> result;
-
-	/**
-	 * offline list updated from result list fetched from facebook
-	 */
-	private List<Post> offlineList = new LinkedList<>();
 
 	/**
 	 * Current time filter for the posts
 	 */
 	private TimeFilter timeFilter;
 
+
+	/**
+	 * User's acess token
+	 */
+	private String userAccessToken;
+
 	/**
 	 * Object fetched from facebook
 	 */
 	private static User me;
+	
+	/**
+	 * List of the pages(List of posts) that, after getting timeline, will be the pages of posts fetched from facebook
+	 */
+	private List<List<Post>> pagesList = new LinkedList<List<Post>>();
 
 	/**
 	 * Initilize app(fbClient) with given acessToken, and fetched "me" object from
-	 * facebook.
+	 * facebook. Also sets time filter to TimeFilter.ALL_TIME
 	 */
 	@SuppressWarnings("deprecation")
 	public FacebookApp() {
-//		String accessToken = "EAAQSXbaizwwBAK2M96ZBGFaYFw7Ez8yaZAM6Ap9ZB1Lrou1kKi2PoGE1E96CUNE4pVokBfhAgZCIucDlb7r9J45O9mCkZAxZAZA9GIvWE27ZB8wtS6CUhIwjcoPVNGaChu87YH04taeksWTcmHuBKHI2M6oZAOR6EdYWTn1ka791HFwZDZD";
-		String accessToken = "EAAD4C79u9UYBAKK5kALF2cxjaebseMLiSzyK6WIE3Y6iPfZBfo7164b0ZBLe9mHC1hKI7ZBjHcbr5Bef8DfzaizSZCpJBNK5SPRkTEHYGoGPSsZCVyhmGjTWELopC2c4LhLcFZAZBWia1rRJie2uR1WGgKKA301SaaZB2d3XpAW5ZAgZDZD";
-		fbClient = new DefaultFacebookClient(accessToken);
+		userAccessToken = "EAAD4C79u9UYBAKK5kALF2cxjaebseMLiSzyK6WIE3Y6iPfZBfo7164b0ZBLe9mHC1hKI7ZBjHcbr5Bef8DfzaizSZCpJBNK5SPRkTEHYGoGPSsZCVyhmGjTWELopC2c4LhLcFZAZBWia1rRJie2uR1WGgKKA301SaaZB2d3XpAW5ZAgZDZD";
+		fbClient = new DefaultFacebookClient(userAccessToken);
 
 		me = fbClient.fetchObject("me", User.class, Parameter.with("fields", "picture,name"));
 		timeFilter = TimeFilter.ALL_TIME;
 	}
 
 	/**
-	 * Runnable that updates offlineList, with the result list fetched from facebook
+	 * Runnable that saves all pages of posts in a local list, with the result list fetched from facebook
 	 */
-	Runnable updateOfflineList = new Runnable() {
+	Runnable getPagesList = new Runnable() {
 		public void run() {
-			resetOfflineList();
 			for (List<Post> page : result) {
-				for (Post rPost : page) {
-					if (rPost.getMessage() != null) {
-						offlineList.add(rPost);
-					}
-				}
+				pagesList.add(page);
 			}
 		}
 	};
 
 	/**
-	 * Returns all non-null message posts from user feed based on a time filter
+	 * Returns all non-null message posts from user feed based on a time filter, and alwats fetches updated information
 	 * 
 	 * @throws FacebookNetworkException when system is offline, returning posts from
 	 *                                  previous list
-	 * 
-	 * @throws InterruptedException     when updater thread is interrupted
 	 * 
 	 * @return List where all non-null message posts from user feed are
 	 *         included(with time filter).
 	 */
 	@SuppressWarnings("finally")
-	public List<Post> getTimeline() {
-		List<Post> posts = new LinkedList<>();
+	public List<Post> getTimeline() throws FacebookNetworkException {
+		resetDesiredPage();
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class, Parameter.with("fields",
 					"likes.summary(true),comments.summary(true),message,shares,created_time,picture"));
-			Thread updater = new Thread(updateOfflineList);
+			Thread updater = new Thread(getPagesList);
 			updater.start();
 			updater.join();
 		} catch (FacebookNetworkException e) {
 			System.out.println("System is Offline, using backup data");
+			throw e;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
-			return getTimelineWithTime();
+			return getPostsByPage();
 		}
 	}
 
 	/**
-	 * Returns all non-null message posts from user feed based on a time filter
+	 * Returns all non-null message posts from user feed based on a time filter, from pagesList. 
 	 * 
 	 * @return List where all non-null message posts from user feed are
 	 *         included(with time filter).
 	 */
-	public List<Post> getTimelineWithTime() {
+	public List<Post> getPostsByPage() {
 		List<Post> posts = new LinkedList<>();
-		if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
-			for (Post rPost : offlineList) {
-				if (rPost.getMessage() != null) {
-					long timeDiff = (Math.abs(timeFilter.getDate() - rPost.getCreatedTime().getTime())
-							/ (24 * 60 * 60 * 1000));
-					if (timeDiff <= timeFilter.getDif()) {
-						posts.add(rPost);
+		if (desiredPage <= pagesList.size()-1) {
+			if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
+				for (Post rPost : pagesList.get(desiredPage)) {
+					if (rPost.getMessage() != null) {
+						long timeDiff = ((timeFilter.getDate() / (24 * 60 * 60 * 1000))
+								- (rPost.getCreatedTime().getTime() / (24 * 60 * 60 * 1000)));
+						if (timeDiff >= 0 && timeDiff <= timeFilter.getDif()) {
+							posts.add(rPost);
+						}
 					}
 				}
-			}
+				if (posts.isEmpty()) {
+					incrementDesiredPage();
+					getPostsByPage();
+				}
 
-		} else {
-			for (Post rPost : offlineList) {
-				if (rPost.getMessage() != null) {
-					posts.add(rPost);
+			} else {
+				for (Post rPost : pagesList.get(desiredPage)) {
+					if (rPost.getMessage() != null) {
+						posts.add(rPost);
 
+					}
 				}
 			}
 		}
@@ -144,50 +156,57 @@ public class FacebookApp {
 	 */
 
 	@SuppressWarnings("finally")
-	public List<Post> getTimeline(String filter) {
+	public List<Post> getTimeline(String filter) throws FacebookNetworkException {
+		resetDesiredPage();
 		try {
 			result = fbClient.fetchConnection("me/feed", Post.class, Parameter.with("fields",
 					"likes.summary(true),comments.summary(true),message,shares,created_time,picture"));
-			Thread updater = new Thread(updateOfflineList);
+			Thread updater = new Thread(getPagesList);
 			updater.start();
 			updater.join();
 		} catch (FacebookNetworkException e) {
 			System.out.println("System is Offline, using backup data");
+			throw e;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
-			return getTimelineWithTime(filter);
+			return getPostsByPage(filter);
 		}
 
 	}
 
+
 	/**
-	 * Returns all non-null message posts from user feed, based on a text and time
-	 * filter
+	 * Returns all non-null message posts from user feed based on a time filter and text filter, from pagesList. 
 	 * 
-	 * @return List where all non-null message posts based on a Text and time filter
-	 *         are included, from user feed.
-	 * 
-	 * @param filter chosen by user to get specific posts.
+	 * @return List where all non-null message posts from user feed are
+	 *         included(with time and text filter).
+	 * @param filter chosen by user        
 	 */
-	public List<Post> getTimelineWithTime(String filter) {
+	public List<Post> getPostsByPage(String filter) {
 		List<Post> posts = new LinkedList<>();
-		if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
-			for (Post rPost : offlineList) {
-				if (rPost.getMessage() != null) {
-					long timeDiff = (Math.abs(timeFilter.getDate() - rPost.getCreatedTime().getTime())
-							/ (24 * 60 * 60 * 1000));
-					if (timeDiff <= timeFilter.getDif() && rPost.getMessage().contains(filter)) {
+		if (desiredPage <= pagesList.size()-1) {
+			if (!(timeFilter.equals(TimeFilter.ALL_TIME))) {
+				for (Post rPost : pagesList.get(desiredPage)) {
+					if (rPost.getMessage() != null) {
+						long timeDiff = ((timeFilter.getDate() / (24 * 60 * 60 * 1000))
+								- (rPost.getCreatedTime().getTime() / (24 * 60 * 60 * 1000)));
+						if (timeDiff >= 0 && timeDiff <= timeFilter.getDif() && rPost.getMessage().contains(filter)) {
+							posts.add(rPost);
+						}
+					}
+				}
+
+			} else {
+				for (Post rPost : pagesList.get(desiredPage)) {
+					if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
 						posts.add(rPost);
 					}
 				}
 			}
-
-		} else {
-			for (Post rPost : offlineList) {
-				if (rPost.getMessage() != null && rPost.getMessage().contains(filter)) {
-					posts.add(rPost);
-				}
+			if (posts.isEmpty()) {
+				incrementDesiredPage();
+				getPostsByPage(filter);
 			}
 		}
 		return posts;
@@ -203,13 +222,6 @@ public class FacebookApp {
 	}
 
 	/**
-	 * Resets offlineList
-	 */
-	public void resetOfflineList() {
-		offlineList.clear();
-	}
-
-	/**
 	 * return user's name
 	 * 
 	 * @return String that equals user's name
@@ -221,9 +233,33 @@ public class FacebookApp {
 	/**
 	 * Sets specific time filter
 	 * 
-	 * @param time filter chosen by user.
+	 * 
+	 * @param timeFilter chosen by user.
 	 */
 	public void setTimeFilter(TimeFilter timeFilter) {
 		this.timeFilter = timeFilter;
+	}
+	
+	/**
+	 * returns current time filter
+	 * 
+	 * @return current time filter
+	 */
+	public TimeFilter getTimeFilter() {
+		return timeFilter;
+	}
+
+	/**
+	 * Resets the desiredPage(Paging mechanism)
+	 */
+	private void resetDesiredPage() {
+		desiredPage = 0;
+	}
+
+	/**
+	 * Increments the desiredPage(Paging mechanism)
+	 */
+	public void incrementDesiredPage() {
+		desiredPage++;
 	}
 }

@@ -35,7 +35,7 @@ class TestFacebookApp {
 	}
 
 	@Test
-	void testGetAllPosts() {
+	void testGetFirstPagePosts() {
 		int i = 0;
 		app.setTimeFilter(TimeFilter.ALL_TIME);
 		List<Post> results = app.getTimeline();
@@ -52,38 +52,143 @@ class TestFacebookApp {
 	}
 
 	@Test
-	void testGetALLPostsbasedOnFilter() {
+	void testGetAllPosts() {
 		int i = 0;
 		app.setTimeFilter(TimeFilter.ALL_TIME);
-		List<Post> results = app.getTimeline("w");
-		System.out.println("Posts based on filter previous chosen are going to be printed....\n");
+		List<Post> results = app.getTimeline();
+		while (!results.isEmpty()) {
+			System.out.println("All post are going to be printed....\n");
+			for (Post a : results) {
+				System.out.println("\n-----------------------------------------------------------------------");
+				System.out.println("Post number: " + i);
+				System.out.println("Message: " + a.getMessage()); // Returns all the messages
+				System.out.println("Likes: " + a.getLikesCount()); // Returns the post's likes count
+				System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
+				System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
+				i++;
+				app.incrementDesiredPage();
+				results = app.getPostsByPage();
+			}
+		}
 
+	}
+
+	@Test
+	void testGetFirstPagePostsBasedOnFilter() {
+		int i = 0;
+		app.setTimeFilter(TimeFilter.ALL_TIME);
+		List<Post> results = app.getTimeline("a");
+		System.out.println("Posts based on filter previous chosen are going to be printed....\n");
+		System.out.println("All post are going to be printed....\n");
 		for (Post a : results) {
 			System.out.println("\n-----------------------------------------------------------------------");
 			System.out.println("Post number: " + i);
-			System.out.println("Message: " + a.getMessage()); // Returns all the posts that contains the previous filter
+			System.out.println("Message: " + a.getMessage()); // Returns all the messages
 			System.out.println("Likes: " + a.getLikesCount()); // Returns the post's likes count
 			System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
 			System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
 			i++;
 		}
+
 	}
 
+	// Will get posts from specific day(1 post for this user)
 	@Test
-	void testGetPostsbasedOnFilter() {
+	void testGetPostsBasedOnSpecificDayTimeFilter() {
 		int i = 0;
-		app.setTimeFilter(TimeFilter.LAST_MONTH);
-		List<Post> results = app.getTimeline("w");
+		app.setTimeFilter(TimeFilter.SPECIFIC_DAY);
+		app.getTimeFilter().setDate(2017, 10, 19);
+		List<Post> results = app.getTimeline();
 		System.out.println("Posts based on filter previous chosen are going to be printed....\n");
-
+		System.out.println("All post are going to be printed....\n");
 		for (Post a : results) {
 			System.out.println("\n-----------------------------------------------------------------------");
 			System.out.println("Post number: " + i);
-			System.out.println("Message: " + a.getMessage()); // Returns all the posts that contains the previous filter
+			System.out.println("Message: " + a.getMessage()); // Returns all the messages
 			System.out.println("Likes: " + a.getLikesCount()); // Returns the post's likes count
 			System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
 			System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
 			i++;
+		}
+
+	}
+
+	@Test
+	void testGetAllPostsBasedOnFilter() {
+		int i = 0;
+		app.setTimeFilter(TimeFilter.ALL_TIME);
+		List<Post> results = app.getTimeline("a");
+		System.out.println("Posts based on filter previous chosen are going to be printed....\n");
+		while (!results.isEmpty()) {
+			System.out.println("All post are going to be printed....\n");
+			for (Post a : results) {
+				System.out.println("\n-----------------------------------------------------------------------");
+				System.out.println("Post number: " + i);
+				System.out.println("Message: " + a.getMessage()); // Returns all the messages
+				System.out.println("Likes: " + a.getLikesCount()); // Returns the post's likes count
+				System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
+				System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
+				i++;
+				app.incrementDesiredPage();
+				results = app.getPostsByPage("a");
+			}
+		}
+		System.out.println("Done!");
+
+	}
+
+	// It will return that there are no posts because the user doesnt have posts
+	// within the timeFilter applied
+	@Test
+	void testGetFirstPageBasedOnTextAndTimeFilter() {
+		int i = 0;
+		app.setTimeFilter(TimeFilter.LAST_MONTH);
+		List<Post> results = app.getTimeline("w");
+		if (results.isEmpty()) {
+			System.out.println("There are no posts for this text filter/time filter");
+		} else {
+			System.out.println("Posts based on filter previous chosen are going to be printed....\n");
+
+			for (Post a : results) {
+				System.out.println("\n-----------------------------------------------------------------------");
+				System.out.println("Post number: " + i);
+				System.out.println("Message: " + a.getMessage()); // Returns all the posts that contains the previous
+																	// filter
+				System.out.println("Likes: " + a.getLikesCount()); // Returns the post's likes count
+				System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
+				System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
+				i++;
+			}
+		}
+	}
+
+	// It will return that there are no posts because the user doesnt have posts
+	// within the timeFilter applied
+	@Test
+	void testGetAllPostsBasedOnTimeFilter() {
+		int i = 0;
+		app.setTimeFilter(TimeFilter.LAST_HOUR);
+		List<Post> results = app.getTimeline();
+		if (results.isEmpty()) {
+			System.out.println("There are no posts for this text filter/time filter");
+		} else {
+			while (!results.isEmpty()) {
+				System.out.println("Posts based on filter previous chosen are going to be printed....\n");
+
+				for (Post a : results) {
+					System.out.println("\n-----------------------------------------------------------------------");
+					System.out.println("Post number: " + i);
+					System.out.println("Message: " + a.getMessage()); // Returns all the posts that contains the
+																		// previous
+																		// filter
+					System.out.println("Likes: " + a.getLikesCount()); // Returns the post's likes count
+					System.out.println("Comments: " + a.getCommentsCount()); // Returns the post's comments count
+					System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
+					i++;
+					app.incrementDesiredPage();
+					results = app.getPostsByPage();
+				}
+			}
 		}
 	}
 

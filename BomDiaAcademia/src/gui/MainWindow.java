@@ -458,18 +458,21 @@ public class MainWindow extends Application {
 			public void handle(MouseEvent mouseEvent) {
 				if (search_twitter_toggle_button.isSelected()) {
 					twitter_app.setTimeFilter(filter_combo_box.getValue());
+					apps_pane.getChildren().remove(twitter_app_pane);
 					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
-						refreshTwitterApp();
+						getTwitterTimeline();
 					} else {
-						refreshTwitterApp(search_text_field.getText());
+
+						getTwitterTimeline(search_text_field.getText());
 					}
 				}
 				if (search_facebook_toggle_button.isSelected()) {
 					facebook_app.setTimeFilter(filter_combo_box.getValue());
+					apps_pane.getChildren().remove(facebook_app_pane);
 					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
-						refreshFacebookApp();
+						getFacebookTimeline();
 					} else {
-						refreshFacebookApp(search_text_field.getText());
+						getFacebookTimeline(search_text_field.getText());
 					}
 				}
 //				if (search_email_toggle_button.isSelected()) {
@@ -601,9 +604,7 @@ public class MainWindow extends Application {
 				Rectangle clip = new Rectangle(cover_image_view.getFitWidth(), cover_image_view.getFitHeight());
 				clip.setArcWidth(20);
 				clip.setArcHeight(20);
-//				cover_image_view.setTranslateY(-(cover_image_view.getFitHeight() - (cover_image_view.getFitHeight() - 100)));
 				cover_image_view.setClip(clip);
-//				clip.setTranslateY(2*(cover_image_view.getFitHeight() - (cover_image_view.getFitHeight() - 100)));
 				cover_image_view.setImage(cover_image);
 				twitter_feed.getChildren().add(cover_image_view);
 				is_there_status = false;
@@ -619,15 +620,29 @@ public class MainWindow extends Application {
 			public void handle(MouseEvent mouseEvent) {
 				try {
 					if (!search_text_field.getText().equals("Filter...") && !search_text_field.getText().equals("")) {
-						for (Status status : twitter_app.getMoreTweetsWithFilter()) {
+						List<Status> statuses = twitter_app.getMoreTweetsWithFilter();
+						System.out.println(statuses.size());
+						if (statuses.isEmpty()) {
+							new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
+						} else {
 							twitter_feed.getChildren().remove(more_button);
-							twitter_feed.getChildren().add(newTwitterPost(status, twitter_app_pane));
+							for (Status status : statuses) {
+								twitter_feed.getChildren().add(newTwitterPost(status, twitter_app_pane));
+							}
+							twitter_app.bufferingWithFilter();
 							twitter_feed.getChildren().add(more_button);
 						}
 					} else {
-						for (Status status : twitter_app.getMoreTweetsWithoutFilter()) {
+						List<Status> statuses = twitter_app.getMoreTweetsWithoutFilter();
+						System.out.println(statuses.size());
+						if (statuses.isEmpty()) {
+							new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
+						} else {
 							twitter_feed.getChildren().remove(more_button);
-							twitter_feed.getChildren().add(newTwitterPost(status, twitter_app_pane));
+							for (Status status : statuses) {
+								twitter_feed.getChildren().add(newTwitterPost(status, twitter_app_pane));
+							}
+							twitter_app.bufferingWithoutFilter();
 							twitter_feed.getChildren().add(more_button);
 						}
 					}
@@ -653,6 +668,10 @@ public class MainWindow extends Application {
 	private void buildFacebookApp(List<Post> posts) {
 		facebook_app_pane = new VBox();
 		facebook_app_pane.setId("facebook_app_pane");
+		facebook_app_pane.setPrefSize((window_pane.getWidth() * 0.8),
+				(window_pane.getHeight() - window_top_bar.getHeight()));
+		facebook_app_pane.setMaxSize((window_pane.getWidth() * 0.8),
+				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 		HBox facebook_app_tool_bar = new HBox();
 		facebook_app_tool_bar.setId("facebook_app_tool_bar");
 		Label facebook_app_top_bar_icon = new Label(facebook_app.getUserName());
@@ -679,11 +698,6 @@ public class MainWindow extends Application {
 				facebook_app_top_bar_refresh_button, facebook_app_top_bar_minimize_button);
 		ScrollPane facebook_app_scroll_pane = new ScrollPane();
 		facebook_app_scroll_pane.setId("facebook_app_scroll_pane");
-		facebook_app_scroll_pane.setPrefSize((window_pane.getWidth() * 0.4),
-				(window_pane.getHeight() - window_top_bar.getHeight()));
-		facebook_app_scroll_pane.setMaxSize((window_pane.getWidth() * 0.4),
-				(window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
-
 		VBox facebook_feed = new VBox();
 		facebook_feed.setId("facebook_feed");
 
@@ -696,13 +710,40 @@ public class MainWindow extends Application {
 		more_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				// To-Do
+				facebook_app.incrementDesiredPage();
+				if (!search_text_field.getText().equals("Filter...") && !search_text_field.getText().equals("")) {
+					List<Post> posts = facebook_app.getPostsByPage(search_text_field.getText());
+					if (posts.isEmpty()) {
+						facebook_feed.getChildren().remove(more_button);
+						new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
+					} else {
+						facebook_feed.getChildren().remove(more_button);
+						for (Post post : posts) {
+							facebook_feed.getChildren().add(newFacebookPost(post, facebook_app_pane));
+						}
+						facebook_feed.getChildren().add(more_button);
+					}
+				} else {
+					List<Post> posts = facebook_app.getPostsByPage();
+					if (posts.isEmpty()) {
+						facebook_feed.getChildren().remove(more_button);
+						new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no more results");
+					} else {
+						facebook_feed.getChildren().remove(more_button);
+						for (Post post : posts) {
+							facebook_feed.getChildren().add(newFacebookPost(post, facebook_app_pane));
+						}
+						facebook_feed.getChildren().add(more_button);
+					}
+				}
+
 			}
 		});
 		facebook_feed.getChildren().add(more_button);
 
 		facebook_app_scroll_pane.setContent(facebook_feed);
 		facebook_app_pane.getChildren().addAll(facebook_app_tool_bar, facebook_app_scroll_pane);
+
 	}
 
 	/**
@@ -867,19 +908,9 @@ public class MainWindow extends Application {
 	 * This method is used to refresh the Twitter App pane (twitter_app_pane).
 	 */
 	private void refreshTwitterApp() {
+		twitter_app.setTimeFilter(TimeFilter.ALL_TIME);
 		apps_pane.getChildren().remove(twitter_app_pane);
 		getTwitterTimeline();
-	}
-
-	/**
-	 * This method is used to refresh the Twitter App pane (twitter_app_pane), using
-	 * a keyword to filter the posts.
-	 * 
-	 * @param filter
-	 */
-	private void refreshTwitterApp(String filter) {
-		apps_pane.getChildren().remove(twitter_app_pane);
-		getTwitterTimeline(filter);
 	}
 
 	/**
@@ -898,19 +929,9 @@ public class MainWindow extends Application {
 	 * This method is used to refresh the Facebook App pane (facebook_app_pane).
 	 */
 	private void refreshFacebookApp() {
+		facebook_app.setTimeFilter(TimeFilter.ALL_TIME);
 		apps_pane.getChildren().remove(facebook_app_pane);
 		getFacebookTimeline();
-	}
-
-	/**
-	 * This method is used to refresh the Facebook App pane (facebook_app_pane),
-	 * using a keyword to filter the posts.
-	 * 
-	 * @param filter
-	 */
-	private void refreshFacebookApp(String filter) {
-		apps_pane.getChildren().remove(facebook_app_pane);
-		getFacebookTimeline(filter);
 	}
 
 	/**
@@ -999,30 +1020,35 @@ public class MainWindow extends Application {
 		facebook_post_pane.setId("facebook_post_pane");
 		facebook_post_pane.setPrefSize(called_app_pane.getPrefWidth() * 0.9, 100);
 		facebook_post_pane.setMaxSize(called_app_pane.getPrefWidth() * 0.9, 100);
-		// TOP BAR
+		// LEFT BAR
 		ImageView imgv = new ImageView(new Image(facebook_app.getUser().getPicture().getUrl()));
 		imgv.resize(50, 20);
-		HBox facebook_post_top_bar = new HBox(imgv);
-		facebook_post_top_bar.setId("post_top_bar");
+		HBox facebook_post_left_bar = new HBox(imgv);
+		facebook_post_left_bar.setId("facebook_post_left_bar");
+		facebook_post_pane.setLeft(facebook_post_left_bar);
 		// CENTER PANE
+		HBox facebook_post_center_container = new HBox();
+		facebook_post_center_container.setId("facebook_post_center_container");
 		Text post_text = new Text(post.getMessage());
 		post_text.setId("post_texto");
 		post_text.setWrappingWidth(facebook_post_pane.getPrefWidth() * 0.8);
-		// BOTTOM BAR
-		HBox facebook_post_bottom_bar = new HBox();
-		facebook_post_bottom_bar.setId("facebook_post_bottom_bar");
-
+		facebook_post_center_container.getChildren().add(post_text);
+		facebook_post_pane.setCenter(facebook_post_center_container);
+		// RIGHT BAR
+		VBox facebook_post_right_bar = new VBox();
+		facebook_post_right_bar.setId("facebook_post_right_bar");
 		Label likes_label = new Label(post.getLikesCount().toString());
 		likes_label.setId("likes_label");
 		Label comments_label = new Label(post.getCommentsCount().toString());
 		comments_label.setId("comments_label");
 		Label shares_label = new Label(post.getSharesCount().toString());
 		shares_label.setId("shares_label");
+		facebook_post_right_bar.getChildren().addAll(likes_label, comments_label, shares_label);
+		facebook_post_pane.setRight(facebook_post_right_bar);
+		// Bottom
+		Label facebook_post_date = new Label(post.getCreatedTime() + "");
+		facebook_post_pane.setBottom(facebook_post_date);
 
-		facebook_post_bottom_bar.getChildren().addAll(likes_label, comments_label, shares_label);
-		facebook_post_pane.setTop(facebook_post_top_bar);
-		facebook_post_pane.setCenter(post_text);
-		facebook_post_pane.setBottom(facebook_post_bottom_bar);
 		return facebook_post_pane;
 	}
 

@@ -199,16 +199,16 @@ public class TwitterApp {
 	 * 
 	 * @throws TwitterException - no connection
 	 */
-	private void bufferingWithoutFilter() throws TwitterException {
+	public void bufferingWithoutFilter() throws TwitterException {
 		bufferingThreadWithoutFilter = new Thread() {
 			@SuppressWarnings("finally")
 			@Override
 			public void run() {
 				List<Status> list = new LinkedList<>();
-				nextPageList.clear();
 				try {
 					incrementPaging();
 					list = twitter.getUserTimeline(user, new Paging(pagingNumber, NUMBER_OF_TWEETS));
+					nextPageList.clear();
 					if (!timeFilter.equals(TimeFilter.ALL_TIME)) {
 						for (Status s : list) {
 							long date = ((timeFilter.getDate() / (24 * 60 * 60 * 1000))
@@ -218,7 +218,7 @@ public class TwitterApp {
 							}
 						}
 					} else {
-						nextPageList = list;
+						nextPageList.addAll(list);
 					}
 
 				} catch (TwitterException e) {
@@ -239,18 +239,17 @@ public class TwitterApp {
 	 * 
 	 * @throws TwitterException - no connection
 	 */
-	private void bufferingWithFilter() throws TwitterException {
+	public void bufferingWithFilter() throws TwitterException {
 		bufferingThreadWithFilter = new Thread() {
 			@SuppressWarnings("finally")
 			@Override
 			public void run() {
 				List<Status> list = new LinkedList<>();
 				List<Status> listWithTimeFilter = new LinkedList<>();
-				nextPageList.clear();
 				try {
 					incrementPaging();
 					list = twitter.getUserTimeline(user, new Paging(pagingNumber, NUMBER_OF_TWEETS));
-					if (!timeFilter.equals(TimeFilter.ALL_TIME) && !timeFilter.equals(TimeFilter.SPECIFIC_DAY)) { // Time
+					if (!timeFilter.equals(TimeFilter.ALL_TIME)) { // Time
 																													// Filter
 						for (Status s : list) {
 							long date = ((timeFilter.getDate() / (24 * 60 * 60 * 1000))
@@ -260,8 +259,9 @@ public class TwitterApp {
 							}
 						}
 					} else {
-						listWithTimeFilter = list;
+						listWithTimeFilter.addAll(list);
 					} // Word Filter
+					nextPageList.clear();
 					for (Status status : listWithTimeFilter) {
 						if (status.getText().contains(wordFilter)) {
 							nextPageList.add(status);
@@ -290,7 +290,6 @@ public class TwitterApp {
 	public List<Status> getMoreTweetsWithoutFilter() throws TwitterException {
 		try {
 			bufferingThreadWithoutFilter.join();
-			bufferingWithoutFilter();
 			return nextPageList;
 		} catch (InterruptedException e) {
 			return nextPageList;
@@ -307,7 +306,6 @@ public class TwitterApp {
 	public List<Status> getMoreTweetsWithFilter() throws TwitterException {
 		try {
 			bufferingThreadWithFilter.join();
-			bufferingWithFilter();
 			return nextPageList;
 		} catch (InterruptedException e) {
 			return nextPageList;
