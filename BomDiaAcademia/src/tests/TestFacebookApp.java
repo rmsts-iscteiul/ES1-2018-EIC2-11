@@ -67,7 +67,7 @@ class TestFacebookApp {
 				System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
 				i++;
 				app.incrementDesiredPage();
-				results = app.getPosts();
+				results = app.getPostsByPage();
 			}
 		}
 
@@ -130,7 +130,7 @@ class TestFacebookApp {
 				System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
 				i++;
 				app.incrementDesiredPage();
-				results = app.getPostsFilter("a");
+				results = app.getPostsByPage("a");
 			}
 		}
 		System.out.println("Done!");
@@ -186,7 +186,7 @@ class TestFacebookApp {
 					System.out.println("Shares: " + a.getSharesCount()); // Returns the post's shares count
 					i++;
 					app.incrementDesiredPage();
-					results = app.getPosts();
+					results = app.getPostsByPage();
 				}
 			}
 		}
