@@ -1,25 +1,39 @@
 package auxClasses;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class User {
 
@@ -31,7 +45,8 @@ public class User {
 	private String emUsr;
 	private String emPwd;
 	private String darkTheme;
-
+	private String id;
+	
 	/**
 	 * @param fn
 	 * @param ln
@@ -60,6 +75,10 @@ public class User {
 		this.emUsr = emUsr;
 		this.emPwd = emPwd;
 		this.darkTheme = darkTheme;
+	}
+	
+	public String getID() {
+		return id;
 	}
 
 	public String getFbToken() {
@@ -105,17 +124,17 @@ public class User {
 			XPath xpath = xpathFactory.newXPath();
 			XPathExpression expr = xpath.compile("/XML/User/@*");
 			NodeList nl = doc.getElementsByTagName("User");
-			
 			if (!isUsrRegistered(nl, usr)) {
 				Element newElement1 = doc.createElement("User");
 				newElement1.setAttribute("fn", usr.getFn());
 				newElement1.setAttribute("ln", usr.getLn());
 				newElement1.setAttribute("pw", encrypt.generateSecurePassword(usr.getPw(), salt));
-				newElement1.setAttribute("darkThem", "" + usr.getDarkTheme());
+				newElement1.setAttribute("darkTheme", "" + usr.getDarkTheme());
 				newElement1.setAttribute("fbToken", usr.getFbToken());
 				newElement1.setAttribute("twToken", usr.getTwToken());
 				newElement1.setAttribute("emUsr", usr.getEmUsr());
 				newElement1.setAttribute("emPwd", encrypt.generateSecurePassword(usr.getEmPwd(), salt));
+				newElement1.setAttribute("id", ""+nl.getLength());
 				Node n = doc.getDocumentElement();
 				n.appendChild(newElement1);
 			}
@@ -139,7 +158,29 @@ public class User {
 		return false;
 	}
 
-
+	public void checkInfo(User usr) {
+		try {
+			File inputFile = new File("src\\resources\\files\\credentials.xml");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(inputFile);
+			doc.getDocumentElement().normalize();
+			XPathFactory xpathFactory = XPathFactory.newInstance();
+			XPath xpath = xpathFactory.newXPath();
+			XPathExpression expr = xpath.compile("/XML/User/@*");
+			NodeList nl = doc.getElementsByTagName("User");
+			for (int i = 0; i < nl.getLength(); i++) {
+				NamedNodeMap children = nl.item(i).getAttributes();
+				if(children.getNamedItem("fn").getNodeValue().equals(usr.getFn()) && children.getNamedItem("ln").getNodeValue().equals(usr.getLn())) {
+					usr.setDarkTheme(children.getNamedItem("darkTheme").getNodeValue());
+					usr.setEmPwd(children.getNamedItem("emPwd").getNodeValue());
+					usr.setEmUsr(children.getNamedItem("emUsr").getNodeValue());
+					usr.setFbToken(children.getNamedItem("fbToken").getNodeValue());
+					usr.setTwToken(children.getNamedItem("twToken").getNodeValue());
+				}
+			}
+		}catch(Exception e) {e.printStackTrace();}
+	}
 
 	private void updateUsrInfo(User usr) {
 		try {
@@ -159,11 +200,12 @@ public class User {
 					newElement1.setAttribute("fn", usr.getFn());
 					newElement1.setAttribute("ln", usr.getLn());
 					newElement1.setAttribute("pw", encrypt.generateSecurePassword(usr.getPw(), salt));
-					newElement1.setAttribute("darkThem", "" + usr.getDarkTheme());
+					newElement1.setAttribute("darkTheme", "" + usr.getDarkTheme());
 					newElement1.setAttribute("fbToken", usr.getFbToken());
 					newElement1.setAttribute("twToken", usr.getTwToken());
 					newElement1.setAttribute("emUsr", usr.getEmUsr());
 					newElement1.setAttribute("emPwd", encrypt.generateSecurePassword(usr.getEmPwd(), salt));
+					newElement1.setAttribute("id", usr.getID());
 					Node n = doc.getDocumentElement();
 					n.replaceChild(newElement1, nl.item(i));
 				}
@@ -177,6 +219,52 @@ public class User {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * type values are:
+	 * Facebook
+	 * Twitter
+	 * Email
+	 * 
+	 * @param type, data
+	 * 
+	 * @throws ParserConfigurationException 
+	 * @throws IOException 
+	 * @throws SAXException 
+	 * @throws XPathExpressionException 
+	 * @throws TransformerFactoryConfigurationError 
+	 * @throws TransformerException 
+	 */
+	
+	
+//	private void storeBrowsedData(String type, List<Object> data) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException, TransformerFactoryConfigurationError, TransformerException {
+//		File inputFile = new File("src\\resources\\files\\appdata.xml");
+//		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+//		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+//		Document doc = dBuilder.parse(inputFile);
+//		doc.getDocumentElement().normalize();
+//		XPathFactory xpathFactory = XPathFactory.newInstance();
+//		XPath xpath = xpathFactory.newXPath();
+//		XPathExpression expr = xpath.compile("/XML/@*");
+//		
+//		NodeList nl = doc.getElementsByTagName(type);
+//		for (int i = 0; i < nl.getLength(); i++) {
+//			NamedNodeMap children = nl.item(i).getAttributes();
+//			Element newElement1 = doc.createElement(type);
+//			newElement1.setAttribute("id", this.getID());
+//			for(int j = 0; j != data.size(); j++) {
+//				newElement1.setAttribute("id", this.getID());
+//			}
+//			Node n = doc.getDocumentElement();
+//			n.appendChild(newElement1);
+//			
+//		}
+//		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+//		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+//		StreamResult result = new StreamResult(new FileOutputStream("src\\resources\\files\\credentials.xml"));
+//		DOMSource source = new DOMSource(doc);
+//		transformer.transform(source, result);
+//	}
 
 	public void setFbToken(String fbToken) {
 		this.fbToken = fbToken;
@@ -200,10 +288,11 @@ public class User {
 
 
 	public static void main(String[] args) {
-		User gay = new User("Leo", "Nardo", "as", null, null, null, "0", "0");
+		User gay = new User("Ru", "Ben", "as", null, null, null, "0", "0");
 		gay.saveNewUser(gay);
-		gay.setDarkTheme("1");
-		gay.updateUsrInfo(gay);
+		gay.checkInfo(gay);
+		//gay.setDarkTheme("1");
+		//gay.updateUsrInfo(gay);
 		//System.out.println(gay.isUsrRegistered(gay));
 	}
 }
