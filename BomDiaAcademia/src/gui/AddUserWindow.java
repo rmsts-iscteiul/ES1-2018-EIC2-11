@@ -202,8 +202,8 @@ public class AddUserWindow {
 			@Override
 			public void handle(ActionEvent actionEvent) {
 				if (password_field.getText().equals(repeat_password_field.getText())) {
-					auxClasses.User user = new auxClasses.User(first_name_text_field.getText(), last_name_text_field.getText(),
-							password_field.getText(), null, null, null, last_name_text_field.getText(), "0");
+					utils.User user = new utils.User(first_name_text_field.getText(),
+							last_name_text_field.getText(), password_field.getText());
 					user.saveNewUser();
 					new PopUpWindow(add_user_stage, PopUpType.SUCCESSFULLY, "Your account was added successfully!");
 					add_user_stage.close();

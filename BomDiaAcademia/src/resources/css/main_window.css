@@ -301,6 +301,20 @@
 	-fx-cursor: hand;  
 }
 
+#log_in_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+	-fx-graphic: "/resources/icons/login_gray_24.png";  
+	-fx-cursor: hand;  
+}
+
+#log_out_button {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+	-fx-graphic: "/resources/icons/logout_gray_24.png";  
+	-fx-cursor: hand;  
+}
+
 #apps_pane {
 	-fx-background-color: transparent;
 	-fx-alignment: center;

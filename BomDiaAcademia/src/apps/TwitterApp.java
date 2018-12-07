@@ -54,26 +54,6 @@ public class TwitterApp {
 	private String owner = "";
 
 	/**
-	 * Consumer key
-	 */
-	private String consumerKey;
-
-	/**
-	 * Consumer secret
-	 */
-	private String consumerSecret;
-
-	/**
-	 * User access token
-	 */
-	private String userAccessToken;
-
-	/**
-	 * Access token secret
-	 */
-	private String accessTokenSecret;
-
-	/**
 	 * "Deprecated" (not updated) list of a users tweets
 	 */
 	private List<Status> statuses;
@@ -113,8 +93,9 @@ public class TwitterApp {
 	public TwitterApp(String twitter_tokens) throws TwitterException {
 		String[] twitter_tokens_array = twitter_tokens.split(",");
 		ConfigurationBuilder cb = new ConfigurationBuilder();
-		cb.setDebugEnabled(true).setOAuthConsumerKey(twitter_tokens_array[0]).setOAuthConsumerSecret(twitter_tokens_array[1])
-				.setOAuthAccessToken(twitter_tokens_array[2]).setOAuthAccessTokenSecret(twitter_tokens_array[3]);
+		cb.setDebugEnabled(true).setOAuthConsumerKey(twitter_tokens_array[0])
+				.setOAuthConsumerSecret(twitter_tokens_array[1]).setOAuthAccessToken(twitter_tokens_array[2])
+				.setOAuthAccessTokenSecret(twitter_tokens_array[3]);
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		twitter = tf.getInstance();
 		timeFilter = TimeFilter.ALL_TIME;
@@ -474,46 +455,6 @@ public class TwitterApp {
 	 */
 	private void setWordFilter(String wordFilter) {
 		this.wordFilter = wordFilter;
-	}
-
-	/**
-	 * Sets specific consumerKey
-	 * 
-	 * 
-	 * @param consumerKey
-	 */
-	public void setConsumerKey(String consumerKey) {
-		this.consumerKey = consumerKey;
-	}
-
-	/**
-	 * Sets specific consumerSecret
-	 * 
-	 * 
-	 * @param consumerSecret
-	 */
-	public void setConsumerSecret(String consumerSecret) {
-		this.consumerSecret = consumerSecret;
-	}
-
-	/**
-	 * Sets specific userAccessToken
-	 * 
-	 * 
-	 * @param userAccessToken
-	 */
-	public void setUserAccessToken(String userAccessToken) {
-		this.userAccessToken = userAccessToken;
-	}
-
-	/**
-	 * Sets specific accessTokenSecret
-	 * 
-	 * 
-	 * @param accessTokenSecret
-	 */
-	public void setAccessTokenSecret(String accessTokenSecret) {
-		this.accessTokenSecret = accessTokenSecret;
 	}
 
 	/**

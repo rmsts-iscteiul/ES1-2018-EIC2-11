@@ -18,7 +18,8 @@ class TestTwitterApp {
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		twitter = new TwitterApp();
+		twitter = new TwitterApp(
+				"GahzkZi50ZuasuqqkRqckC2ln,Rr3Q7ivhL3HiEKVoP3d2aLwNbh6ez5rTdEy3MtNRd6yeC5vNVV,3362933517-swAMAbDiMufcuyxHUEpkSYUJ3JY9ANIrqT5yirP,onDIulYjcQCvb3rVk6N3cYp0DxytW0ew86fM2Kyp8JQOj");
 	}
 
 	@BeforeEach

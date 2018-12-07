@@ -1,8 +1,5 @@
 package gui;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;

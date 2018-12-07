@@ -61,6 +61,7 @@ public class MainWindow extends Application {
 	private HBox window_top_bar;
 	private BorderPane options_pane = null;
 	private TextField search_text_field;
+	private ComboBox<TimeFilter> filter_combo_box;
 
 	private VBox twitter_app_pane = null;
 	private VBox facebook_app_pane = null;
@@ -71,7 +72,7 @@ public class MainWindow extends Application {
 	private FacebookApp facebook_app;
 	private EmailApp email_app;
 
-	private auxClasses.User user = null;
+	private utils.User user = null;
 
 	private double xOffset, yOffset;
 
@@ -434,7 +435,7 @@ public class MainWindow extends Application {
 			@Override
 			public void handle(ActionEvent actionEvent) {
 				new AddUserWindow(main_stage);
-				user = auxClasses.User.getLast();
+				user = utils.User.getLast();
 			}
 		});
 		users_pane.getChildren().add(add_user_button);
@@ -462,6 +463,9 @@ public class MainWindow extends Application {
 		});
 		Button log_in_button = new Button("Log in");
 		log_in_button.setId("log_in_button");
+		Button log_out_button = new Button("Log in");
+		log_out_button.setId("log_out_button");
+		// Login
 		log_in_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
@@ -478,15 +482,45 @@ public class MainWindow extends Application {
 					window_left_menu.setId("window_left_menu");
 					dark_theme_toggle_button.setSelected(false);
 				}
+				if (!(user.getWordFilter().equals("") || user.getWordFilter() == null)) {
+					search_text_field.setText(user.getWordFilter());
+					if (!(user.getTwToken().equals("") || user.getTwToken() == null)) {
+						try {
+							twitter_app = new TwitterApp(user.getTwToken());
+						} catch (TwitterException e) {
 
+						}
+						getTwitterTimeline(user.getWordFilter());
+					}
+					if (!(user.getFbToken().equals("") || user.getFbToken() == null)) {
+						facebook_app = new FacebookApp(user.getFbToken());
+						getTwitterTimeline(user.getWordFilter());
+					}
+
+				}
+				log_in_button.setVisible(false);
+				log_out_button.setVisible(true);
 			}
 		});
+		// Logout
+		log_out_button.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				user = null;
+				search_text_field.setText("Filter...");
+				filter_combo_box.setValue(TimeFilter.ALL_TIME);
+				apps_pane.getChildren().clear();
+				log_in_button.setVisible(true);
+				log_out_button.setVisible(false);
+			}
+		});
+		log_out_button.setVisible(false);
 		Button settings_button = new Button("Settings");
 		settings_button.setId("settings_button");
 		Button about_button = new Button("About");
 		about_button.setId("about_button");
-		bottom_options_container.getChildren().addAll(new Separator(), log_in_button, dark_theme_toggle_button,
-				settings_button, about_button);
+		bottom_options_container.getChildren().addAll(new Separator(), log_in_button, log_out_button, new Separator(),
+				dark_theme_toggle_button, settings_button, about_button);
 		options_content_pane.setBottom(bottom_options_container);
 
 		options_pane.setCenter(options_content_pane);
@@ -511,7 +545,7 @@ public class MainWindow extends Application {
 		search_email_toggle_button.setId("search_email_toggle_button");
 		HBox search_pane = new HBox();
 		search_pane.setId("search_pane");
-		ComboBox<TimeFilter> filter_combo_box = new ComboBox<TimeFilter>();
+		filter_combo_box = new ComboBox<TimeFilter>();
 		filter_combo_box.setId("filter_combo_box");
 		filter_combo_box.getItems().addAll(TimeFilter.LAST_HOUR, TimeFilter.LAST_24H, TimeFilter.LAST_WEEK,
 				TimeFilter.LAST_MONTH, TimeFilter.ALL_TIME, TimeFilter.SPECIFIC_DAY);
@@ -539,8 +573,9 @@ public class MainWindow extends Application {
 					if (search_text_field.getText().equals("Filter...") || search_text_field.getText().equals("")) {
 						getTwitterTimeline();
 					} else {
-
 						getTwitterTimeline(search_text_field.getText());
+						user.setWordFilter(search_text_field.getText());
+						user.updateUsrInfo();
 					}
 				}
 				if (search_facebook_toggle_button.isSelected()) {
@@ -550,6 +585,8 @@ public class MainWindow extends Application {
 						getFacebookTimeline();
 					} else {
 						getFacebookTimeline(search_text_field.getText());
+						user.setWordFilter(search_text_field.getText());
+						user.updateUsrInfo();
 					}
 				}
 //				if (search_email_toggle_button.isSelected()) {

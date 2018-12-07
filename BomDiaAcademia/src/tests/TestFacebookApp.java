@@ -18,7 +18,9 @@ class TestFacebookApp {
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		app = new FacebookApp(); // initiates facebookApp
+		app = new FacebookApp(
+				"EAAD4C79u9UYBAMkgJAOuZAeFyWQarOmO9pBaLrRAfhA8G7DrJyWgJXZAWZAZCnUDhhI9z14AzQmGWLw38R3QFR5SZBZCl0hV0RtwQibKeFLHKOjUZA9gO6kq2N5Xzq0GEDuCi4neMZBrpX60Y8vtzMUfEi1CuVJdf9ZBBNQx6pNwPdVCF7akwPwmWxLvU1NZAqsk0ZD"); // initiates
+																																																								// facebookApp
 	}
 
 	@BeforeEach

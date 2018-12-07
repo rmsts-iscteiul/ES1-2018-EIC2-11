@@ -1,4 +1,4 @@
-package auxClasses;
+package utils;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;

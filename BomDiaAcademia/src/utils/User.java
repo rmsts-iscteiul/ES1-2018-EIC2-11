@@ -1,4 +1,4 @@
-package auxClasses;
+package utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,10 +14,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,7 +26,8 @@ import org.xml.sax.SAXException;
 public class User {
 
 	/**
-	 * fn,ln,pw are the main credentials for our app (First Name, Last Name, Password)
+	 * fn,ln,pw are the main credentials for our app (First Name, Last Name,
+	 * Password)
 	 */
 	private String fn, ln, pw;
 	/**
@@ -102,10 +100,11 @@ public class User {
 		this.timeFilter = null;
 		this.wordFilter = null;
 	}
+
 	public String getWordFilter() {
 		return wordFilter;
 	}
-	
+
 	public String getTimeFilter() {
 		return timeFilter;
 	}
@@ -153,9 +152,6 @@ public class User {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(inputFile);
 			doc.getDocumentElement().normalize();
-			XPathFactory xpathFactory = XPathFactory.newInstance();
-			XPath xpath = xpathFactory.newXPath();
-			XPathExpression expr = xpath.compile("/XML/User/@*");
 			NodeList nl = doc.getElementsByTagName("User");
 			if (!isUsrRegistered(nl, this)) {
 				Element newElement1 = doc.createElement("User");
@@ -201,9 +197,6 @@ public class User {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(inputFile);
 			doc.getDocumentElement().normalize();
-			XPathFactory xpathFactory = XPathFactory.newInstance();
-			XPath xpath = xpathFactory.newXPath();
-			XPathExpression expr = xpath.compile("/XML/User/@*");
 			NodeList nl = doc.getElementsByTagName("User");
 			if (this.isUsrRegistered(nl, this)) {
 				for (int i = 0; i < nl.getLength(); i++) {
@@ -215,7 +208,8 @@ public class User {
 						this.setEmUsr(children.getNamedItem("emUsr").getNodeValue());
 						this.setFbToken(children.getNamedItem("fbToken").getNodeValue());
 						this.setTwToken(children.getNamedItem("twToken").getNodeValue());
-	
+						this.setWordFilter(children.getNamedItem("wordF").getNodeValue());
+						this.setTimeFilter(children.getNamedItem("timeF").getNodeValue());
 					}
 				}
 			}
@@ -233,15 +227,10 @@ public class User {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(inputFile);
 			doc.getDocumentElement().normalize();
-			XPathFactory xpathFactory = XPathFactory.newInstance();
-			XPath xpath = xpathFactory.newXPath();
-			XPathExpression expr = xpath.compile("/XML/User/@*");
 			NodeList nl = doc.getElementsByTagName("User");
 			NamedNodeMap children = nl.item(nl.getLength() - 1).getAttributes();
 			usr = new User(children.getNamedItem("fn").getNodeValue(), children.getNamedItem("ln").getNodeValue(),
-					children.getNamedItem("pw").getNodeValue(), children.getNamedItem("fbToken").getNodeValue(),
-					children.getNamedItem("twToken").getNodeValue(), children.getNamedItem("emUsr").getNodeValue(),
-					children.getNamedItem("emPwd").getNodeValue(), children.getNamedItem("darkTheme").getNodeValue());
+					children.getNamedItem("pw").getNodeValue());
 			return usr;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -256,9 +245,6 @@ public class User {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(inputFile);
 			doc.getDocumentElement().normalize();
-			XPathFactory xpathFactory = XPathFactory.newInstance();
-			XPath xpath = xpathFactory.newXPath();
-			XPathExpression expr = xpath.compile("/XML/User/@*");
 			NodeList nl = doc.getElementsByTagName("User");
 			for (int i = 0; i < nl.getLength(); i++) {
 				NamedNodeMap children = nl.item(i).getAttributes();
@@ -334,11 +320,11 @@ public class User {
 	public void setWordFilter(String word) {
 		this.wordFilter = word;
 	}
-	
+
 	public void setTimeFilter(String time) {
 		this.timeFilter = time;
 	}
-	
+
 	public void setFbToken(String fbToken) {
 		this.fbToken = fbToken;
 	}

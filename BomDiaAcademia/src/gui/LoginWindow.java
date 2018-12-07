@@ -1,7 +1,6 @@
 package gui;
 
 import apps.EmailApp;
-import auxClasses.User;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
@@ -18,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import utils.User;
 
 public class LoginWindow {
 
@@ -28,7 +28,7 @@ public class LoginWindow {
 
 	private EmailApp email_app = null;
 	
-	private auxClasses.User user;
+	private utils.User user;
 
 	private static final int LOGIN_SHADOW_GAP = 10;
 	private static final int LOGIN_ROOT_PANE_WIDTH = 400;
@@ -220,7 +220,7 @@ public class LoginWindow {
 					login_stage.close();
 				} else {
 					user = new User(first_name_text_field.getText(), last_name_text_field.getText(),
-							password_field.getText(), null, null, null, password_field.getText(), "0");
+							password_field.getText());
 					new PopUpWindow(login_stage, PopUpType.SUCCESSFULLY, "Logged in successfully!");
 					login_stage.close();
 				}
