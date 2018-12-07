@@ -18,6 +18,7 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -36,6 +37,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -538,7 +540,6 @@ public class MainWindow extends Application {
 				new TwitterPostWindow(main_stage, twitter_app);
 			}
 		});
-
 		ToggleButton twitter_app_top_bar_change_user_button = new ToggleButton();
 		twitter_app_top_bar_change_user_button.setId("twitter_app_top_bar_change_user_button");
 		twitter_app_top_bar_change_user_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -587,7 +588,24 @@ public class MainWindow extends Application {
 		VBox twitter_feed = new VBox();
 		twitter_feed.setId("twitter_feed");
 
+		boolean is_there_status = true;
 		for (Status status : statuses) {
+			if (is_there_status) {
+				Image cover_image = new Image(status.getUser().getProfileBannerURL());
+				double ratio = cover_image.getWidth() / cover_image.getHeight();
+				ImageView cover_image_view = new ImageView();
+				cover_image_view.setFitWidth(twitter_app_pane.getPrefWidth() * 0.9);
+				cover_image_view.setFitHeight(cover_image_view.getFitWidth() / ratio);
+				Rectangle clip = new Rectangle(cover_image_view.getFitWidth(), cover_image_view.getFitHeight());
+				clip.setArcWidth(20);
+				clip.setArcHeight(20);
+//				cover_image_view.setTranslateY(-(cover_image_view.getFitHeight() - (cover_image_view.getFitHeight() - 100)));
+				cover_image_view.setClip(clip);
+//				clip.setTranslateY(2*(cover_image_view.getFitHeight() - (cover_image_view.getFitHeight() - 100)));
+				cover_image_view.setImage(cover_image);
+				twitter_feed.getChildren().add(cover_image_view);
+				is_there_status = false;
+			}
 			twitter_feed.getChildren().add(newTwitterPost(status));
 		}
 
@@ -854,8 +872,6 @@ public class MainWindow extends Application {
 	private BorderPane newTwitterPost(Status status) {
 		BorderPane twitter_post_pane = new BorderPane();
 		twitter_post_pane.setId("twitter_post_pane");
-		twitter_post_pane.setPrefSize(twitter_app_pane.getPrefWidth() * 0.9, 100);
-		twitter_post_pane.setMaxSize(twitter_app_pane.getPrefWidth() * 0.9, 100);
 		twitter_post_pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
@@ -865,6 +881,8 @@ public class MainWindow extends Application {
 				}
 			}
 		});
+		twitter_post_pane.setPrefSize(twitter_app_pane.getPrefWidth() * 0.9, 100);
+		twitter_post_pane.setMaxSize(twitter_app_pane.getPrefWidth() * 0.9, 100);
 		// Left
 		VBox twitter_post_left_container = new VBox();
 		twitter_post_left_container.setId("twitter_post_left_container");
@@ -897,6 +915,9 @@ public class MainWindow extends Application {
 		twitter_post_text.setWrappingWidth(twitter_post_pane.getPrefWidth() * 0.8);
 		twitter_post_center_container.getChildren().add(twitter_post_text);
 		twitter_post_pane.setCenter(twitter_post_center_container);
+		// Bottom
+		Label twitter_post_date = new Label(status.getCreatedAt() + "");
+		twitter_post_pane.setBottom(twitter_post_date);
 
 		return twitter_post_pane;
 	}
@@ -980,7 +1001,7 @@ public class MainWindow extends Application {
 	 */
 	private void initApps() {
 		twitter_app = new TwitterApp();
-		facebook_app = new FacebookApp();
+//		facebook_app = new FacebookApp();
 		email_app = new EmailApp();
 	}
 

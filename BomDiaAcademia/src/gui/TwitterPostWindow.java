@@ -1,5 +1,7 @@
 package gui;
 
+import java.io.File;
+
 import apps.TwitterApp;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,11 +24,13 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
+import twitter4j.TwitterException;
 
 public class TwitterPostWindow {
 	private Stage twitter_post_stage;
@@ -36,18 +40,20 @@ public class TwitterPostWindow {
 	private BorderPane view_twitter_post_window_root_pane = null;
 	private BorderPane write_twitter_post_window_root_pane = null;
 
-	private FlowPane write_twitter_post_container;
-	private BorderPane view_twitter_post_container;
+	private VBox write_twitter_post_container;
+	private BorderPane view_twitter_post;
 
-	private MediaPlayer twitter_post_media_player;
+	private MediaPlayer twitter_post_media_player = null;
 
 	private TwitterApp twitter_app;
 	private Status status;
 
+	private File image_to_tweet = null;
+
 	private TextArea write_twitter_post_text_area;
 
 	private static final int TWITTER_POST_SHADOW_GAP = 10;
-	private static final int TWITTER_POST_ROOT_PANE_WIDTH = 900;
+	private static final int TWITTER_POST_ROOT_PANE_WIDTH = 1000;
 	private static final int TWITTER_POST_ROOT_PANE_HEIGHT = 600;
 	private static final int VIEW_TWITTER_POST_ROOT_PANE_WIDTH = 400;
 	private static final int VIEW_TWITTER_POST_ROOT_PANE_HEIGHT = 600;
@@ -170,10 +176,6 @@ public class TwitterPostWindow {
 	private void buildViewTwitterPostWindowTopBar() {
 		VBox view_twitter_post_window_top_bar = new VBox();
 		view_twitter_post_window_top_bar.setId("view_twitter_post_window_top_bar");
-		view_twitter_post_window_top_bar.setPrefSize(VIEW_TWITTER_POST_ROOT_PANE_WIDTH,
-				EMAIL_TWITTER_WINDOW_TOP_BAR_HEIGHT);
-		view_twitter_post_window_top_bar.setMaxSize(VIEW_TWITTER_POST_ROOT_PANE_WIDTH,
-				EMAIL_TWITTER_WINDOW_TOP_BAR_HEIGHT);
 		HBox twitter_post_window_top_bar_buttons_container = new HBox();
 		twitter_post_window_top_bar_buttons_container.setId("twitter_post_window_top_bar_buttons_container");
 		Label subject_label = new Label(status.getInReplyToScreenName());
@@ -183,6 +185,9 @@ public class TwitterPostWindow {
 		close_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
+				if (twitter_post_media_player != null) {
+					twitter_post_media_player.stop();
+				}
 				twitter_post_stage.close();
 			}
 		});
@@ -221,27 +226,40 @@ public class TwitterPostWindow {
 					} else {
 						write_twitter_post_window_root_pane.setVisible(false);
 					}
-
 				}
 			});
 			twitter_post_window_top_bar_buttons_container.getChildren().addAll(return_button);
 		}
-		// Tweet
 		Button tweet_button;
+		// Retweet
 		if (what_called.equals("R")) {
 			tweet_button = new Button("Retweet");
 			tweet_button.setId("retweet_button");
 			tweet_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent mouseEvent) {
-					if (write_twitter_post_text_area.getText().equals("Add a comment about this tweet...")
-							|| write_twitter_post_text_area.getText().equals("")) {
-						twitter_app.retweet(status);
-					} else {
-						twitter_app.retweet(write_twitter_post_text_area.getText(), status);
+					try {
+						if (write_twitter_post_text_area.getText().equals("Add a comment about this tweet...")
+								|| write_twitter_post_text_area.getText().equals("")) {
+							twitter_app.retweet(status);
+							new PopUpWindow(twitter_post_stage, PopUpType.SUCCESSFULLY, "You retweeted sucessfully");
+							twitter_post_window_root_pane.getChildren().remove(write_twitter_post_window_root_pane);
+							write_twitter_post_window_root_pane = null;
+							refreshViewTwitterPostContent();
+						} else {
+							twitter_app.retweet(write_twitter_post_text_area.getText(), status);
+							new PopUpWindow(twitter_post_stage, PopUpType.SUCCESSFULLY, "You retweeted sucessfully");
+							twitter_post_window_root_pane.getChildren().remove(write_twitter_post_window_root_pane);
+							write_twitter_post_window_root_pane = null;
+							refreshViewTwitterPostContent();
+						}
+					} catch (TwitterException e) {
+						new PopUpWindow(twitter_post_stage, PopUpType.WARNING,
+								"Sorry but there is no Internet connection :(");
 					}
 				}
 			});
+			// Reply
 		} else if (what_called.equals("RT")) {
 			tweet_button = new Button("Reply");
 			tweet_button.setId("reply_button");
@@ -253,10 +271,20 @@ public class TwitterPostWindow {
 						new PopUpWindow(twitter_post_stage, PopUpType.WARNING,
 								"Please add a comment to reply this tweet");
 					} else {
-						twitter_app.replyTo(write_twitter_post_text_area.getText(), status);
+						try {
+							twitter_app.replyTo(write_twitter_post_text_area.getText(), status);
+							new PopUpWindow(twitter_post_stage, PopUpType.SUCCESSFULLY, "You have replied sucessfully");
+							twitter_post_window_root_pane.getChildren().remove(write_twitter_post_window_root_pane);
+							write_twitter_post_window_root_pane = null;
+							refreshViewTwitterPostContent();
+						} catch (TwitterException e) {
+							new PopUpWindow(twitter_post_stage, PopUpType.WARNING,
+									"Sorry but there is no Internet connection :(");
+						}
 					}
 				}
 			});
+			// Tweet
 		} else {
 			tweet_button = new Button("Tweet");
 			tweet_button.setId("tweet_button");
@@ -268,7 +296,17 @@ public class TwitterPostWindow {
 						new PopUpWindow(twitter_post_stage, PopUpType.WARNING,
 								"You first need to write something to tweet");
 					} else {
-						twitter_app.tweet(write_twitter_post_text_area.getText());
+						try {
+							twitter_app.tweet(write_twitter_post_text_area.getText(), image_to_tweet);
+							new PopUpWindow(twitter_post_stage, PopUpType.SUCCESSFULLY,
+									"Your tweet was tweeted successfully");
+							twitter_post_window_root_pane.getChildren().remove(write_twitter_post_window_root_pane);
+							write_twitter_post_window_root_pane = null;
+							refreshViewTwitterPostContent();
+						} catch (TwitterException e) {
+							new PopUpWindow(twitter_post_stage, PopUpType.WARNING,
+									"Sorry but there is no Internet connection :(");
+						}
 					}
 				}
 			});
@@ -295,9 +333,13 @@ public class TwitterPostWindow {
 	}
 
 	private void buildViewTwitterPostContent() {
-		view_twitter_post_container = new BorderPane();
+		view_twitter_post = new BorderPane();
+		view_twitter_post.setId("view_twitter_post_container");
+		BorderPane view_twitter_post_container = new BorderPane();
 		view_twitter_post_container.setId("view_twitter_post_container");
 		ScrollPane view_twitter_post_scroll_pane = new ScrollPane();
+		view_twitter_post_scroll_pane.setPrefSize(view_twitter_post.getPrefWidth(), view_twitter_post.getPrefHeight());
+		view_twitter_post_scroll_pane.setMaxSize(view_twitter_post.getMaxWidth(), view_twitter_post.getMaxHeight());
 		// TOP
 		HBox view_twitter_post_top_container = new HBox();
 		view_twitter_post_top_container.setId("view_twitter_post_top_container");
@@ -357,15 +399,14 @@ public class TwitterPostWindow {
 		// Top
 		VBox twitter_post_left_container = new VBox();
 		twitter_post_left_container.setId("twitter_post_top_container");
-		ImageView cover_image = new ImageView(new Image(status.getUser().getProfileBanner300x100URL()));
-		cover_image.setId("cover_image");
+
 		ImageView profile_image = new ImageView(new Image(status.getUser().getProfileImageURL()));
 		profile_image.setId("profile_image");
 		profile_image.setFitWidth(80);
 		profile_image.setFitHeight(80);
 		Label profile_image_label = new Label(status.getUser().getName());
 		profile_image_label.setId("profile_image_label");
-		twitter_post_left_container.getChildren().addAll(cover_image, profile_image, profile_image_label);
+		twitter_post_left_container.getChildren().addAll(profile_image, profile_image_label);
 		twitter_post_container.setTop(twitter_post_left_container);
 
 		// Center
@@ -373,13 +414,16 @@ public class TwitterPostWindow {
 		twitter_post_center_container.setId("twitter_post_center_container");
 		Text twitter_post_text = new Text(status.getText());
 		twitter_post_text.setId("twitter_post_text");
-		twitter_post_text.setWrappingWidth(VIEW_TWITTER_POST_ROOT_PANE_WIDTH * 0.6);
+		twitter_post_text.setWrappingWidth(VIEW_TWITTER_POST_ROOT_PANE_WIDTH * 0.8);
 		twitter_post_center_container.getChildren().add(twitter_post_text);
 		twitter_post_container.setCenter(twitter_post_center_container);
 
-		// Right
-		VBox twitter_post_right_container = new VBox();
-		twitter_post_right_container.setId("twitter_post_right_container");
+		// Bottom
+		VBox twitter_post_bottom_container = new VBox();
+		twitter_post_bottom_container.setId("twitter_post_bottom_container");
+		// Favourite and Retweets
+		HBox twitter_post_icons_container = new HBox();
+		twitter_post_icons_container.setId("twitter_post_icons_container");
 		Label favourites_label = new Label(status.getFavoriteCount() + "");
 		if (status.isFavorited()) {
 			favourites_label.setId("favourited_label");
@@ -389,12 +433,18 @@ public class TwitterPostWindow {
 		favourites_label.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				if (status.isFavorited()) {
+				try {
+					if (status.isFavorited()) {
+						favourites_label.setId("no_favourited_label");
+						favourites_label.setText(status.getFavoriteCount() - 1 + "");
+					} else {
+						favourites_label.setId("favourited_label");
+						favourites_label.setText(status.getFavoriteCount() + 1 + "");
+					}
 					twitter_app.favorite(status);
-					favourites_label.setId("no_favourited_label");
-				} else {
-					favourites_label.setId("favourited_label");
-					twitter_app.favorite(status);
+				} catch (TwitterException e) {
+					new PopUpWindow(twitter_post_stage, PopUpType.WARNING,
+							"Sorry but there is no Internet connection :(");
 				}
 			}
 		});
@@ -402,16 +452,19 @@ public class TwitterPostWindow {
 		retweets_label.setId("retweets_label");
 		retweets_label.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
-			public void handle(MouseEvent event) {
-				// To-Do
+			public void handle(MouseEvent mouseEvent) {
+				if (write_twitter_post_window_root_pane == null) {
+					buildWriteTwitterPostWindowRootPane("R");
+				} else {
+					write_twitter_post_window_root_pane.setVisible(true);
+				}
 			}
 		});
-		twitter_post_right_container.getChildren().addAll(favourites_label, retweets_label);
-		twitter_post_container.setRight(twitter_post_right_container);
+		twitter_post_icons_container.getChildren().addAll(favourites_label, retweets_label);
 
-		// Bottom
-		HBox twitter_post_bottom_container = new HBox();
-		twitter_post_bottom_container.setId("twitter_post_bottom_container");
+		// Media
+		VBox twitter_post_media_container = new VBox();
+		twitter_post_media_container.setId("twitter_post_media_container");
 		MediaEntity[] media = status.getMediaEntities();
 		for (MediaEntity m : media) {
 			if (m.getVideoVariants().length != 0) {
@@ -419,37 +472,42 @@ public class TwitterPostWindow {
 				this.twitter_post_media_player = new MediaPlayer(twitter_post_media);
 				this.twitter_post_media_player.setAutoPlay(true);
 				MediaView twitter_post_media_view = new MediaView(twitter_post_media_player);
-				twitter_post_bottom_container.getChildren().add(twitter_post_media_view);
+				twitter_post_media_view.setFitWidth(VIEW_TWITTER_POST_ROOT_PANE_WIDTH * 0.8);
+				twitter_post_media_container.getChildren().add(twitter_post_media_view);
 			} else {
-				ImageView img = new ImageView(new Image(m.getMediaURL()));
-				twitter_post_bottom_container.getChildren().add(img);
+				Image image = new Image(m.getMediaURL());
+				double ratio = image.getWidth() / image.getHeight();
+				ImageView image_view = new ImageView(image);
+				image_view.setFitWidth(VIEW_TWITTER_POST_ROOT_PANE_WIDTH * 0.8);
+				image_view.setFitHeight(image_view.getFitWidth() / ratio);
+				twitter_post_media_container.getChildren().add(image_view);
 			}
 		}
+		twitter_post_bottom_container.getChildren().addAll(twitter_post_icons_container, twitter_post_media_container);
 		twitter_post_container.setBottom(twitter_post_bottom_container);
 		view_twitter_post_container.setCenter(twitter_post_container);
+		view_twitter_post_scroll_pane.setContent(view_twitter_post_container);
+		view_twitter_post.setCenter(view_twitter_post_scroll_pane);
+
 		// BOTTOM
 		FlowPane view_fill_bottom = new FlowPane();
 		view_fill_bottom.setId("view_fill_bottom");
 		view_fill_bottom.setMinHeight(EMAIL_TWITTER_WINDOW_TOP_BAR_HEIGHT);
 		view_fill_bottom.setPrefHeight(EMAIL_TWITTER_WINDOW_TOP_BAR_HEIGHT);
 		view_fill_bottom.setMaxHeight(EMAIL_TWITTER_WINDOW_TOP_BAR_HEIGHT);
-		view_twitter_post_container.setBottom(view_fill_bottom);
-		view_twitter_post_scroll_pane.setContent(view_twitter_post_container);
-		view_twitter_post_window_root_pane.setCenter(view_twitter_post_scroll_pane);
+		view_twitter_post.setBottom(view_fill_bottom);
+
+		view_twitter_post_window_root_pane.setCenter(view_twitter_post);
 	}
 
 	private void buildWriteTwitterPostContent(String what_called) {
-		write_twitter_post_container = new FlowPane(Orientation.VERTICAL);
+		write_twitter_post_container = new VBox();
 		write_twitter_post_container.setId("write_twitter_post_container");
 		if (what_called.equals("RT")) {
-			HBox to_write_email_post_top_container = new HBox();
-			to_write_email_post_top_container.setId("to_write_email_post_top_container");
-			Label to_label = new Label("In response to " + status.getUser().getName());
+			Label to_label = new Label("In response to @" + status.getUser().getName());
 			to_label.setId("to_label");
-			to_write_email_post_top_container.getChildren().addAll(to_label);
-			write_twitter_post_container.getChildren().add(to_write_email_post_top_container);
+			write_twitter_post_container.getChildren().addAll(to_label);
 		}
-
 		VBox write_twitter_post_text_area_container = new VBox();
 		write_twitter_post_text_area_container.setId("write_twitter_post_text_area_container");
 		if (what_called.equals("R")) {
@@ -484,10 +542,32 @@ public class TwitterPostWindow {
 			});
 		}
 		write_twitter_post_text_area.setId("write_twitter_post_text_area");
-		write_twitter_post_text_area_container.getChildren().add(write_twitter_post_text_area);
+		// File Chooser
+		FileChooser file_chooser = new FileChooser();
+		Button file_chooser_button = new Button("Open Pictures");
+		file_chooser_button.setId("file_chooser_button_n_file");
+		file_chooser_button.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent e) {
+				image_to_tweet = file_chooser.showOpenDialog(twitter_post_stage);
+				if (image_to_tweet != null) {
+					file_chooser_button.setId("file_chooser_button_y_file");
+				}
+			}
+		});
+		write_twitter_post_text_area_container.getChildren().addAll(write_twitter_post_text_area, file_chooser_button);
 		write_twitter_post_container.getChildren().add(write_twitter_post_text_area_container);
 
 		write_twitter_post_window_root_pane.setCenter(write_twitter_post_container);
+	}
+
+	private void refreshViewTwitterPostContent() {
+		if (view_twitter_post_window_root_pane != null && view_twitter_post_window_root_pane.isVisible()) {
+			view_twitter_post = null;
+			view_twitter_post_window_root_pane.getChildren().remove(view_twitter_post);
+			buildViewTwitterPostContent();
+		}
+
 	}
 
 	private void startTwitterPostStage() {

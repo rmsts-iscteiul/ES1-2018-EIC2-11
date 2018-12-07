@@ -37,6 +37,13 @@
 	-fx-cursor: hand;
 }
 
+#twitter_app_top_bar_homepage_button {
+	-fx-background-color: transparent;
+	-fx-graphic: "/resources/icons/homepage_white_14.png";
+	-fx-border-style: none;
+	-fx-cursor: hand;
+}
+
 #change_user_container {
 	-fx-background-color: transparent;
 	-fx-background-radius: 50.0px;
@@ -115,11 +122,30 @@
     -fx-background-radius : 2.0em;
 }
 
+.scroll-pane {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane:focused {
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .corner {
+    -fx-background-insets: 0;
+}
+
 #twitter_feed {
 	-fx-background-color: transparent;
 	-fx-spacing: 10.0px;
 	-fx-alignment: top-center;
 	-fx-padding: 10.0px 0.0px 0.0px 0.0px;
+}
+
+#cover_image_container {
+	-fx-background-radius: 10.0px;
+	-fx-border-color: transparent;
+	-fx-border-radius: 10.0px;
 }
 
 #twitter_post_pane {

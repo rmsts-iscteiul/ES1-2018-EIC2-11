@@ -19,6 +19,12 @@
 	-fx-alignment: top-right;
 }
 
+#pop_up_window_top_bar_successfully {
+	-fx-background-color: #4cd964;
+	-fx-background-radius: 10.0px 10.0px 0.0px 0.0px;
+	-fx-alignment: top-right;
+}
+
 #pop_up_window_top_bar_buttons_container {
 	-fx-alignment: top-right;
 	-fx-padding: 0.0px 0.0px 0.0px 4.0px
@@ -92,4 +98,10 @@
 	-fx-background-color: transparent;
     -fx-border-style: none;
     -fx-graphic: "/resources/icons/confirmation_yellow_32.png";
+}
+
+#successfully_label {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/successfully_green_32.png";
 }

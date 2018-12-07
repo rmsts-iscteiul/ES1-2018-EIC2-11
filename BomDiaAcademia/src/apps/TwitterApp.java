@@ -105,15 +105,6 @@ public class TwitterApp {
 	}
 
 	/**
-	 * 
-	 * @return timeline of the user that is logged-in
-	 * @throws TwitterException
-	 */
-	public List<Status> getOwnerTimeline() throws TwitterException {
-		return getTimeline(owner);
-	}
-
-	/**
 	 * Gets the most recent 20 posts from a users timeline.
 	 * 
 	 * @param user(String) Owns the timeline which is being displayed.
@@ -306,7 +297,7 @@ public class TwitterApp {
 
 	public void tweet(String text, File file) throws TwitterException {
 		StatusUpdate newStatus = new StatusUpdate(text + WATERMARK);
-		newStatus.setMedia(file);
+		newStatus.media(file);
 		twitter.updateStatus(newStatus.getStatus());
 	}
 

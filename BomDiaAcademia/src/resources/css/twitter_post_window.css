@@ -43,6 +43,12 @@
 	-fx-padding: 0.0px 0.0px 0.0px 4.0px;
 }
 
+#view_twitter_post_container {
+	-fx-padding: 10.0px;
+	-fx-alignment: top-center;
+	-fx-border-style: none;
+}
+
 #view_twitter_post_top_container {
 	-fx-alignment: center-right ;
 }
@@ -177,10 +183,38 @@
     -fx-background-radius : 2.0em;
 }
 
+.scroll-pane {
+    -fx-background-insets: 0.0;
+    -fx-padding: 0.0;
+}
+
+.scroll-pane:focused {
+    -fx-background-insets: 0.0;
+}
+
+.scroll-pane .corner {
+    -fx-background-insets: 0.0;
+}
+
 #write_twitter_post_text_area_container {
 	-fx-alignment: center;
 	-fx-background-radius: 10.0px;
 	-fx-background-color: #ffffff;
+	-fx-padding: 2.0px 2.0px 4.0px 2.0px;
+}
+
+#file_chooser_button_n_file {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/image_n_gray_32.png";
+    -fx-cursor: hand;
+}
+
+#file_chooser_button_y_file {
+	-fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-graphic: "/resources/icons/image_y_gray_32.png";
+    -fx-cursor: hand;
 }
 
 #write_twitter_post_text_area {
@@ -204,22 +238,25 @@
 }
 
 #twitter_post_top_container {
-	-fx-padding: 10.0px;
+	-fx-padding: 10.0px 0.0px 0.0px 0.0px;
 	-fx-alignment: center;
 }
 
 #twitter_post_center_container {
-	-fx-padding: 0.0px 10.0px 0.0px 10.0px;
+	-fx-padding: 10.0px;
 	-fx-alignment: center;
 }
 
-#twitter_post_text {
-	
+#twitter_post_bottom_container {
+	-fx-padding: 0.0px 0.0px 10.0px 0.0px;
+	-fx-alignment: center;
 }
 
-#twitter_post_right_container {
-	-fx-padding: 10.0px;
-	-fx-alignment: center-right;
+#twitter_post_icons_container {
+	-fx-padding: 0.0px;
+	-fx-alignment: center;
+	-fx-hgap: 50.0px;
+	-fx-spacing: 50.0px;
 }
 
 #favourited_label {
@@ -234,11 +271,15 @@
 
 #retweets_label {
 	-fx-graphic: "/resources/icons/twitter_retweet_tcolor_24.png";
+	-fx-cursor: hand;
 }
 
-#twitter_post_bottom_container {
-	
+
+#twitter_post_media_container {
+	-fx-padding: 20.0px 0.0px 0.0px 0.0px;
+	-fx-alignment:  center;
 }
+
 
 #cover_image {
 	-fx-background-radius: 50.0px;

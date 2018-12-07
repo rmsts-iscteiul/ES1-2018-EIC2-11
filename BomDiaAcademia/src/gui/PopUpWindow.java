@@ -20,6 +20,8 @@ public class PopUpWindow {
 	private Scene pop_up_scene;
 	private BorderPane pop_up_root_pane;
 	private BorderPane pop_up_window_root_pane;
+	
+	private PopUpType type;
 
 	private static final int POP_UP_SHADOW_GAP = 10;
 	private static final int POP_UP_ROOT_PANE_WIDTH = 400;
@@ -27,14 +29,15 @@ public class PopUpWindow {
 	private static final int POP_UP_WINDOW_TOP_BAR_HEIGHT = 20;
 
 	private double xOffset, yOffset;
-	
+
 	private boolean confirmation;
 
 	public PopUpWindow(Stage main_stage, PopUpType type, String text) {
+		this.type = type;
 		configurePopUpStage(main_stage);
 		createPopUpRootPane();
 		buildPopUpWindowRootPane();
-		buildPopUpContent(type, text);
+		buildPopUpContent(text);
 		buildPopUpScene();
 		startPopUpStage();
 	}
@@ -103,7 +106,11 @@ public class PopUpWindow {
 
 	private void buildPopUpWindowTopBar() {
 		VBox pop_up_window_top_bar = new VBox();
-		pop_up_window_top_bar.setId("pop_up_window_top_bar");
+		if(type.equals(PopUpType.SUCCESSFULLY)) {
+			pop_up_window_top_bar.setId("pop_up_window_top_bar_successfully");
+		}else {
+			pop_up_window_top_bar.setId("pop_up_window_top_bar");
+		}
 		pop_up_window_top_bar.setPrefSize(POP_UP_ROOT_PANE_WIDTH, POP_UP_WINDOW_TOP_BAR_HEIGHT);
 		pop_up_window_top_bar.setMaxSize(POP_UP_ROOT_PANE_WIDTH, POP_UP_WINDOW_TOP_BAR_HEIGHT);
 		HBox pop_up_window_top_bar_buttons_container = new HBox();
@@ -122,7 +129,7 @@ public class PopUpWindow {
 		pop_up_window_root_pane.setTop(pop_up_window_top_bar);
 	}
 
-	private void buildPopUpContent(PopUpType type, String text) {
+	private void buildPopUpContent(String text) {
 		VBox pop_up_container = new VBox();
 		pop_up_container.setId("pop_up_container");
 		HBox pop_up_buttons_container = new HBox();
@@ -132,17 +139,22 @@ public class PopUpWindow {
 			warning_label.setId("warning_label");
 			pop_up_container.getChildren().add(warning_label);
 			pop_up_buttons_container.getChildren().addAll(buildOkButton());
-			
+
 		} else if (type.equals(PopUpType.CONFIRMATION)) {
 			Label confirmation_label = new Label();
 			confirmation_label.setId("confirmation_label");
 			pop_up_container.getChildren().add(confirmation_label);
 			pop_up_buttons_container.getChildren().addAll(buildOkButton(), buildCancelButton());
+		} else if (type.equals(PopUpType.SUCCESSFULLY)) {
+			Label successfully_label = new Label();
+			successfully_label.setId("successfully_label");
+			pop_up_container.getChildren().add(successfully_label);
+			pop_up_buttons_container.getChildren().addAll(buildOkButton());
 		}
 		pop_up_container.getChildren().addAll(new Text(text), pop_up_buttons_container);
 		pop_up_window_root_pane.setCenter(pop_up_container);
 	}
-	
+
 	private Button buildOkButton() {
 		Button ok_button = new Button();
 		ok_button.setId("ok_button");
@@ -155,7 +167,7 @@ public class PopUpWindow {
 		});
 		return ok_button;
 	}
-	
+
 	private Button buildCancelButton() {
 		Button cancel_button = new Button();
 		cancel_button.setId("cancel_button");
@@ -168,11 +180,11 @@ public class PopUpWindow {
 		});
 		return cancel_button;
 	}
-	
+
 	public boolean getConfirmation() {
 		return confirmation;
 	}
-	
+
 	private void startPopUpStage() {
 		pop_up_stage.setScene(pop_up_scene);
 		pop_up_stage.showAndWait();
