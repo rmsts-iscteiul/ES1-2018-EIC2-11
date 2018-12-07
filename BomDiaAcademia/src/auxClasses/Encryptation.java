@@ -12,11 +12,28 @@ import javax.crypto.spec.PBEKeySpec;
  
 public class Encryptation {
     
+	/**
+	 * RANDOM a random to auxiliate in the encryption method
+	 */
     private static final Random RANDOM = new SecureRandom();
+    /**
+     * ALPHABET defines the valida key chars to the encryptions
+     */
     private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    /**
+     * ITERATIONS the number of times that the encryption key will iterate
+     */
     private static final int ITERATIONS = 10000;
+    /**
+     * KEY_LENGTH length of the encryptation key
+     */
     private static final int KEY_LENGTH = 256;
     
+    /**
+     * Salt is a random encryptation value
+     * @param length Salt length
+     * @return String of the Salt value
+     */
      protected String getSalt(int length) {
         StringBuilder returnValue = new StringBuilder(length);
 
@@ -27,6 +44,12 @@ public class Encryptation {
         return new String(returnValue);
     }
 
+     /**
+      * 
+      * @param password Password who is being encrypted
+      * @param salt Salt key value
+      * @return Hash password
+      */
     protected byte[] hash(char[] password, byte[] salt) {
         PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, KEY_LENGTH);
         Arrays.fill(password, Character.MIN_VALUE);
@@ -40,6 +63,12 @@ public class Encryptation {
         }
     }
 
+    /**
+     * 
+     * @param password Password who is being encrypted
+     * @param salt Salt key value
+     * @return Encrypted password value
+     */ 
     protected String generateSecurePassword(String password, String salt) {
         String returnValue = null;
 
@@ -50,6 +79,13 @@ public class Encryptation {
         return returnValue;
     }
     
+    /**
+     * 
+     * @param providedPassword Non Encrypted password
+     * @param securedPassword Encrypted password
+     * @param salt Salt key value
+     * @return true if keys match, false if not
+     */
     protected boolean verifyUserPassword(String providedPassword, String securedPassword, String salt){
         boolean returnValue = false;
         

@@ -113,7 +113,7 @@ public class User {
 		return pw;
 	}
 
-	private void saveNewUser(User usr) {
+	public void saveNewUser() {
 		try {
 			File inputFile = new File("src\\resources\\files\\credentials.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -124,16 +124,16 @@ public class User {
 			XPath xpath = xpathFactory.newXPath();
 			XPathExpression expr = xpath.compile("/XML/User/@*");
 			NodeList nl = doc.getElementsByTagName("User");
-			if (!isUsrRegistered(nl, usr)) {
+			if (!isUsrRegistered(nl, this)) {
 				Element newElement1 = doc.createElement("User");
-				newElement1.setAttribute("fn", usr.getFn());
-				newElement1.setAttribute("ln", usr.getLn());
-				newElement1.setAttribute("pw", encrypt.generateSecurePassword(usr.getPw(), salt));
-				newElement1.setAttribute("darkTheme", "" + usr.getDarkTheme());
-				newElement1.setAttribute("fbToken", usr.getFbToken());
-				newElement1.setAttribute("twToken", usr.getTwToken());
-				newElement1.setAttribute("emUsr", usr.getEmUsr());
-				newElement1.setAttribute("emPwd", encrypt.generateSecurePassword(usr.getEmPwd(), salt));
+				newElement1.setAttribute("fn", this.getFn());
+				newElement1.setAttribute("ln", this.getLn());
+				newElement1.setAttribute("pw", encrypt.generateSecurePassword(this.getPw(), salt));
+				newElement1.setAttribute("darkTheme", "" + this.getDarkTheme());
+				newElement1.setAttribute("fbToken", this.getFbToken());
+				newElement1.setAttribute("twToken", this.getTwToken());
+				newElement1.setAttribute("emUsr", this.getEmUsr());
+				newElement1.setAttribute("emPwd", encrypt.generateSecurePassword(this.getEmPwd(), salt));
 				newElement1.setAttribute("id", ""+nl.getLength());
 				Node n = doc.getDocumentElement();
 				n.appendChild(newElement1);
