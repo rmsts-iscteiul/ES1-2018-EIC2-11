@@ -1,4 +1,4 @@
-package tests;
+package jUnitTests;
 
 import java.util.List;
 import java.util.Scanner;
