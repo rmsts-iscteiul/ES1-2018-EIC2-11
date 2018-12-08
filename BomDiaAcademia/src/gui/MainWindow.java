@@ -74,7 +74,7 @@ public class MainWindow extends Application {
 	private FacebookApp facebook_app;
 	private EmailApp email_app;
 
-	private List<Object> all_posts;
+	private List<Object> all_posts = new LinkedList<>();
 
 	private utils.User user = null;
 
@@ -351,6 +351,7 @@ public class MainWindow extends Application {
 					}
 				}
 				if (email_app == null) {
+					System.out.println("Done");
 					email_app = new EmailApp();
 					email_app.setUser(user.getEmUsr());
 					email_app.setPassword(user.getEmPwd());
@@ -991,7 +992,26 @@ public class MainWindow extends Application {
 		more_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				// To-Do
+				email_feed.getChildren().remove(more_button);
+				email_app.moreMails();
+				List<Message> list = email_app.getTimeline("");
+				if (list.size() == 0) {
+					email_feed.getChildren().remove(more_button);
+					Label no_posts_label = new Label("Sorry but there is no tweets");
+					no_posts_label.setId("no_posts_label");
+					email_feed.getChildren().add(no_posts_label);
+					email_feed.getChildren().add(more_button);
+				} else {
+					for (Message message : list) {
+						try {
+							email_feed.getChildren().add(newEmailPost(message, email_app_pane));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				email_feed.getChildren().add(more_button);
+
 			}
 		});
 		if (emails.size() == 0) {
@@ -1085,7 +1105,7 @@ public class MainWindow extends Application {
 		more_button.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-
+				
 			}
 		});
 		all_feed.getChildren().add(more_button);
@@ -1484,7 +1504,7 @@ public class MainWindow extends Application {
 		all_posts.addAll(posts);
 		all_posts.addAll(messages);
 		all_posts.addAll(statuses);
-//		sortIt();
+		sortIt();
 	}
 
 	public void sortIt() {
