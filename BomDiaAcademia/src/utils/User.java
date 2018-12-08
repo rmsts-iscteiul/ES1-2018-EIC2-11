@@ -151,12 +151,12 @@ public class User {
 				Element newElement1 = doc.createElement("User");
 				newElement1.setAttribute("fn", this.getFn());
 				newElement1.setAttribute("ln", this.getLn());
-				newElement1.setAttribute("pw", Encryptation.encode(this.getPw()));
+				newElement1.setAttribute("pw", this.getPw());
 				newElement1.setAttribute("darkTheme", "" + this.getDarkTheme());
 				newElement1.setAttribute("fbToken", this.getFbToken());
 				newElement1.setAttribute("twToken", this.getTwToken());
 				newElement1.setAttribute("emUsr", this.getEmUsr());
-				newElement1.setAttribute("emPwd", Encryptation.encode(this.getEmPwd()));
+				newElement1.setAttribute("emPwd", this.getEmPwd());
 				newElement1.setAttribute("id", "" + nl.getLength());
 				newElement1.setAttribute("wordF", this.getWordFilter());
 				newElement1.setAttribute("timeF", this.getTimeFilter());

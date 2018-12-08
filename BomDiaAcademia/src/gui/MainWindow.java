@@ -301,6 +301,7 @@ public class MainWindow extends Application {
 					}
 				}
 				if (email_app_pane == null) {
+
 					getEmailTimeline();
 				} else {
 					if (left_menu_email_toggle_button.isSelected()) {
@@ -352,6 +353,7 @@ public class MainWindow extends Application {
 				}
 
 				if (all_app_pane == null) {
+					System.out.println("NULL");
 					getAllTimeline();
 				} else {
 					if (left_menu_combine_apps_toggle_button.isSelected()) {
@@ -568,6 +570,8 @@ public class MainWindow extends Application {
 		search_twitter_toggle_button.setId("search_twitter_toggle_button");
 		ToggleButton search_email_toggle_button = new ToggleButton();
 		search_email_toggle_button.setId("search_email_toggle_button");
+		ToggleButton search_all_toggle_button = new ToggleButton();
+		search_all_toggle_button.setId("search_all_toggle_button");
 		HBox search_pane = new HBox();
 		search_pane.setId("search_pane");
 		filter_combo_box = new ComboBox<TimeFilter>();
@@ -581,7 +585,7 @@ public class MainWindow extends Application {
 			}
 		});
 		app_check_pane.getChildren().addAll(search_facebook_toggle_button, search_twitter_toggle_button,
-				search_email_toggle_button, filter_combo_box);
+				search_email_toggle_button, search_all_toggle_button, filter_combo_box);
 		search_text_field = new TextField("Filter...");
 		search_text_field.setId("search_text_field");
 		search_text_field.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -1014,13 +1018,14 @@ public class MainWindow extends Application {
 	 * @param emails
 	 */
 	private void buildAllApp(List<Status> statuses, List<Post> posts, List<Message> emails) {
+		System.out.println("entrou");
 		all_app_pane = new VBox();
 		all_app_pane.setId("all_app_pane");
 		all_app_pane.setPrefSize((getUsableSpace() * 0.9), (window_pane.getHeight() - window_top_bar.getHeight()));
 		all_app_pane.setMaxSize((getUsableSpace() * 0.9), (window_pane.getMaxHeight() - window_top_bar.getMaxHeight()));
 		HBox all_app_tool_bar = new HBox();
 		all_app_tool_bar.setId("all_app_tool_bar");
-		Label all_app_top_bar_icon = new Label(email_app.getUser());
+		Label all_app_top_bar_icon = new Label();
 		all_app_top_bar_icon.setId("all_app_top_bar_icon");
 		Button all_app_top_bar_refresh_button = new Button();
 		all_app_top_bar_refresh_button.setId("all_app_top_bar_refresh_button");
@@ -1052,7 +1057,9 @@ public class MainWindow extends Application {
 		VBox all_feed = new VBox();
 		all_feed.setId("all_feed");
 
+		System.out.println("BEFORE CLEAR");
 		all_posts.clear();
+		System.out.println("AFTER CLEAR");
 		getAllPosts(statuses, posts, emails);
 		for (Object o : all_posts) {
 			if (o instanceof Status) {
@@ -1392,6 +1399,7 @@ public class MainWindow extends Application {
 				return null;
 			}
 		};
+
 		/*
 		 * What the thread does after it did what is describred above
 		 */
@@ -1444,11 +1452,14 @@ public class MainWindow extends Application {
 			 */
 			@Override
 			protected Void call() throws Exception {
+				System.out.println("BEFORE BUILD");
 				buildAllApp(twitter_app.getTimeline(twitter_app.getUser()), facebook_app.getTimeline(),
 						email_app.getTimeline(""));
+				System.out.println("AFTER BUILD");
 				return null;
 			}
 		};
+
 		/*
 		 * What the thread does after it did what is describred above
 		 */
@@ -1521,38 +1532,7 @@ public class MainWindow extends Application {
 	}
 
 	private double getUsableSpace() {
-		double occupied_space = 0;
-		int nr_apps_opened = 0;
-		if (twitter_app_pane != null) {
-			occupied_space += twitter_app_pane.getWidth();
-			nr_apps_opened++;
-		}
-		if (facebook_app_pane != null) {
-			occupied_space += facebook_app_pane.getWidth();
-			nr_apps_opened++;
-		}
-		if (email_app_pane != null) {
-			occupied_space += email_app_pane.getWidth();
-			nr_apps_opened++;
-		}
-		if (all_app_pane != null) {
-			occupied_space += all_app_pane.getWidth();
-			nr_apps_opened++;
-		}
-		// To-Do
-		switch (nr_apps_opened) {
-		case 0:
-			return apps_pane.getWidth() - occupied_space;
-		case 1:
-			return apps_pane.getWidth() - (occupied_space * 0.5);
-		case 2:
-			return apps_pane.getWidth() - (occupied_space * 0.5);
-		case 3:
-			return apps_pane.getWidth() - (occupied_space / 0.33);
-		case 4:
-			return apps_pane.getWidth() - (occupied_space / 0.25);
-		}
-		return 0;
+		return apps_pane.getWidth();
 
 	}
 

@@ -102,7 +102,7 @@
 }
 
 #left_menu_combine_apps_toggle_button:selected {
-	 -fx-graphic: "/resources/icons/combine_apps_white_32.png";
+	 -fx-graphic: "/resources/icons/all_purple_32.png";
 }
 
 #window_top_bar {
@@ -218,6 +218,23 @@
 
 #search_email_toggle_button:selected {
     -fx-background-color: #ff3b30;
+    -fx-graphic: "/resources/icons/email_white_14.png";
+}
+
+#search_all_toggle_button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50.0px;
+    -fx-graphic: "/resources/icons/all_gray_14.png";
+    -fx-cursor: hand;
+}
+
+#search_all_toggle_button:hover {
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+}
+
+#search_all_toggle_button:selected {
+    -fx-background-color: #483d8b;
     -fx-graphic: "/resources/icons/email_white_14.png";
 }
 
