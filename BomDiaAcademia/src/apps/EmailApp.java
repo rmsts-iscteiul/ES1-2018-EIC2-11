@@ -33,7 +33,7 @@ public class EmailApp {
 	private String user;
 
 	/**
-	 * password credential for the outlook login
+	 * password credential for the Outlook login
 	 */
 	private String password;
 
