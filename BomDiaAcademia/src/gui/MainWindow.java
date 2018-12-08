@@ -325,27 +325,32 @@ public class MainWindow extends Application {
 					if (user.getFbToken() == null || user.getFbToken().equals("")) {
 						new PopUpWindow(main_stage, PopUpType.WARNING,
 								"Please add a Facebook account. \n Try to open Facebook App first");
+						left_menu_combine_apps_toggle_button.setSelected(false);
 						return;
 					} else if (user.getTwToken() == null || user.getTwToken().equals("")) {
 						new PopUpWindow(main_stage, PopUpType.WARNING,
 								"Please add a Twitter account. \n Try to open Twitter App first");
+						left_menu_combine_apps_toggle_button.setSelected(false);
 						return;
 					} else if (user.getEmUsr() == null || user.getEmUsr().equals("") || user.getEmPwd() == null
 							|| user.getEmPwd().equals("")) {
 						new PopUpWindow(main_stage, PopUpType.WARNING,
 								"Please add a Email account. \n Try to open Email App first");
+						left_menu_combine_apps_toggle_button.setSelected(false);
 						return;
 					}
 				}
 				if (facebook_app == null) {
 					facebook_app = new FacebookApp(user.getFbToken());
-				} else if (twitter_app == null) {
+				}
+				if (twitter_app == null) {
 					try {
 						twitter_app = new TwitterApp(user.getTwToken());
 					} catch (TwitterException e) {
 						new PopUpWindow(main_stage, PopUpType.WARNING, "Sorry but there is no Internet connection :(");
 					}
-				} else if (email_app == null) {
+				}
+				if (email_app == null) {
 					email_app = new EmailApp();
 					email_app.setUser(user.getEmUsr());
 					email_app.setPassword(user.getEmPwd());
