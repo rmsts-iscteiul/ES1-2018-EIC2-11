@@ -26,7 +26,7 @@ public class FacebookApp {
 	 */
 	private static FacebookClient fbClient;
 	/**
-	 * Desired page to appear in GUI(Paging mechanism)
+	 * Desired page to appear in GUI(Paging Mechanism)
 	 */
 	private int desiredPage = 0;
 
